@@ -15,7 +15,7 @@ export default class CommunityMobilizer extends Model {
       // Relationships
       utentes: this.hasMany(Utente, 'community_mobilizer_id'),
       info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
-      links: this.hasMany(Link, 'community_mobilizer_id'),
+      links: this.hasMany(Link, 'community_mobilizer_id')
     }
   }
 }

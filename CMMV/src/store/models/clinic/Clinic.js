@@ -13,12 +13,12 @@ export default class Clinic extends Model {
       type: this.attr(''),
       latitude: this.attr(''),
       longitude: this.attr(''),
-    
-     
+
+
 
       // Relationships
       links: this.hasMany(Link, 'clinic_id'),
-      appointments: this.hasMany(Appointment, 'clinic_id'),
+      appointments: this.hasMany(Appointment, 'clinic_id')
     }
   }
 }

@@ -13,7 +13,7 @@ export default class Message extends Model {
       utente_id: this.attr(''),
 
       // Relationships
-      utente: this.belongsTo(Utente, 'utente_id'),
+      utente: this.belongsTo(Utente, 'utente_id')
     }
   }
 }
