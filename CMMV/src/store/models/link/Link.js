@@ -13,11 +13,11 @@ export default class Link extends Model {
       utente_id: this.attr(''),
       community_mobilizer_id: this.attr(''),
       clinic_id: this.attr(''),
- 
+
       // Relationships
       utente: this.belongsTo(Utente, 'utente_id'),
       community_mobilizer: this.belongsTo(CommunityMobilizer, 'community_mobilizer_id'),
-      clinic: this.belongsTo(Clinic, 'clinic_id'),
+      clinic: this.belongsTo(Clinic, 'clinic_id')
     }
   }
 }

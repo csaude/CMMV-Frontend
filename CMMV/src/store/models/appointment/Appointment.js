@@ -14,11 +14,11 @@ export default class Appointment extends Model {
       orderNumber: this.attr(''),
       utente_id: this.attr(''),
       clinic_id: this.attr(''),
-    
+
 
       // Relationships
       utente: this.belongsTo(Utente, 'utente_id'),
-      clinic: this.belongsTo(Clinic, 'clinic_id'),
+      clinic: this.belongsTo(Clinic, 'clinic_id')
     }
   }
 }

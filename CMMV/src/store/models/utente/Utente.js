@@ -28,7 +28,7 @@ export default class Utente extends Model {
       info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
       messages: this.hasMany(Message, 'utente_id'),
       links: this.hasMany(Link, 'utente_id'),
-      appointments: this.hasMany(Appointment, 'utente_id'),
+      appointments: this.hasMany(Appointment, 'utente_id')
     }
   }
 }
