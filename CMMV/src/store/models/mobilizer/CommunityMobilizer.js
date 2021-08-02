@@ -1,6 +1,7 @@
 import { Model } from '@vuex-orm/core'
 import Link from '../link/Link'
 import Utente from '../utente/Utente'
+import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
 
 export default class CommunityMobilizer extends Model {
   static entity = 'communityMobilizers'
