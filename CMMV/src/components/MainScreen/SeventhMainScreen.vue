@@ -13,7 +13,7 @@
         />
     <div class="absolute-bottom q-px-lg q-mb-lg">
         <div class="text-center q-mb-md">
-            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Registar" />
+            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Registar" @click="$emit('nextScreen')" />
         </div>
         <div class="text-center">
             <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" />
