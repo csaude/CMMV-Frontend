@@ -8,7 +8,7 @@
         </div>
         <div class=" absolute-bottom text-center q-mb-xl">
             <q-btn
-            size="30px"
+            size="lg"
             unelevated round
             @click="$emit('nextScreen')"
             color="deep-orange"
