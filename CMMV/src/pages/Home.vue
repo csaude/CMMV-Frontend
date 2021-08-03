@@ -55,7 +55,7 @@
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : materialTab}">
                     <q-card-section>
-                        <q-btn flat round color="deep-orange" size="30px" icon="add"  @click="changeTab('material')"/>
+                        <q-btn flat round color="deep-orange" size="30px" icon="add"  @click="changeTab('informativeMaterial')"/>
                         <div class=" text-deep-orange">Material Educativo</div>
                     </q-card-section>
                 </q-card>
@@ -66,6 +66,7 @@
             <mobilizer-screen v-if="mobilizerTab"/>
             <consulta v-if="consultaTab" />
             <us v-if="usTab"/>
+            <informative-docs v-if="materialTab" :docsOrImages="docsOrImages" />
         </div>
     </div>
     <div class="row">
@@ -123,7 +124,21 @@ export default {
                     }
                 }
             ]
-          }
+             },
+             docsOrImages: [
+        {
+          id: 1,
+          name: 'Folheto de Convite'
+        },
+        {
+          id: 2,
+          name: 'Folheto Para Criancas'
+        },
+        {
+          id: 2,
+          name: 'Seriado Activista'
+        }
+      ]
     }
   },
   methods: {
@@ -138,7 +153,7 @@ export default {
             this.mobilizerTab = true
         } else if (selectedTab === 'consulta') {
             this.consultaTab = true
-        } else if (selectedTab === 'material') {
+        } else if (selectedTab === 'informativeMaterial') {
             this.materialTab = true
         }
       }
@@ -165,7 +180,8 @@ export default {
       'no-mibilizer': require('components/Home/NoMobilizer.vue').default,
       'mobilizer-screen': require('components/Home/Mobilizer.vue').default,
       consulta: require('components/Home/Consulta.vue').default,
-      us: require('components/Home/SanitaryUnit.vue').default
+      us: require('components/Home/SanitaryUnit.vue').default,
+       'informative-docs': require('components/Home/ViewDocsOrImages.vue').default
   }
 }
 </script>
