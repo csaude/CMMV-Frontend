@@ -11,6 +11,8 @@ export default class CommunityMobilizer extends Model {
       id: this.attr(null),
       firstnames: this.attr(''),
       lastname: this.attr(''),
+      cellNumber: this.attr(''),
+      cellNumber2: this.attr(''),
       uuid: this.attr(''),
 
       // Relationships
