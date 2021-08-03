@@ -18,7 +18,7 @@ export default class Address extends Model {
 
       // Relationships
       district: this.belongsTo(District, 'district_id'),
-      utente_id: this.belongsTo(Utente, 'utente_id')
+      utente: this.belongsTo(Utente, 'utente_id')
     }
   }
 }

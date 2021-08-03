@@ -1,6 +1,5 @@
 import { Model } from '@vuex-orm/core'
 import Country from 'src/store/models/country/Country'
-import City from '../city/City'
 import District from '../district/District'
 
 export default class Province extends Model {
@@ -14,8 +13,7 @@ export default class Province extends Model {
       country_id: this.attr(''),
       // Relationships
       country: this.belongsTo(Country, 'country_id'),
-      districts: this.hasMany(District, 'province_id'),
-      cities: this.hasMany(City, 'province_id')
+      districts: this.hasMany(District, 'province_id')
 
     }
   }

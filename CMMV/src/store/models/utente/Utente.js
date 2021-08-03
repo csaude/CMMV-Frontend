@@ -2,6 +2,9 @@ import { Model } from '@vuex-orm/core'
 import Address from '../address/Address'
 import Appointment from '../appointment/Appointment'
 import Message from '../messages/Message'
+import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
+import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
+import Link from '../link/Link'
 
 export default class Utente extends Model {
   static entity = 'utentes'
@@ -30,5 +33,9 @@ export default class Utente extends Model {
       links: this.hasMany(Link, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id')
     }
+  }
+
+  getFullName () {
+    return this.firstnames + ' ' + this.lastname
   }
 }

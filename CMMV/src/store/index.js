@@ -1,27 +1,42 @@
-import { store } from 'quasar/wrappers'
-import { createStore } from 'vuex'
+import Vuex from 'vuex'
+import axios from 'axios'
+import VuexORM from '@vuex-orm/core'
+import VuexORMAxios from '@vuex-orm/plugin-axios'
+import Utente from './models/utente/Utente'
+import Address from './models/address/Address'
+import Appoinment from './models/appointment/Appointment'
+import Clinic from './models/clinic/Clinic'
+import Country from './models/country/Country'
+import District from './models/district/District'
+import InfoDocsOrImages from './models/dorcOrImages/InfoDocsOrImages'
+import Link from './models/link/Link'
+import Message from './models/messages/Message'
+import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
+import Province from './models/province/Province'
 
-// import example from './module-example'
+// Vue.use(Vuex)
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Store instance.
- */
-
-export default store(function (/* { ssrContext } */) {
-  const Store = createStore({
-    modules: {
-      // example
+VuexORM.use(VuexORMAxios, {
+    axios,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
     },
-
-    // enable strict mode (adds overhead!)
-    // for dev mode and --debug builds only
-    strict: process.env.DEBUGGING
+    baseURL: 'http://localhost:8081/api'
   })
 
-  return Store
-})
+  const database = new VuexORM.Database()
+    database.register(Utente)
+    database.register(Address)
+    database.register(Appoinment)
+    database.register(Clinic)
+    database.register(Country)
+    database.register(District)
+    database.register(InfoDocsOrImages)
+    database.register(Link)
+    database.register(Message)
+    database.register(CommunityMobilizer)
+    database.register(Province)
+
+  export default new Vuex.Store({
+    plugins: [VuexORM.install(database)]
+  })
