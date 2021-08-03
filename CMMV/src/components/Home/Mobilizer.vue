@@ -1,8 +1,13 @@
 <template>
-   <q-card class="my-card full-width q-pt-lg">
+<transition-group
+        appear
+        enter-active-class="animated zoomIn"
+        leave-active-class="animated zoomOut absolute-top"
+        >
+   <q-card key="mobilizer" class="my-card full-width q-pt-lg">
         <q-card-section class="text-center">
             <img src="~src/assets/mobilizador.png">
-            <div class="text-h6 q-py-xs text-weight-light">Carlos Alberto</div>
+            <div class="text-h6 q-py-xs text-weight-light">{{mobilizer.firstnames + ' ' + mobilizer.lastname}}</div>
         </q-card-section>
 
 
@@ -10,16 +15,17 @@
 
         <div class="text-center q-py-md items-center">
             <q-icon name="call" size="sm" color="green-10" />
-            <q-btn flat>84 6523987</q-btn>
+            <q-btn flat>{{mobilizer.cellNumber}}</q-btn>
             <q-icon name="call" size="sm" color="green-10" />
-            <q-btn flat >87 6321598</q-btn>
+            <q-btn flat >{{mobilizer.cellNumber2}}</q-btn>
         </div>
     </q-card>
+</transition-group>
 </template>
 
 <script>
 export default {
-
+    props: ['mobilizer']
 }
 </script>
 

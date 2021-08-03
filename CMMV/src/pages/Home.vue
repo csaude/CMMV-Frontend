@@ -62,10 +62,17 @@
             </div>
         </div>
         <div class="row q-mt-lg rounded-borders bordered">
-            <no-mibilizer v-if="noMobilizerTab"/>
-            <mobilizer-screen v-if="mobilizerTab"/>
-            <consulta v-if="consultaTab" />
-            <us v-if="usTab"/>
+            <noMobilizer
+                v-if="mobilizerTab && utente.link.community_mobilizer === null"/>
+            <mobilizer
+                :mobilizer="utente.link.community_mobilizer"
+                v-if="mobilizerTab && utente.link.community_mobilizer != null"/>
+            <consulta
+                :appointment="utente.appointments[0]"
+                v-if="consultaTab" />
+            <us
+                :clinic="utente.link.clinic"
+                v-if="usTab"/>
         </div>
     </div>
     <div class="row">
@@ -86,7 +93,7 @@
 
 <script>
 import { ref } from 'vue'
-import Utente from '../store/models/utente/Utente'
+// import Utente from '../store/models/utente/Utente'
 export default {
      data () {
         return {
@@ -111,11 +118,27 @@ export default {
             address: {
                 city: 'Maputo'
             },
+            link: {
+                id: 45,
+                dateLink: '25/06/2021',
+                clinic: {
+                    code: 'BOANE',
+                    name: 'Boane'
+                },
+                community_mobilizer: {
+                    id: 7,
+                    firstnames: 'Carlos',
+                    lastname: 'Alberto',
+                    cellNumber: '856321456',
+                    cellNumber2: '846321952'
+                }
+            },
             appointments: [
                 {
                     appointmentDate: '25/06/2021',
                     time: '13:03',
                     hasHappened: false,
+                    confirmedByUS: false,
                     orderNumber: 6,
                     clinic: {
                         code: 'BOANE',
@@ -144,26 +167,10 @@ export default {
       }
   },
   computed: {},
-  mounted () {
-      Utente.insert({
-          data: {
-            id: 1,
-            firstnames: 'Jonas Antonio',
-            lastname: 'Musculo',
-            birthDate: '02/25/2001',
-            cellNumber: '846253984',
-            whatsappNumber: '846315932',
-            preferedLanguage: 'Portugues',
-            documentType: 'BI',
-            documentNumber: '5236222235F',
-            systemNumber: 2216,
-            haspartner: true
-          }
-      })
-  },
+  mounted () {},
   components: {
-      'no-mibilizer': require('components/Home/NoMobilizer.vue').default,
-      'mobilizer-screen': require('components/Home/Mobilizer.vue').default,
+      noMobilizer: require('components/Home/NoMobilizer.vue').default,
+      mobilizer: require('components/Home/Mobilizer.vue').default,
       consulta: require('components/Home/Consulta.vue').default,
       us: require('components/Home/SanitaryUnit.vue').default
   }
