@@ -188,7 +188,7 @@ export default {
       mobilizer: require('components/Home/Mobilizer.vue').default,
       consulta: require('components/Home/Consulta.vue').default,
       us: require('components/Home/SanitaryUnit.vue').default,
-       'informative-docs': require('components/Home/ViewDocsOrImages.vue').default
+       'informative-docs': require('components/Home/MaterialEducativo.vue').default
   }
 }
 </script>

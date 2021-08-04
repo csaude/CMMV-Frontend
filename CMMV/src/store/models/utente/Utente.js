@@ -5,6 +5,7 @@ import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
 import Link from '../link/Link'
+import UserLogin from '../userLogin/userLogin'
 
 export default class Utente extends Model {
   static entity = 'utentes'
@@ -22,6 +23,7 @@ export default class Utente extends Model {
       documentNumber: this.attr(''),
       systemNumber: this.attr(''),
       haspartner: this.attr(''),
+      status: this.attr(''),
       address_id: this.attr(''),
       community_mobilizer_id: this.attr(''),
 
@@ -31,7 +33,8 @@ export default class Utente extends Model {
       info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
       messages: this.hasMany(Message, 'utente_id'),
       links: this.hasMany(Link, 'utente_id'),
-      appointments: this.hasMany(Appointment, 'utente_id')
+      appointments: this.hasMany(Appointment, 'utente_id'),
+      userLogin: this.hasOne(UserLogin, 'utente_id')
     }
   }
 
