@@ -13,6 +13,7 @@ import Link from './models/link/Link'
 import Message from './models/messages/Message'
 import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
 import Province from './models/province/Province'
+import UserLogin from './models/userLogin/userLogin'
 
 // Vue.use(Vuex)
 
@@ -36,6 +37,7 @@ VuexORM.use(VuexORMAxios, {
     database.register(Message)
     database.register(CommunityMobilizer)
     database.register(Province)
+    database.register(UserLogin)
 
   export default new Vuex.Store({
     plugins: [VuexORM.install(database)]
