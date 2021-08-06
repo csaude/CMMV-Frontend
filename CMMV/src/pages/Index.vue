@@ -25,7 +25,8 @@
             <Seventh-screen
                 v-if="showSeventhScreen"
                 @previousScreen="showSeventhScreen = !showSeventhScreen, showSixthScreen = true"
-                @nextScreen="showSeventhScreen = false"/>
+                @nextScreen="showSeventhScreen = false,showEightScreen=true"/>
+                <Eight-screen  v-if="showEightScreen" @nextScreen="showSixthScreen = false, showSeventhScreen = true"/>
         </div>
     </q-page>
 </template>
@@ -39,7 +40,8 @@ export default {
             showfourthScreen: false,
             showfifthScreen: false,
             showSixthScreen: false,
-            showSeventhScreen: false
+            showSeventhScreen: false,
+            showEightScreen: false
         }
     },
     components: {
@@ -49,7 +51,8 @@ export default {
         'fourth-screen': require('components/MainScreen/FourthMainScreen.vue').default,
         'fifth-screen': require('components/MainScreen/FifthMainScreen.vue').default,
         'Sixth-screen': require('components/MainScreen/SixthMainScreen.vue').default,
-        'Seventh-screen': require('components/MainScreen/SeventhMainScreen.vue').default
+        'Seventh-screen': require('components/MainScreen/SeventhMainScreen.vue').default,
+        'Eight-screen': require('pages/PageTest.vue').default
     },
     methods: {}
 }
