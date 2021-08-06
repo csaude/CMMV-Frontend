@@ -1,5 +1,10 @@
 <template>
-  <div>
+    <transition-group
+        appear
+        enter-active-class="animated zoomIn"
+        leave-active-class="animated zoomOut absolute-top"
+        >
+  <div key="thirdScreen">
     <img-component
         imgUrl="~src/assets/splash_img.png"
         />
@@ -12,6 +17,7 @@
             @nextScreen="$emit('nextScreen')"
             @previousScreen="$emit('previousScreen')" />
     </div>
+    </transition-group>
 </template>
 
 <script>

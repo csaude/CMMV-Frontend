@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <transition-group
+        appear
+        enter-active-class="animated zoomIn"
+        leave-active-class="animated zoomOut absolute-top"
+        >
+  <div key="seventhScreen">
     <img-component
         imgUrl="~src/assets/splash_img.png"
         />
@@ -20,6 +25,7 @@
         </div>
     </div>
 </div>
+  </transition-group>
 </template>
 
 <script>

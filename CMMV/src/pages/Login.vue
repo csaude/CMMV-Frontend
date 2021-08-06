@@ -18,19 +18,27 @@
                 type="text"
                 lazy-rules
                 rounded
-                label="Utilizador"
-                stack-label  />
+                label="Utilizador" >
+                <template v-slot:append>
+                    <q-icon name="person"  color="deep-orange"/>
+                </template>
+            </q-input>
         </div>
         <div class="row q-mb-md">
-            <q-input
-                class="col"
-                ref="password"
-                rounded
+            <q-input v-model="password" rounded
                 outlined
+                class="col"
                 label="Senha"
-                lazy-rules
-                type="password"
-                stack-label  />
+                :type="isPwd ? 'password' : 'text'">
+                <template v-slot:append>
+                    <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                        color="deep-orange"
+                    />
+                </template>
+            </q-input>
         </div>
         <div class="row float-right">Esqueceu a senha?</div>
     </div>
@@ -41,7 +49,14 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
+    data () {
+        return {
+            isPwd: ref(true)
+        }
+    },
+    methods: {}
 
 }
 </script>

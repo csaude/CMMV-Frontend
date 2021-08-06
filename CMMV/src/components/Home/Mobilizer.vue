@@ -1,5 +1,5 @@
 <template>
-<transition-group
+    <transition-group
         appear
         enter-active-class="animated zoomIn"
         leave-active-class="animated zoomOut absolute-top"

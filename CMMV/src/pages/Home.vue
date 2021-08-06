@@ -104,7 +104,6 @@ export default {
         consultaTab: false,
         materialTab: false,
         utente: {
-            id: 1,
             firstnames: 'Jonas Antonio',
             lastname: 'Musculo',
             birthDate: '02/25/2001',
@@ -116,37 +115,15 @@ export default {
             systemNumber: 2216,
             haspartner: true,
             address: {
-                city: 'Maputo'
-            },
-            link: {
-                id: 45,
-                dateLink: '25/06/2021',
-                clinic: {
-                    code: 'BOANE',
-                    name: 'Boane'
-                },
-                community_mobilizer: {
-                    id: 7,
-                    firstnames: 'Carlos',
-                    lastname: 'Alberto',
-                    cellNumber: '856321456',
-                    cellNumber2: '846321952'
+                city: 'Boane',
+                neighboorhood: '25 de Junho',
+                residence: 'casa 25',
+                latitude: '25689233',
+                longitude: '896325566',
+                district: {
+                    id: 1
                 }
-            },
-            appointments: [
-                {
-                    appointmentDate: '25/06/2021',
-                    time: '13:03',
-                    hasHappened: false,
-                    confirmedByUS: false,
-                    orderNumber: 6,
-                    clinic: {
-                        code: 'BOANE',
-                        name: 'Boane'
-                    }
-                }
-            ]
-          }
+            }
     }
   },
   methods: {
