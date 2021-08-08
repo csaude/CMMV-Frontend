@@ -1,7 +1,7 @@
 import { Model } from '@vuex-orm/core'
-import Link from '../link/Link'
 import Utente from '../utente/Utente'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
+import Clinic from '../clinic/Clinic'
 
 export default class CommunityMobilizer extends Model {
   static entity = 'communityMobilizers'
@@ -14,11 +14,12 @@ export default class CommunityMobilizer extends Model {
       cellNumber: this.attr(''),
       cellNumber2: this.attr(''),
       uuid: this.attr(''),
+      clinic_id: this.attr(''),
 
       // Relationships
       utentes: this.hasMany(Utente, 'community_mobilizer_id'),
       info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
-      links: this.hasMany(Link, 'community_mobilizer_id')
+      clinic: this.belongsTo(Clinic, 'clinic_id')
     }
   }
 }

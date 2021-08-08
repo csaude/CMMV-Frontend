@@ -1,6 +1,6 @@
 import { Model } from '@vuex-orm/core'
 import Appointment from '../appointment/Appointment'
-import Link from '../link/Link'
+import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 
 export default class Clinic extends Model {
   static entity = 'clinics'
@@ -17,8 +17,8 @@ export default class Clinic extends Model {
 
 
       // Relationships
-      links: this.hasMany(Link, 'clinic_id'),
-      appointments: this.hasMany(Appointment, 'clinic_id')
+      appointments: this.hasMany(Appointment, 'clinic_id'),
+      communityMobilizers: this.hasMany(CommunityMobilizer, 'clinic_id')
     }
   }
 }
