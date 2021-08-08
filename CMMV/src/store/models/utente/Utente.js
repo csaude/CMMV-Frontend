@@ -4,7 +4,6 @@ import Appointment from '../appointment/Appointment'
 import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
-import Link from '../link/Link'
 import UserLogin from '../userLogin/userLogin'
 
 export default class Utente extends Model {
@@ -32,7 +31,6 @@ export default class Utente extends Model {
       community_mobilizer: this.belongsTo(CommunityMobilizer, 'community_mobilizer_id'),
       info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
       messages: this.hasMany(Message, 'utente_id'),
-      links: this.hasMany(Link, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id'),
       userLogin: this.hasOne(UserLogin, 'utente_id')
     }

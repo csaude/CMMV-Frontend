@@ -12,9 +12,11 @@ export default class Appointment extends Model {
       time: this.attr(''),
       hasHappened: this.attr(''),
       orderNumber: this.attr(''),
-      confirmedByUS: this.attr(''),
+      status: this.attr(''),
+      visitDate: this.attr(''),
       utente_id: this.attr(''),
       clinic_id: this.attr(''),
+
 
 
       // Relationships
