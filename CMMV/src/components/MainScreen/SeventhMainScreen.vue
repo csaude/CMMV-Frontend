@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <transition-group
+        appear
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
+        >
+  <div key="seventhScreen">
     <img-component
         imgUrl="~src/assets/splash_img.png"
         />
@@ -16,10 +21,11 @@
             <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Registar" @click="$emit('nextScreen')" />
         </div>
         <div class="text-center">
-            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" />
+            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" to="/login"/>
         </div>
     </div>
 </div>
+  </transition-group>
 </template>
 
 <script>
@@ -27,7 +33,8 @@ export default {
     components: {
         'img-component': require('components/MainScreen/MainScreenImg.vue').default,
         'page-content': require('components/MainScreen/Content.vue').default
-    }
+    },
+    methods: {}
 }
 </script>
 

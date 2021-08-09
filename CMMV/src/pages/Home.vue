@@ -9,7 +9,7 @@
                     >
             </div>
             <div class="col-8 q-px-xl q-mt-xl">
-                <div class="text-h6 q-pb-sm text-grey-9">{{utente.firstnames}}</div>
+                <div class="text-h6 q-pb-sm text-grey-9">{{utente.firstNames + ' ' + utente.lastName}}</div>
                 <div class="row items-center">
                     <q-icon name="call" size="sm" color="grey-5" />
                     <div class=" text-subtitle1 q-px-xs text-grey-7" >Nr Telemóvel:</div>
@@ -63,17 +63,19 @@
         </div>
         <div class="row q-mt-lg rounded-borders bordered">
             <noMobilizer
-                v-if="mobilizerTab && utente.link.community_mobilizer === null"/>
+                v-if="mobilizerTab && utente.mobilizer === null"/>
             <mobilizer
-                :mobilizer="utente.link.community_mobilizer"
-                v-if="mobilizerTab && utente.link.community_mobilizer != null"/>
+                :mobilizer="utente.mobilizer"
+                v-if="mobilizerTab && utente.mobilizer != null"/>
             <consulta
                 :appointment="utente.appointments[0]"
                 v-if="consultaTab" />
             <us
-                :clinic="utente.link.clinic"
+                :clinic="utente.clinic"
                 v-if="usTab"/>
-            <informative-docs v-if="materialTab" :docsOrImages="docsOrImages" />
+            <informative-docs
+                v-if="materialTab"
+                :docsOrImages="docsOrImages" />
         </div>
     </div>
     <div class="row">
@@ -94,7 +96,7 @@
 
 <script>
 import { ref } from 'vue'
-// import Utente from '../store/models/utente/Utente'
+import Utente from '../store/models/utente/Utente'
 export default {
      data () {
         return {
@@ -105,9 +107,8 @@ export default {
         consultaTab: false,
         materialTab: false,
         utente: {
-            id: 1,
-            firstnames: 'Jonas Antonio',
-            lastname: 'Musculo',
+            firstNames: 'Jonas Antonio',
+            lastName: 'Musculo',
             birthDate: '02/25/2001',
             cellNumber: '846253984',
             whatsappNumber: '846315932',
@@ -116,22 +117,28 @@ export default {
             documentNumber: '5236222235F',
             systemNumber: 2216,
             haspartner: true,
-            address: {
-                city: 'Maputo'
+            clinic: {
+                id: 6,
+                code: 'BOANE_CLINIC',
+                longitude: '8652123',
+                name: 'Hospital Distrital de Boane',
+                type: 'Hospital Distrital',
+                latitude: '2563489'
             },
-            link: {
-                id: 45,
-                dateLink: '25/06/2021',
-                clinic: {
-                    code: 'BOANE',
-                    name: 'Boane'
-                },
-                community_mobilizer: {
-                    id: 7,
-                    firstnames: 'Carlos',
-                    lastname: 'Alberto',
+            mobilizer: {
+                    firstNames: 'Carlos',
+                    lastName: 'Alberto',
                     cellNumber: '856321456',
                     cellNumber2: '846321952'
+            },
+            address: {
+                city: 'Boane',
+                neighboorhood: '25 de Junho',
+                residence: 'casa 25',
+                latitude: '25689233',
+                longitude: '896325566',
+                district: {
+                    id: 1
                 }
             },
             appointments: [
@@ -139,7 +146,7 @@ export default {
                     appointmentDate: '25/06/2021',
                     time: '13:03',
                     hasHappened: false,
-                    confirmedByUS: false,
+                    status: 'ACEITE',
                     orderNumber: 6,
                     clinic: {
                         code: 'BOANE',
@@ -147,22 +154,22 @@ export default {
                     }
                 }
             ]
-             },
+            },
              docsOrImages: [
-        {
-          id: 1,
-          name: 'Folheto de Convite'
-        },
-        {
-          id: 2,
-          name: 'Folheto Para Criancas'
-        },
-        {
-          id: 2,
-          name: 'Seriado Activista'
+                {
+                    id: 1,
+                    name: 'Folheto de Convite'
+                },
+                {
+                    id: 2,
+                    name: 'Folheto Para Criancas'
+                },
+                {
+                    id: 2,
+                    name: 'Seriado Activista'
+                }
+            ]
         }
-      ]
-    }
   },
   methods: {
       changeTab (selectedTab) {
@@ -179,16 +186,25 @@ export default {
         } else if (selectedTab === 'informativeMaterial') {
             this.materialTab = true
         }
+      },
+      getUtente () {
+          Utente.api().get('/utente/10')
       }
   },
-  computed: {},
-  mounted () {},
+  computed: {
+      utenteDB () {
+          return Utente.findAll
+      }
+  },
+  mounted () {
+      this.getUtente()
+  },
   components: {
       noMobilizer: require('components/Home/NoMobilizer.vue').default,
       mobilizer: require('components/Home/Mobilizer.vue').default,
       consulta: require('components/Home/Consulta.vue').default,
       us: require('components/Home/SanitaryUnit.vue').default,
-       'informative-docs': require('components/Home/MaterialEducativo.vue').default
+      'informative-docs': require('components/Home/MaterialEducativo.vue').default
   }
 }
 </script>

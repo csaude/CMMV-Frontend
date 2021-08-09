@@ -1,5 +1,10 @@
 <template>
-    <div class=" absolute full-width full-height column">
+    <transition-group
+        appear
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
+        >
+    <div key="main" class=" absolute full-width full-height column">
         <div class="row">
             <img
                 src="~src/assets/Main_Screen.png"
@@ -15,6 +20,7 @@
             icon="chevron_right" />
         </div>
     </div>
+</transition-group>
 </template>
 <script>
 export default {

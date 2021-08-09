@@ -1,6 +1,6 @@
 <template>
     <q-page>
-        <div class=" absolute full-width full-height column" >
+        <div class="  full-width full-height column" >
             <main-screen v-if="showMainScreen" @nextScreen="showMainScreen = false, showSecondScreen = true"/>
             <second-screen
                 v-if="showSecondScreen"
@@ -41,7 +41,15 @@ export default {
             showfifthScreen: false,
             showSixthScreen: false,
             showSeventhScreen: false,
-            showEightScreen: false
+            showEightScreen: false,
+            componentParam: ''
+        }
+    },
+    mounted () {
+        this.componentParam = this.$route.params.componentParam
+        if (this.componentParam === 'showEightScreen') {
+            this.showMainScreen = false
+            this.showEightScreen = true
         }
     },
     components: {

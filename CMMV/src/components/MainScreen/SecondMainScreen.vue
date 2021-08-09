@@ -1,5 +1,10 @@
 <template>
-  <div>
+    <transition-group
+        appear
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
+        >
+  <div key="secondScreen">
     <img-component
         imgUrl="~src/assets/splash_img.png"
         />
@@ -12,6 +17,7 @@
             @nextScreen="$emit('nextScreen')"
             @previousScreen="$emit('previousScreen')" />
     </div>
+    </transition-group>
 </template>
 
 <script>
