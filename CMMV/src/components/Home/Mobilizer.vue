@@ -7,7 +7,7 @@
    <q-card key="mobilizer" class="my-card full-width q-pt-lg" >
         <q-card-section class="text-center">
             <img src="~src/assets/mobilizador.png">
-            <div class="text-h6 q-py-xs text-weight-light">{{mobilizer.firstnames + ' ' + mobilizer.lastname}}</div>
+            <div class="text-h6 q-py-xs text-weight-light">{{mobilizer.firstNames + ' ' + mobilizer.lastName}}</div>
         </q-card-section>
 
 

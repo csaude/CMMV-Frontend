@@ -4,7 +4,6 @@ import Appointment from '../appointment/Appointment'
 import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
-import Link from '../link/Link'
 import UserLogin from '../userLogin/userLogin'
 
 export default class Utente extends Model {
@@ -13,8 +12,8 @@ export default class Utente extends Model {
   static fields () {
     return {
       id: this.attr(null),
-      firstnames: this.attr(''),
-      lastname: this.attr(''),
+      firstNames: this.attr(''),
+      lastNames: this.attr(''),
       birthDate: this.attr(''),
       cellNumber: this.attr(''),
       whatsappNumber: this.attr(''),
@@ -25,16 +24,16 @@ export default class Utente extends Model {
       haspartner: this.attr(''),
       status: this.attr(''),
       address_id: this.attr(''),
-      community_mobilizer_id: this.attr(''),
+      mobilizer_id: this.attr(''),
+      user_id: this.attr(''),
 
       // Relationships
-      address: this.hasOne(Address, 'address_id'),
-      community_mobilizer: this.belongsTo(CommunityMobilizer, 'community_mobilizer_id'),
-      info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
+      address: this.belongsTo(Address, 'address_id'),
+      mobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id'),
+      infoDocsImages: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
       messages: this.hasMany(Message, 'utente_id'),
-      links: this.hasMany(Link, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id'),
-      userLogin: this.hasOne(UserLogin, 'utente_id')
+      userLogin: this.belongsTo(UserLogin, 'user_id')
     }
   }
 

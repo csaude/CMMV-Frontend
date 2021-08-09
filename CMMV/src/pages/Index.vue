@@ -1,6 +1,6 @@
 <template>
     <q-page>
-        <div class=" absolute full-width full-height column" >
+        <div class="  full-width full-height column" >
             <main-screen v-if="showMainScreen" @nextScreen="showMainScreen = false, showSecondScreen = true"/>
             <second-screen
                 v-if="showSecondScreen"

@@ -9,54 +9,81 @@
     </div>
     <div class="row q-mt-lg">
     </div>
-    <div class="q-pa-xl">
-        <div class="row q-mb-md">
-            <q-input
-                class="col"
-                ref="user"
-                outlined
-                type="text"
-                lazy-rules
-                rounded
-                label="Utilizador" >
-                <template v-slot:append>
-                    <q-icon name="person"  color="deep-orange"/>
-                </template>
-            </q-input>
+    <form @submit.prevent="doLogin">
+        <div class="q-pa-xl">
+            <div class="row q-mb-md">
+                <q-input
+                    class="col"
+                    ref="user"
+                    v-model="user.username"
+                    outlined
+                    type="text"
+                    lazy-rules
+                    rounded
+                    label="Utilizador" >
+                    <template v-slot:append>
+                        <q-icon name="person"  color="deep-orange"/>
+                    </template>
+                </q-input>
+            </div>
+            <div class="row q-mb-md">
+                <q-input
+                    v-model="user.password"
+                    rounded
+                    outlined
+                    class="col"
+                    label="Senha"
+                    :type="isPwd ? 'password' : 'text'">
+                    <template v-slot:append>
+                        <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
+                            color="deep-orange"
+                        />
+                    </template>
+                </q-input>
+            </div>
+            <div class="row float-right">Esqueceu a senha?</div>
         </div>
-        <div class="row q-mb-md">
-            <q-input v-model="password" rounded
-                outlined
-                class="col"
-                label="Senha"
-                :type="isPwd ? 'password' : 'text'">
-                <template v-slot:append>
-                    <q-icon
-                        :name="isPwd ? 'visibility_off' : 'visibility'"
-                        class="cursor-pointer"
-                        @click="isPwd = !isPwd"
-                        color="deep-orange"
-                    />
-                </template>
-            </q-input>
+        <div class="row column q-pa-xl">
+            <q-btn
+                class="q-py-sm"
+                unelevated rounded
+                color="deep-orange"
+                type="submit"
+                label="Entrar" />
         </div>
-        <div class="row float-right">Esqueceu a senha?</div>
-    </div>
-    <div class="row column q-pa-xl">
-        <q-btn class="q-py-sm" unelevated rounded color="deep-orange" label="Entrar" />
-    </div>
+    </form>
   </q-page>
 </template>
 
 <script>
 import { ref } from 'vue'
+import UserLogin from '../store/models/userLogin/userLogin'
 export default {
     data () {
         return {
-            isPwd: ref(true)
+            isPwd: ref(true),
+            user: {
+                username: '',
+                password: ''
+            }
         }
     },
-    methods: {}
+    mounted () {
+      this.getUtente()
+    },
+    methods: {
+        doLogin () {
+          UserLogin.api().get('/login/13')
+        },
+        redirectToHome () {
+            if (UserLogin.find(13) != null) {
+                this.$router.push({ name: '/Home' })
+            }
+        }
+    }
 
 }
 </script>

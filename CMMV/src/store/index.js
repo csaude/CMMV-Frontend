@@ -25,7 +25,7 @@ VuexORM.use(VuexORMAxios, {
     baseURL: 'http://localhost:8080/api'
   })
 
-  const database = new VuexORM.Database()
+    const database = new VuexORM.Database()
     database.register(Utente)
     database.register(Address)
     database.register(Appoinment)
@@ -39,6 +39,17 @@ VuexORM.use(VuexORMAxios, {
     database.register(Province)
     database.register(UserLogin)
 
-  export default new Vuex.Store({
-    plugins: [VuexORM.install(database)]
-  })
+    export default function (/* { ssrContext } */) {
+        const Store = new Vuex.Store({
+          plugins: [VuexORM.install(database)],
+          modules: {
+            // example
+          },
+
+          // enable strict mode (adds overhead!)
+          // for dev mode only
+          strict: process.env.DEBUGGING
+        })
+
+        return Store
+      }

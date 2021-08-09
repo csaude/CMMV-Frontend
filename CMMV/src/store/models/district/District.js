@@ -14,7 +14,7 @@ export default class District extends Model {
 
       // Relationshiops
       province: this.belongsTo(Province, 'province_id'),
-      addresses: this.hasMany(Address, 'address_id')
+      addresses: this.hasMany(Address, 'district_id')
     }
   }
 }
