@@ -1,8 +1,8 @@
 <template>
     <transition-group
         appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut"
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
         >
     <div key="main" class=" absolute full-width full-height column">
         <div class="row">

@@ -5,14 +5,14 @@ const routes = [
     children: [
         {
             path: '',
-            component: () => import('pages/Index.vue')
+            component: () => import('src/pages/Index.vue')
         },
         {
-            path: '/Home',
+            path: '/home',
             component: () => import('pages/Home.vue')
         },
         {
-            path: '/Login',
+            path: '/login',
             component: () => import('pages/Login.vue')
         }
     ]

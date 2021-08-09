@@ -1,8 +1,8 @@
 <template>
   <transition-group
         appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut absolute-top"
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
         >
   <div key="seventhScreen">
     <img-component
@@ -21,7 +21,7 @@
             <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Registar" @click="$emit('nextScreen')" />
         </div>
         <div class="text-center">
-            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" />
+            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" to="/login"/>
         </div>
     </div>
 </div>
@@ -33,7 +33,8 @@ export default {
     components: {
         'img-component': require('components/MainScreen/MainScreenImg.vue').default,
         'page-content': require('components/MainScreen/Content.vue').default
-    }
+    },
+    methods: {}
 }
 </script>
 

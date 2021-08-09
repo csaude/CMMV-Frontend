@@ -56,6 +56,7 @@ module.exports = {
     'indent':['off',2],
     "no-multiple-empty-lines": 'off',
     "skipBlankLines": 'off',
+    "import/no-named-as-default": 0,
     // allow async-await
     'generator-star-spacing': 'off',
     // allow paren-less arrow functions

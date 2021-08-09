@@ -1,8 +1,8 @@
 <template>
   <transition-group
         appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut absolute-top"
+        enter-active-class="animated slideInRight"
+        leave-active-class="animated slideOutLeft absolute-top"
         >
   <div key="sixthScreen">
     <img-component

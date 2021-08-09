@@ -1,7 +1,7 @@
 <template>
   <q-page class=" absolute full-width full-height column">
   <div class="row q-px-md q-mt-lg">
-        <q-btn flat round color="deep-orange" icon="chevron_left" />
+        <q-btn flat round color="deep-orange" icon="chevron_left" @click="backToSevenMainScreen()"/>
     </div>
     <div class="row q-pa-xl texte-center q-mt-xl column">
         <div class="row text-center column text-h6 q-mb-md">BEM VINDO</div>
@@ -9,7 +9,7 @@
     </div>
     <div class="row q-mt-lg">
     </div>
-    <form @submit.prevent="doLogin">
+    <form @submit.prevent="redirectToHome">
         <div class="q-pa-xl">
             <div class="row q-mb-md">
                 <q-input
@@ -18,6 +18,7 @@
                     v-model="user.username"
                     outlined
                     type="text"
+                    :rules="[ val => val.length >= 4 || 'O nome do utilizador deve ter um minimo de 4 caracteres']"
                     lazy-rules
                     rounded
                     label="Utilizador" >
@@ -33,6 +34,8 @@
                     outlined
                     class="col"
                     label="Senha"
+                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
+                    ref="password"
                     :type="isPwd ? 'password' : 'text'">
                     <template v-slot:append>
                         <q-icon
@@ -72,17 +75,27 @@ export default {
         }
     },
     mounted () {
-      this.getUtente()
+      this.doLogin()
+    },
+    computed: {
+        logedUser () {
+            return UserLogin.find(13)
+        }
     },
     methods: {
         doLogin () {
           UserLogin.api().get('/login/13')
         },
         redirectToHome () {
-            if (UserLogin.find(13) != null) {
-                this.$router.push({ name: '/Home' })
+            this.$refs.user.validate()
+            this.$refs.password.validate()
+            if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
+                if (this.logedUser != null) {
+                    this.$router.push('/home')
+                }
             }
-        }
+        },
+        backToSevenMainScreen () { this.$router.push('/showEightScreen') }
     }
 
 }

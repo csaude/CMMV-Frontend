@@ -9,7 +9,7 @@ import Clinic from './models/clinic/Clinic'
 import Country from './models/country/Country'
 import District from './models/district/District'
 import InfoDocsOrImages from './models/dorcOrImages/InfoDocsOrImages'
-import Link from './models/link/Link'
+
 import Message from './models/messages/Message'
 import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
 import Province from './models/province/Province'
@@ -33,7 +33,6 @@ VuexORM.use(VuexORMAxios, {
     database.register(Country)
     database.register(District)
     database.register(InfoDocsOrImages)
-    database.register(Link)
     database.register(Message)
     database.register(CommunityMobilizer)
     database.register(Province)

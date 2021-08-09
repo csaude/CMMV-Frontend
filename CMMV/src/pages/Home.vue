@@ -126,8 +126,8 @@ export default {
                 latitude: '2563489'
             },
             mobilizer: {
-                    firstnames: 'Carlos',
-                    lastname: 'Alberto',
+                    firstNames: 'Carlos',
+                    lastName: 'Alberto',
                     cellNumber: '856321456',
                     cellNumber2: '846321952'
             },
@@ -188,7 +188,7 @@ export default {
         }
       },
       getUtente () {
-          Utente.api().get('/utente/8')
+          Utente.api().get('/utente/10')
       }
   },
   computed: {
