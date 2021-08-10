@@ -14,27 +14,27 @@
 
                 <div class="col-8 q-pa-sm">
                     <div class="row items-center q-mb-md">
-                        <q-icon name="person_outline" size="sm" color="deep-orange" />
+                        <q-icon name="person_outline" size="sm" color="primary" />
                         <div class="q-px-sm text-grey-7">Ordem:</div>
                         <div class="text-grey-7">{{appointment.orderNumber}}</div>
 
                         <q-space />
-                        <q-icon name="date_range" size="sm" color="deep-orange" />
+                        <q-icon name="date_range" size="sm" color="primary" />
                             <div class="q-px-sm text-grey-7">{{appointment.appointmentDate}}</div>
                     </div>
                     <div class="row items-center ">
-                        <q-icon name="schedule" size="sm" color="deep-orange" />
+                        <q-icon name="schedule" size="sm" color="primary" />
                         <div class="q-px-sm text-grey-7">{{appointment.time}}</div>
 
                         <q-space />
-                        <q-icon name="fmd_good" size="sm" color="deep-orange" />
+                        <q-icon name="fmd_good" size="sm" color="primary" />
                             <div class="q-px-sm text-grey-7">{{appointment.clinic.name}}</div>
                     </div>
                 </div>
             </div>
             <div class="col-4 q-pa-sm">
-                <q-btn v-if="appointementConfirmed" flat round color="deep-orange" class="no-pointer-events float-right" disabled size="40px" icon="check" />
-                <q-btn v-else rounded color="deep-orange" class="float-right" size="md" label="Re-marcar"  />
+                <q-btn v-if="appointementConfirmed" flat round color="primary" class="no-pointer-events float-right" disabled size="40px" icon="check" />
+                <q-btn v-else rounded color="primary" class="float-right" size="md" label="Re-marcar"  />
 
             </div>
         </div>

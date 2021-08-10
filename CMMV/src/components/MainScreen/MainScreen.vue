@@ -16,7 +16,7 @@
             size="lg"
             unelevated round
             @click="$emit('nextScreen')"
-            color="deep-orange"
+            color="primary"
             icon="chevron_right" />
         </div>
     </div>

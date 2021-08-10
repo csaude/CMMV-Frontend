@@ -1,5 +1,5 @@
  <template>
-  <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange"  />
+  <q-btn class="full-width q-py-xs" unelevated rounded color="primary"  />
 </template>
 <script>
 export default {
