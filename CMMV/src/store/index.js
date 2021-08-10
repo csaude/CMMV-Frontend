@@ -9,7 +9,6 @@ import Clinic from './models/clinic/Clinic'
 import Country from './models/country/Country'
 import District from './models/district/District'
 import InfoDocsOrImages from './models/dorcOrImages/InfoDocsOrImages'
-
 import Message from './models/messages/Message'
 import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
 import Province from './models/province/Province'

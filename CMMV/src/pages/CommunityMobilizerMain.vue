@@ -10,13 +10,13 @@
           </q-toolbar>
     </div>
  <div class="column bg-grey-4" style="height: 400px">
- <div class="q-pa-md q-gutter-sm fixed-center" >
+ <div class="row-1 q-pa-md q-gutter-sm fixed-center" >
  <img src="~src/assets/mobilizador.png">
   <div class="text-h4 text-weight-light center">{{communityMobilizer.firstnames + ' ' + communityMobilizer.lastname}}
   </div>
  </div>
   <div class="q-pa-md q-gutter-sm" v-if="materialTab">
-    <q-btn color="white" text-color="black" label="Material Educativo" class="absolute-center" style="width: 70%"/>
+    <q-btn color="white" text-color="black"  label="Material Educativo" class="absolute-center" style="width: 70%"/>
 <br>
 <br>
 <br>
