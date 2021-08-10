@@ -10,10 +10,6 @@ const routes = [
         {
             path: '/home',
             component: () => import('pages/Home.vue')
-        },
-        {
-            path: '/login',
-            component: () => import('pages/Login.vue')
         }
     ]
   },

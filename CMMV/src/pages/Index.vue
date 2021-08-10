@@ -25,8 +25,22 @@
             <Seventh-screen
                 v-if="showSeventhScreen"
                 @previousScreen="showSeventhScreen = !showSeventhScreen, showSixthScreen = true"
-                @nextScreen="showSeventhScreen = false,showEightScreen=true"/>
-                <Eight-screen  v-if="showEightScreen" @nextScreen="showSixthScreen = false, showSeventhScreen = true"/>
+                @nextScreen="showSeventhScreen = false,showEightScreen=true"
+                @login="showLoginScreen = true, showSeventhScreen = false"/>
+            <utente-registration
+                v-if="showEightScreen"
+                @previousScreen="showEightScreen = !showEightScreen, showSeventhScreen = true"
+                @nextScreen="showEightScreen = false, showAddressScreen = true"/>
+            <Address
+                v-if="showAddressScreen"
+                @saveUtente="saveUtente()"
+                @previousScreen="showAddressScreen = !showAddressScreen, showEightScreen = true" />
+            <SuccessRegistration
+                v-if="showSuccessRegistration"
+                @procced="goToHome()"/>
+            <Login
+                v-if="showLoginScreen"
+                @previousScreen="showLoginScreen = false, showSeventhScreen = true" />
         </div>
     </q-page>
 </template>
@@ -42,6 +56,9 @@ export default {
             showSixthScreen: false,
             showSeventhScreen: false,
             showEightScreen: false,
+            showAddressScreen: false,
+            showSuccessRegistration: false,
+            showLoginScreen: false,
             componentParam: ''
         }
     },
@@ -60,9 +77,20 @@ export default {
         'fifth-screen': require('components/MainScreen/FifthMainScreen.vue').default,
         'Sixth-screen': require('components/MainScreen/SixthMainScreen.vue').default,
         'Seventh-screen': require('components/MainScreen/SeventhMainScreen.vue').default,
-        'Eight-screen': require('pages/PageTest.vue').default
+        'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
+        Address: require('components/Utente/Address.vue').default,
+        SuccessRegistration: require('components/Utente/RegistredSucess.vue').default,
+        Login: require('components/Shared/Login.vue').default
     },
-    methods: {}
+    methods: {
+        saveUtente () {
+            this.showAddressScreen = false
+            this.showSuccessRegistration = true
+        },
+        goToHome () {
+            this.$router.push('/home')
+        }
+    }
 }
 </script>
 <style lang="scss">

@@ -18,10 +18,10 @@
         />
     <div class="absolute-bottom q-px-lg q-mb-lg">
         <div class="text-center q-mb-md">
-            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Registar" @click="$emit('nextScreen')" />
+            <q-btn class="full-width q-py-xs" unelevated rounded color="primary" label="Registar" @click="$emit('nextScreen')" />
         </div>
         <div class="text-center">
-            <q-btn class="full-width q-py-xs" unelevated rounded color="deep-orange" label="Entrar" to="/login"/>
+            <q-btn class="full-width q-py-xs" unelevated rounded color="primary" label="Entrar" @click="$emit('login')"/>
         </div>
     </div>
 </div>
