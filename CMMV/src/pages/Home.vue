@@ -5,7 +5,8 @@
             <div class="col-4">
                 <img class="rounded-borders"
                     src="~src/assets/splash_img.png"
-                    />
+                    style="width: 120%; height: 150px"
+                    >
             </div>
             <div class="col-8 q-px-xl q-mt-xl">
                 <div class="text-h6 q-pb-sm text-grey-9">{{utente.firstNames + ' ' + utente.lastName}}</div>

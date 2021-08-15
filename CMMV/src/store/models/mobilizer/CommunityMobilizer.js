@@ -2,7 +2,7 @@ import { Model } from '@vuex-orm/core'
 import Utente from '../utente/Utente'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
 import Clinic from '../clinic/Clinic'
-import UserLogin from '../userLogin/userLogin'
+import { MobilizerLogin } from '../userLogin/UserLoginHierarchy'
 
 export default class CommunityMobilizer extends Model {
   static entity = 'communityMobilizers'
@@ -20,9 +20,9 @@ export default class CommunityMobilizer extends Model {
 
       // Relationships
       utentes: this.hasMany(Utente, 'mobilizer_id'),
-      info_docs_or_images: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
+      docsOrImages: this.hasMany(InfoDocsOrImages, 'docsOrImages_id'),
       clinic: this.belongsTo(Clinic, 'clinic_id'),
-      userLogin: this.belongsTo(UserLogin, 'user_id')
+      user: this.hasOne(MobilizerLogin, 'user_id')
     }
   }
 }

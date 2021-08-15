@@ -13,7 +13,7 @@ import InfoDocsOrImages from './models/dorcOrImages/InfoDocsOrImages'
 import Message from './models/messages/Message'
 import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
 import Province from './models/province/Province'
-import UserLogin from './models/userLogin/userLogin'
+import { UserLogin, MobilizerLogin, UtenteLogin } from './models/userLogin/UserLoginHierarchy'
 
 // Vue.use(Vuex)
 
@@ -37,6 +37,8 @@ VuexORM.use(VuexORMAxios, {
     database.register(CommunityMobilizer)
     database.register(Province)
     database.register(UserLogin)
+    database.register(UtenteLogin)
+    database.register(MobilizerLogin)
 
     export default function (/* { ssrContext } */) {
         const Store = new Vuex.Store({
