@@ -38,11 +38,17 @@
         </div>
         <div class="row q-mt-md" >
             <div class="col-8 q-pr-sm">
-                <q-input rounded outlined v-model="utente.birthDate" mask="date" :rules="['date']" label="Data de Nascimento">
+                <q-input
+                    rounded outlined
+                    v-model="utente.birthDate"
+                    mask="date"
+                    :rules="['date']"
+                    @input="calculateAge()"
+                    label="Data de Nascimento">
                     <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="utente.birthDate">
+                            <q-date v-model="utente.birthDate" @input="calculateAge()">
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat />
                             </div>
@@ -55,7 +61,7 @@
             <br>
             <div class="col-4 q-pl-sm">
                 <input-number-field
-                    v-model="utente.age"
+                    v-model="age"
                     label="Idade"
                     :rules="[val => (val > 0 && val < 100) || 'Digite uma idade real']"  />
             </div>
@@ -74,6 +80,7 @@
 export default {
   data () {
     return {
+        age: '',
       utente: {
             firstNames: '',
             lastName: '',
@@ -97,6 +104,12 @@ export default {
             }
         }
     }
+  },
+  methods: {
+    calculateAge () {
+          this.age = Math.floor((new Date() - new Date(this.utente.birthDate)) / 31557600000)
+          console.log(this.age)
+        }
   },
   components: {
     'input-text-field': require('components/Shared/InputFieldText.vue').default,

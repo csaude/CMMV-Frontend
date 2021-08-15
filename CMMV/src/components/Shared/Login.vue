@@ -63,7 +63,7 @@
 
 <script>
 import { ref } from 'vue'
-import UserLogin from '../../store/models/userLogin/userLogin'
+import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
 export default {
     data () {
         return {
@@ -79,12 +79,12 @@ export default {
     },
     computed: {
         logedUser () {
-            return UserLogin.find(13)
+            return UserLogin.find(17)
         }
     },
     methods: {
         doLogin () {
-          UserLogin.api().get('/login/13')
+          UserLogin.api().get('/userLogin/17')
         },
         redirectToHome () {
             this.$refs.user.validate()
