@@ -97,6 +97,7 @@
 <script>
 import { ref } from 'vue'
 import Utente from '../store/models/utente/Utente'
+import InfoDocsOrImages from '../store/models/dorcOrImages/InfoDocsOrImages'
 export default {
      data () {
         return {
@@ -188,12 +189,16 @@ export default {
         }
       },
       getUtente () {
-          Utente.api().get('/utente/10')
+          // InfoDocsOrImages.api().get('/infoDocsOrImages')
+           Utente.api().get('/utente/6')
       }
   },
   computed: {
       utenteDB () {
           return Utente.findAll
+      },
+      infoDB () {
+        return InfoDocsOrImages.findAll.data
       }
   },
   mounted () {

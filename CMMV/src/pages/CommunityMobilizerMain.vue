@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
    <div class="q-pa-md">
-       <div class="column bg-red-4" style="height: 400px">
+       <div class="column bg-red-4" style="height: 450px">
       <q-toolbar>
         <div class="col-auto">
             <q-btn color="black-7" round flat icon="more_vert" @click="toggleLeftDrawer">
@@ -9,22 +9,19 @@
           </div>
           </q-toolbar>
     </div>
- <div class="column bg-grey-4" style="height: 400px">
- <div class="row-1 q-pa-md q-gutter-sm fixed-center" >
- <img src="~src/assets/mobilizador.png">
-  <div class="text-h4 text-weight-light center">{{communityMobilizer.firstnames + ' ' + communityMobilizer.lastname}}
+    <div class="column items-center bg-grey-4" style="height: 450px">
+     <div class="col self-center">
+       <img src="~src/assets/mobilizador.png">
+  <div class="text-h4 text-weight-light">{{communityMobilizer.firstnames + ' ' + communityMobilizer.lastname}}
   </div>
- </div>
-  <div class="q-pa-md q-gutter-sm" v-if="materialTab">
-    <q-btn color="white" text-color="black"  label="Material Educativo" class="absolute-center" style="width: 70%"/>
-<br>
-<br>
-<br>
-    <div class="q-mt-lg rounded-borders bordered">
-            <informative-docs :docsOrImages="docsOrImages" />
-        </div>
-  </div>
-   <div class="q-pa-md q-gutter-sm" v-if="utentesTab" style="width: 100%">
+      </div>
+      <div class="col-9" v-if="materialTab" style="width: 90%">
+    <q-btn color="white" text-color="black"  label="Material Educativo" class="col" style="width: 100%"/>
+      <div class="q-mt-lg rounded-borders">
+     <informative-docs :docsOrImages="infoDB" />
+      </div>
+      </div>
+      <div class="col-9" v-if="utentesTab" style="width: 100%">
    <q-btn-group style="width: 100%">
       <q-btn color="primary" glossy label="Pendentes" @click="handler" style="width: 100%"/>
       <q-btn color="primary" glossy label="Associados" @click="handler1"  style="width: 100%"/>
@@ -38,10 +35,10 @@
   <br>
   <q-btn class="q-py-xs float-right" align="right"   padding="xs lg" unelevated rounded color="deep-orange" v-show="pending" label="Associar" />
   </div>
-    </div>
+     </div>
+      </div>
+          </div>
    </div>
-    </div>
-  </div>
     <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile" bordered>
      <q-btn color="grey-7" round flat icon="close"  />
       <div class="q-pa-md">
@@ -80,6 +77,9 @@
 
 <script>
 import { ref } from 'vue'
+import InfoDocsOrImages from '../store/models/dorcOrImages/InfoDocsOrImages'
+import Utente from '../store/models/utente/Utente'
+import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
 
 export default {
   data () {
@@ -94,114 +94,23 @@ export default {
           associateds: [],
           sendeds: [],
       leftDrawerOpen,
-       communityMobilizer: {
-                    id: 7,
-                    firstnames: 'Carlos',
-                    lastname: 'Alberto',
-                    cellNumber: '856321456',
-                    cellNumber2: '846321952'
-                },
+       communityMobilizer: {},
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
        opcoes: [
         'Material Educativo', 'Utentes', 'Perfil', 'Alterar Senha'
-      ],
-       docsOrImages: [
-        {
-          id: 1,
-          name: 'Folheto de Convite'
-        },
-        {
-          id: 2,
-          name: 'Folheto Para Criancas'
-        },
-        {
-          id: 3,
-          name: 'Seriado Activista'
-        }
-        ],
-      utentes: [
-        {
-          id: 1,
-          firstname: 'Mario Kanda',
-          selected: false,
-          status: 'pending',
-          cellphone: '8446425456'
-        },
-        {
-          id: 2,
-          firstname: 'Muhammad Chona',
-          selected: false,
-           status: 'pending',
-           cellphone: '8446425456'
-        },
-        {
-          id: 3,
-          firstname: 'Chona',
-          selected: false,
-           status: 'pending',
-           cellphone: '8446425456'
-        },
-        {
-          id: 4,
-          firstname: 'Eurico',
-          selected: false,
-          status: 'associated',
-          cellphone: '8446425456'
-        },
-        {
-          id: 5,
-          firstname: 'Roxanne',
-          selected: false,
-           status: 'associated',
-           cellphone: '8446425456'
-        },
-        {
-          id: 6,
-          firstname: 'Sarah',
-          selected: false,
-           status: 'associated',
-           cellphone: '8446425456'
-        },
-        {
-          id: 7,
-          firstname: 'Themos',
-          selected: false,
-          status: 'sended',
-          cellphone: '8446425456',
-           appointments: [
-                {
-                    appointmentDate: '25/06/2021',
-                    time: '13:03',
-                    hasHappened: false,
-                    confirmedByUS: false,
-                    orderNumber: 6,
-                    clinic: {
-                        code: 'BOANE',
-                        name: 'Boane'
-                    }
-                }
-                ]
-        },
-        {
-          id: 8,
-          firstname: 'Amrita',
-          selected: false,
-           status: 'sended',
-           cellphone: '8446425456'
-        },
-        {
-          id: 9,
-          firstname: 'Sonia',
-          selected: false,
-           status: 'sended',
-           cellphone: '8446425456'
-        }
-        ]
+      ]
     }
   },
   methods: {
+    getDocsInfo () {
+          InfoDocsOrImages.api().get('/infoDocsOrImages')
+          Utente.api().get('/utente')
+         // CommunityMobilizer.api().get('/communityMobilizer')
+      },
+      getUtente () {
+      },
     handler () {
          this.pending = true
          this.sended = false
@@ -228,24 +137,38 @@ export default {
         }
          this.toggleLeftDrawer()
     },
-    getUtentesByStatus (utentes) {
-      this.utentes.forEach(utente => {
-        if (utente.status === 'pending') {
+    getUtentesByStatus (utenteDB) {
+      this.utenteDB.forEach(utente => {
+        if (utente.status === 'PENDENTE') {
           return this.pendings.push(utente)
-        } else if (utente.status === 'associated') {
+        } else if (utente.status === 'ASSOCIADO') {
           return this.associateds.push(utente)
-        } else if (utente.status === 'sended') {
+        } else if (utente.status === 'ENVIADO') {
           return this.sendeds.push(utente)
         }
       })
     }
   },
+  computed: {
+      infoDB () {
+        // console.log(this.InfoDocsOrImages.all)
+        return InfoDocsOrImages.all()
+      },
+      utenteDB () {
+        return Utente.all()
+      },
+        communityMobilizerDb () {
+         return CommunityMobilizer.all()
+      }
+  },
   components: {
        'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-       'utentes-list': require('components/Shared/ViewUtenteList.vue').default
+        'utentes-list': require('components/Shared/ViewUtenteList.vue').default
        },
         mounted () {
       this.getUtentesByStatus()
+       this.getDocsInfo()
+       this.getUtente()
     }
 }
 </script>

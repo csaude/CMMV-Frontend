@@ -1,6 +1,6 @@
 <template>
       <q-item clickable v-ripple rounded>
-        <q-item-section> {{utente.firstname}}
+        <q-item-section> {{utente.firstNames}}
          <q-item-label caption v-if="sended"> {{utente.cellphone}}
           <div class="row q-pa-md flex-break q-py-md">
           <q-icon name="event" />  {{utente.appointments[0].appointmentDate}}    <br>
@@ -20,23 +20,30 @@ export default {
     props: ['utente', 'name'],
     methods: {
     showPending () {
-    if (this.utente.status === 'pending') {
+    if (this.utente.status === 'PENDENTE') {
         this.pending = true
-      } else if (this.utente.status === 'associated') {
+      } else if (this.utente.status === 'ASSOCIADO') {
          this.associated = true
-      } else if (this.utente.status === 'sended') {
+      } else if (this.utente.status === 'ENVIADO') {
          this.sended = true
+      }
+    },
+    check () {
+      if (this.checked === true) {
+       return this.checked
       }
     }
      },
      data () {
        let pending, sended, associated
+       const checked = false
        return {
-         pending, sended, associated
+         pending, sended, associated, checked
     }
     },
     mounted () {
       this.showPending()
+      this.check()
     }
      }
 </script>

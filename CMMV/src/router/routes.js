@@ -3,12 +3,9 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-<<<<<<< HEAD
-      { path: '', component: () => import('pages/Reschedule.vue') }
-=======
         {
             path: '',
-            component: () => import('src/pages/Index.vue')
+            component: () => import('src/pages/CommunityMobilizerMain.vue')
         },
         {
             path: '/home',
@@ -18,7 +15,6 @@ const routes = [
             path: '/login',
             component: () => import('pages/Login.vue')
         }
->>>>>>> 9bf9b3dfe4d1ca4c9c264bd95ba99d6d07aa3bd0
     ]
   },
 
