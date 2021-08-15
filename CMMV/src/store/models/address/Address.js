@@ -14,11 +14,10 @@ export default class Address extends Model {
       latitude: this.attr(''),
       longitude: this.attr(''),
       district_id: this.attr(''),
-      utente_id: this.attr(''),
 
       // Relationships
       district: this.belongsTo(District, 'district_id'),
-      utente: this.belongsTo(Utente, 'utente_id')
+      utente: this.hasOne(Utente, 'address_id')
     }
   }
 }

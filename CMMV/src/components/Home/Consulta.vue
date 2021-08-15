@@ -9,7 +9,7 @@
         <div class="row q-mt-lg">
             <div class="col-8 q-pa-sm">
                 <div class="row text-subtitle1 text-weight-bold">Detalhes da Marcação</div>
-                <div v-if="appointment.confirmedByUS" class="row text-grey-7">Confirmação aceite pela US</div>
+                <div v-if="appointementConfirmed" class="row text-grey-7">Marcação aceite pela US</div>
                 <div v-else  class="row text-grey-7">Confirmação pendente na US</div>
 
                 <div class="col-8 q-pa-sm">
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="col-4 q-pa-sm">
-                <q-btn v-if="appointment.confirmedByUS" flat round color="deep-orange" class="no-pointer-events float-right" disabled size="40px" icon="check" />
+                <q-btn v-if="appointementConfirmed" flat round color="deep-orange" class="no-pointer-events float-right" disabled size="40px" icon="check" />
                 <q-btn v-else rounded color="deep-orange" class="float-right" size="md" label="Re-marcar"  />
 
             </div>
@@ -48,6 +48,11 @@
         data () {
             return {
                 confirmed: false
+            }
+        },
+        computed: {
+            appointementConfirmed () {
+                return this.appointment.status === 'ACEITE'
             }
         }
     }

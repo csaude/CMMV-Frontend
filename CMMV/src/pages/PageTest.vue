@@ -1,6 +1,6 @@
 <template>
-  <q-page padding>
-  <div class="q-pa-md absolute full-width full-height column">
+  <q-page class="q-pa-md absolute full-width full-height column">
+  <div >
     <p>Registrar Utente</p>
   <p>Dados Pessoais</p>
   <br>
@@ -43,7 +43,6 @@
             <buttone  label="Proximo" @click="$emit('nextScreen')" />
         </div>
     </div>
-    <pre>{{utente}}</pre>
      </div>
   </q-page>
 </template>
