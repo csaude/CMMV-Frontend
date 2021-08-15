@@ -1,7 +1,7 @@
 <template>
   <q-page class=" absolute full-width full-height column">
   <div class="row q-px-md q-mt-lg">
-        <q-btn flat round color="deep-orange" icon="chevron_left" @click="backToSevenMainScreen()"/>
+        <q-btn flat round color="primary" icon="chevron_left" @click="$emit('previousScreen')"/>
     </div>
     <div class="row q-pa-xl texte-center q-mt-xl column">
         <div class="row text-center column text-h6 q-mb-md">BEM VINDO</div>
@@ -23,7 +23,7 @@
                     rounded
                     label="Utilizador" >
                     <template v-slot:append>
-                        <q-icon name="person"  color="deep-orange"/>
+                        <q-icon name="person"  color="primary"/>
                     </template>
                 </q-input>
             </div>
@@ -42,7 +42,7 @@
                             :name="isPwd ? 'visibility_off' : 'visibility'"
                             class="cursor-pointer"
                             @click="isPwd = !isPwd"
-                            color="deep-orange"
+                            color="primary"
                         />
                     </template>
                 </q-input>
@@ -53,7 +53,7 @@
             <q-btn
                 class="q-py-sm"
                 unelevated rounded
-                color="deep-orange"
+                color="primary"
                 type="submit"
                 label="Entrar" />
         </div>
@@ -63,7 +63,7 @@
 
 <script>
 import { ref } from 'vue'
-import UserLogin from '../store/models/userLogin/userLogin'
+import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
 export default {
     data () {
         return {
@@ -79,12 +79,12 @@ export default {
     },
     computed: {
         logedUser () {
-            return UserLogin.find(13)
+            return UserLogin.find(17)
         }
     },
     methods: {
         doLogin () {
-          UserLogin.api().get('/login/13')
+          UserLogin.api().get('/userLogin/17')
         },
         redirectToHome () {
             this.$refs.user.validate()
@@ -94,8 +94,7 @@ export default {
                     this.$router.push('/home')
                 }
             }
-        },
-        backToSevenMainScreen () { this.$router.push('/showEightScreen') }
+        }
     }
 
 }

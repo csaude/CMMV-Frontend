@@ -2,7 +2,7 @@
   <q-page class=" absolute full-width full-height column" >
     <div class="q-pa-md">
         <div class="row q-mb-xl">
-            <div class="col-4 q-pa-md ">
+            <div class="col-4">
                 <img class="rounded-borders"
                     src="~src/assets/splash_img.png"
                     style="width: 120%; height: 150px"
@@ -26,37 +26,37 @@
                 </div>
             </div>
         </div>
-        <div class=" q-my-md row text-h6 text-deep-orange text-weight-bold">Detalhes do Beneficiário</div>
+        <div class=" q-my-md row text-h6 text-primary text-weight-bold">Detalhes do Beneficiário</div>
         <div class="row">
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center " :class="{'bg-orange-1' : usTab}">
                     <q-card-section>
-                        <q-btn flat round color="deep-orange" size="30px" icon="add" @click="changeTab('us')" />
-                        <div class=" text-deep-orange">Unidade Sanitária</div>
+                        <q-btn flat round color="primary" size="30px" icon="add" @click="changeTab('us')" />
+                        <div class=" text-primary">Unidade Sanitária</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : mobilizerTab}">
                     <q-card-section>
-                        <q-btn flat round color="deep-orange" size="30px" icon="add"  @click="changeTab('mobilizador')"/>
-                        <div class=" text-deep-orange">Visualizar Mobilizador</div>
+                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('mobilizador')"/>
+                        <div class=" text-primary">Visualizar Mobilizador</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : consultaTab}">
                     <q-card-section>
-                        <q-btn flat round color="deep-orange" size="30px" icon="add"  @click="changeTab('consulta')"/>
-                        <div class=" text-deep-orange">Marcação de Consulta</div>
+                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('consulta')"/>
+                        <div class=" text-primary">Marcação de Consulta</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : materialTab}">
                     <q-card-section>
-                        <q-btn flat round color="deep-orange" size="30px" icon="add"  @click="changeTab('informativeMaterial')"/>
-                        <div class=" text-deep-orange">Material Educativo</div>
+                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('informativeMaterial')"/>
+                        <div class=" text-primary">Material Educativo</div>
                     </q-card-section>
                 </q-card>
             </div>

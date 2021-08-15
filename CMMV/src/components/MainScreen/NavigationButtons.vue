@@ -1,6 +1,6 @@
 <template>
   <div class="row no-wrap items-center q-mt-md q-pa-sm absolute-bottom ">
-    <q-btn flat round color="deep-orange" icon="west" @click="$emit('previousScreen')"/>
+    <q-btn flat round color="primary" icon="west" @click="$emit('previousScreen')"/>
         <q-space />
 
         <div>

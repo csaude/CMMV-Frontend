@@ -4,7 +4,7 @@ import Appointment from '../appointment/Appointment'
 import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
-import UserLogin from '../userLogin/userLogin'
+import { UtenteLogin } from '../userLogin/UserLoginHierarchy'
 
 export default class Utente extends Model {
   static entity = 'utentes'
@@ -23,17 +23,15 @@ export default class Utente extends Model {
       systemNumber: this.attr(''),
       haspartner: this.attr(''),
       status: this.attr(''),
-      address_id: this.attr(''),
       mobilizer_id: this.attr(''),
-      user_id: this.attr(''),
 
       // Relationships
-      address: this.belongsTo(Address, 'address_id'),
+      address: this.hasOne(Address, 'utente_id'),
       mobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id'),
-      infoDocsImages: this.hasMany(InfoDocsOrImages, 'info_docs_or_images_id'),
+      infoDocsImages: this.hasMany(InfoDocsOrImages, 'infoDocsImages_id'),
       messages: this.hasMany(Message, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id'),
-      userLogin: this.belongsTo(UserLogin, 'user_id')
+      user: this.hasOne(UtenteLogin, 'utente_id')
     }
   }
 
