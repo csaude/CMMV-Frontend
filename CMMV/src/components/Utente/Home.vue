@@ -72,7 +72,8 @@
                 v-if="consultaTab" />
             <us
                 :clinic="utente.clinic"
-                v-if="usTab"/>
+                v-if="usTab && utente.clinic != null"/>
+            <noMobilizer v-if="usTab && utente.clinic === null" />
             <informative-docs
                 v-if="materialTab"
                 :docsOrImages="docsOrImages" />
@@ -96,79 +97,17 @@
 
 <script>
 import { ref } from 'vue'
-import Utente from '../store/models/utente/Utente'
+import Address from '../../store/models/address/Address'
 export default {
+    props: ['utente'],
      data () {
         return {
-        tab: ref('home'),
-        noMobilizerTab: false,
-        mobilizerTab: false,
-        usTab: true,
-        consultaTab: false,
-        materialTab: false,
-        utente: {
-            firstNames: 'Jonas Antonio',
-            lastName: 'Musculo',
-            birthDate: '02/25/2001',
-            cellNumber: '846253984',
-            whatsappNumber: '846315932',
-            preferedLanguage: 'Portugues',
-            documentType: 'BI',
-            documentNumber: '5236222235F',
-            systemNumber: 2216,
-            haspartner: true,
-            clinic: {
-                id: 6,
-                code: 'BOANE_CLINIC',
-                longitude: '8652123',
-                name: 'Hospital Distrital de Boane',
-                type: 'Hospital Distrital',
-                latitude: '2563489'
-            },
-            mobilizer: {
-                    firstNames: 'Carlos',
-                    lastName: 'Alberto',
-                    cellNumber: '856321456',
-                    cellNumber2: '846321952'
-            },
-            address: {
-                city: 'Boane',
-                neighboorhood: '25 de Junho',
-                residence: 'casa 25',
-                latitude: '25689233',
-                longitude: '896325566',
-                district: {
-                    id: 1
-                }
-            },
-            appointments: [
-                {
-                    appointmentDate: '25/06/2021',
-                    time: '13:03',
-                    hasHappened: false,
-                    status: 'ACEITE',
-                    orderNumber: 6,
-                    clinic: {
-                        code: 'BOANE',
-                        name: 'Boane'
-                    }
-                }
-            ]
-            },
-             docsOrImages: [
-                {
-                    id: 1,
-                    name: 'Folheto de Convite'
-                },
-                {
-                    id: 2,
-                    name: 'Folheto Para Criancas'
-                },
-                {
-                    id: 2,
-                    name: 'Seriado Activista'
-                }
-            ]
+            tab: ref('home'),
+            noMobilizerTab: false,
+            mobilizerTab: false,
+            usTab: true,
+            consultaTab: false,
+            materialTab: false
         }
   },
   methods: {
@@ -178,27 +117,31 @@ export default {
         this.consultaTab = false
         this.materialTab = false
         if (selectedTab === 'us') {
-            this.usTab = true
+            if (this.utente.clinic === null) {
+                this.$emit('searchClinic', this.utente)
+            } else {
+                this.usTab = true
+            }
         } else if (selectedTab === 'mobilizador') {
             this.mobilizerTab = true
         } else if (selectedTab === 'consulta') {
-            this.consultaTab = true
+            console.log(this.utente.appointments)
+            if (this.utente.appointments.length <= 0) {
+                this.$emit('makeAppointment', this.utente)
+            } else {
+                this.consultaTab = true
+            }
         } else if (selectedTab === 'informativeMaterial') {
             this.materialTab = true
         }
-      },
-      getUtente () {
-          Utente.api().get('/utente/10')
       }
   },
   computed: {
-      utenteDB () {
-          return Utente.findAll
+      address () {
+          return Address.query().where('utente_id', this.utente.id).get()
       }
   },
-  mounted () {
-      this.getUtente()
-  },
+  mounted () {},
   components: {
       noMobilizer: require('components/Home/NoMobilizer.vue').default,
       mobilizer: require('components/Home/Mobilizer.vue').default,

@@ -18,13 +18,14 @@
     </div>
     <div class="absolute-bottom q-px-sm q-mb-lg">
             <div class="text-center q-mb-md">
-                <buttone  label="Feito!" @click="$emit('procced')" />
+                <buttone  label="Feito!" @click="$emit('procced', utente)" />
             </div>
         </div>
   </q-page>
 </template>
 <script>
 export default {
+    props: ['utente'],
   components: {
     pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default,
     buttone: require('components/Shared/Button.vue').default

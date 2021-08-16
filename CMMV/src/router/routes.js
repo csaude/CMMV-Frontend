@@ -6,10 +6,6 @@ const routes = [
         {
             path: '',
             component: () => import('src/pages/Index.vue')
-        },
-        {
-            path: '/home',
-            component: () => import('pages/Home.vue')
         }
     ]
   },
