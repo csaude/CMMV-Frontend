@@ -14,7 +14,7 @@
         <div class="row">
             <input-text-field
                 class="col"
-                v-model="utente.lastName"
+                v-model="utente.lastNames"
                 label="Apelido" />
         </div>
         <div class="row">
@@ -43,12 +43,11 @@
                     v-model="utente.birthDate"
                     mask="date"
                     :rules="['date']"
-                    @input="calculateAge()"
                     label="Data de Nascimento">
                     <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="utente.birthDate" @input="calculateAge()">
+                            <q-date v-model="utente.birthDate" >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat />
                             </div>
@@ -68,11 +67,11 @@
         </div>
         <div class="absolute-bottom q-px-sm q-mb-lg">
             <div class="text-center q-mb-md">
-                <buttone  label="Proximo" @click="$emit('nextScreen')" />
+                <buttone  label="Proximo" @click="$emit('nextScreen', utente)" />
             </div>
         </div>
     </div>
-
+<pre>{{utente}}</pre>
   </q-page>
 </template>
 
@@ -83,7 +82,7 @@ export default {
         age: '',
       utente: {
             firstNames: '',
-            lastName: '',
+            lastNames: '',
             birthDate: '',
             cellNumber: '',
             whatsappNumber: '',
@@ -92,16 +91,7 @@ export default {
             documentNumber: '',
             systemNumber: '',
             haspartner: '',
-            address: {
-                city: '',
-                neighboorhood: '',
-                residence: '',
-                latitude: '',
-                longitude: '',
-                district: {
-                    id: ''
-                }
-            }
+            address: null
         }
     }
   },

@@ -28,7 +28,7 @@
               <hr />
               <q-icon name="place" size="2em"/>{{appointment.clinic}}
             </div>
-            
+
           </div>
         </q-card-section>
       </q-card>
@@ -37,19 +37,20 @@
 </template>
 <script>
 export default {
-  data() {
-    return {
-      lorem:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    props: ['utente'],
+    data () {
+        return {
+            lorem:
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
 
-      appointment: {
-        date: "20/11/2021",
-        time: "12:00 AM",
-        clinic: "CS Boane",
-        orderNumber: "3",
-      },
-    };
-  },
-  components: {},
-};
+            appointment: {
+                date: '20/11/2021',
+                time: '12:00 AM',
+                clinic: 'CS Boane',
+                orderNumber: '3'
+            }
+        }
+    },
+    components: {}
+}
 </script>
