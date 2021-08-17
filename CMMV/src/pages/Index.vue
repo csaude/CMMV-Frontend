@@ -30,21 +30,39 @@
             <utente-registration
                 v-if="showEightScreen"
                 @previousScreen="showEightScreen = !showEightScreen, showSeventhScreen = true"
-                @nextScreen="showEightScreen = false, showAddressScreen = true"/>
+                @nextScreen="proccedToAddress"/>
             <Address
                 v-if="showAddressScreen"
-                @saveUtente="saveUtente()"
+                @saveUtente="saveUtente"
+                :utente="userParent"
                 @previousScreen="showAddressScreen = !showAddressScreen, showEightScreen = true" />
             <SuccessRegistration
                 v-if="showSuccessRegistration"
-                @procced="goToHome()"/>
+                :utente="userParent"
+                @procced="goHome"/>
             <Login
                 v-if="showLoginScreen"
+                @goHome="goHome"
                 @previousScreen="showLoginScreen = false, showSeventhScreen = true" />
+            <Home
+                v-if="showHomeScreen"
+                :utente="userParent"
+                @makeAppointment="makeAppointment"
+                @searchClinic="searchClinic"/>
+            <clinicSearch
+                v-if="showClinicSearchScreen"
+                @associarClinic="associarClinic"
+                :utente="userParent"/>
+            <appointment
+                v-if="showAppointmentScreen"
+                :utente="userParent"/>
         </div>
     </q-page>
 </template>
 <script>
+import Address from '../store/models/address/Address'
+import Appointment from '../store/models/appointment/Appointment'
+import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
 export default {
     data () {
         return {
@@ -59,16 +77,14 @@ export default {
             showAddressScreen: false,
             showSuccessRegistration: false,
             showLoginScreen: false,
+            showHomeScreen: false,
+            showClinicSearchScreen: false,
+            showAppointmentScreen: false,
+            userParent: '',
             componentParam: ''
         }
     },
-    mounted () {
-        this.componentParam = this.$route.params.componentParam
-        if (this.componentParam === 'showEightScreen') {
-            this.showMainScreen = false
-            this.showEightScreen = true
-        }
-    },
+    mounted () {},
     components: {
         'main-screen': require('components/MainScreen/MainScreen.vue').default,
         'second-screen': require('components/MainScreen/SecondMainScreen.vue').default,
@@ -80,15 +96,47 @@ export default {
         'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
         Address: require('components/Utente/Address.vue').default,
         SuccessRegistration: require('components/Utente/RegistredSucess.vue').default,
-        Login: require('components/Shared/Login.vue').default
+        Login: require('components/Shared/Login.vue').default,
+        Home: require('components/Utente/Home.vue').default,
+        clinicSearch: require('components/Utente/SearchSanitaryUnit.vue').default,
+        appointment: require('components/Utente/Appointment.vue').default
     },
     methods: {
-        saveUtente () {
+        saveUtente (utente) {
+            this.userParent = utente
             this.showAddressScreen = false
             this.showSuccessRegistration = true
         },
-        goToHome () {
-            this.$router.push('/home')
+        proccedToAddress (utente) {
+            this.userParent = utente
+            this.showEightScreen = false
+            this.showAddressScreen = true
+        },
+        goHome (userParent) {
+            let utente = {}
+            utente = userParent
+            utente.address = Address.query().where('utente_id', userParent.id).get()[0]
+            utente.mobilizer = CommunityMobilizer.find(userParent.mobilizer_id)
+            utente.appointments = Appointment.query().where('utente_id', userParent.id).get()
+            console.log(userParent)
+            this.userParent = userParent
+            this.showSuccessRegistration = false
+            this.showLoginScreen = false
+            this.showHomeScreen = true
+        },
+        searchClinic (utente) {
+            this.userParent = utente
+            this.showClinicSearchScreen = true
+            this.showHomeScreen = false
+        },
+        associarClinic () {
+            this.showClinicSearchScreen = false
+            this.showHomeScreen = true
+        },
+        makeAppointment (utente) {
+            this.userParent = utente
+            this.showHomeScreen = false
+            this.showAppointmentScreen = true
         }
     }
 }

@@ -9,7 +9,7 @@
     </div>
     <div class="row q-mt-lg">
     </div>
-    <form @submit.prevent="redirectToHome">
+    <form @submit.prevent="authUser">
         <div class="q-pa-xl">
             <div class="row q-mb-md">
                 <q-input
@@ -63,7 +63,8 @@
 
 <script>
 import { ref } from 'vue'
-import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
+import { UtenteLogin } from '../../store/models/userLogin/UserLoginHierarchy'
+import Utente from '../../store/models/utente/Utente'
 export default {
     data () {
         return {
@@ -79,19 +80,22 @@ export default {
     },
     computed: {
         logedUser () {
-            return UserLogin.find(17)
+            return UtenteLogin.find(17)
         }
     },
     methods: {
         doLogin () {
-          UserLogin.api().get('/userLogin/17')
+          UtenteLogin.api().get('/userLogin/17')
         },
-        redirectToHome () {
+        authUser () {
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
                 if (this.logedUser != null) {
-                    this.$router.push('/home')
+                    if (this.logedUser.type === 'UTENTELOGIN') {
+                    console.log(this.logedUser.type)
+                        this.$emit('goHome', Utente.find(this.logedUser.utente_id))
+                    }
                 }
             }
         }

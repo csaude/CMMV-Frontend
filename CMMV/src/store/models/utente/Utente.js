@@ -4,10 +4,12 @@ import Appointment from '../appointment/Appointment'
 import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
+import Clinic from '../clinic/Clinic'
 import { UtenteLogin } from '../userLogin/UserLoginHierarchy'
 
 export default class Utente extends Model {
   static entity = 'utentes'
+  static eagerLoad = ['address', 'mobilizer', 'clinic', 'appointments', 'infoDocsImages']
 
   static fields () {
     return {
@@ -25,6 +27,7 @@ export default class Utente extends Model {
       status: this.attr(''),
       selected: this.attr(''),
       mobilizer_id: this.attr(''),
+      clinic_id: this.attr(''),
 
       // Relationships
       address: this.hasMany(Address, 'utente_id'),
@@ -32,7 +35,8 @@ export default class Utente extends Model {
       infoDocsImages: this.hasMany(InfoDocsOrImages, 'infoDocsImages_id'),
       messages: this.hasMany(Message, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id'),
-      user: this.hasOne(UtenteLogin, 'utente_id')
+      user: this.hasOne(UtenteLogin, 'utente_id'),
+      clinic: this.belongsTo(Clinic, 'clinic_id')
     }
   }
 

@@ -5,11 +5,7 @@ const routes = [
     children: [
         {
             path: '',
-            component: () => import('src/pages/CommunityMobilizerMain.vue')
-        },
-        {
-            path: '/home',
-            component: () => import('pages/Home.vue')
+            component: () => import('src/pages/Index.vue')
         }
     ]
   },
