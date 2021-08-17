@@ -190,7 +190,7 @@ export default {
       },
       getUtente () {
           // InfoDocsOrImages.api().get('/infoDocsOrImages')
-           Utente.api().get('/utente/6')
+           Utente.api().get('/utente/16')
       }
   },
   computed: {

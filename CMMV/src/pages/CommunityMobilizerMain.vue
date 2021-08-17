@@ -28,14 +28,71 @@
       <q-btn color="primary" glossy label="Enviados"  @click="handler2"  style="width: 100%"/>
     </q-btn-group>
      <div class="q-pa-md" style="width: 100%">
-      <utentes-list :utentes="pendings" v-if="pending"/>
+      <utentes-list :utentes="pendings" v-if="pending" v-on:listenerChild="listenerChild"/>
     <utentes-list :utentes="associateds" v-if="associated" :name="call"/>
   <utentes-list :utentes="sendeds" v-if="sended"/>
   <div class="float-right">
   <br>
-  <q-btn class="q-py-xs float-right" align="right"   padding="xs lg" unelevated rounded color="deep-orange" v-show="pending" label="Associar" />
+  <q-btn class="q-py-xs float-right" align="right"   padding="xs lg" unelevated rounded color="deep-orange" v-show="pending" label="Associar" @click="handlerAssociate" />
   </div>
      </div>
+      </div>
+       <div class="col-9" v-if="changePasswordTab" style="width: 90%">
+           <q-input
+                    v-model="communityMobilizer"
+                    rounded
+                    outlined
+                    class="col"
+                    label="Senha Actual"
+                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
+                    ref="password"
+                    :type="isPwd ? 'password' : 'text'">
+                    <template v-slot:append>
+                        <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
+                            color="primary"
+                        />
+                    </template>
+                </q-input>
+                <q-input
+                    v-model="communityMobilizer"
+                    rounded
+                    outlined
+                    class="col"
+                    label="Nova Senha"
+                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
+                    ref="password"
+                    :type="isPwd ? 'password' : 'text'">
+                    <template v-slot:append>
+                        <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
+                            color="primary"
+                        />
+                    </template>
+                </q-input>
+                <q-input
+                    v-model="communityMobilizer"
+                    rounded
+                    outlined
+                    class="col"
+                    label="Repeticao da Nova Senha"
+                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
+                    ref="password"
+                    :type="isPwd ? 'password' : 'text'">
+                    <template v-slot:append>
+                        <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
+                            color="primary"
+                        />
+                    </template>
+                </q-input>
+                <q-btn  text-color="black"  label="Alterar" class="float-right" style="width: 50%" align="center" unelevated rounded color="deep-orange"/>
       </div>
           </div>
    </div>
@@ -90,9 +147,11 @@ export default {
           sended: false,
           materialTab: false,
           utentesTab: false,
+          changePasswordTab: false,
           pendings: [],
           associateds: [],
           sendeds: [],
+           selectedUtents: [],
       leftDrawerOpen,
        communityMobilizer: {},
       toggleLeftDrawer () {
@@ -107,7 +166,7 @@ export default {
     getDocsInfo () {
           InfoDocsOrImages.api().get('/infoDocsOrImages')
           Utente.api().get('/utente')
-         // CommunityMobilizer.api().get('/communityMobilizer')
+          CommunityMobilizer.api().get('/communityMobilizer')
       },
       getUtente () {
       },
@@ -126,18 +185,35 @@ export default {
          this.sended = true
          this.associated = false
     },
+    listenerChild (reply) {
+     if (this.selectedUtents.includes(reply)) {
+        this.selectedUtents.pop(reply)
+      } else {
+     this.selectedUtents.push(reply)
+           }
+      },
     getTab (tab) {
         if (tab === 'Material Educativo') {
             this.materialTab = true
             this.utentesTab = false
+            this.changePasswordTab = false
+            this.communityMobilizer = this.communityMobilizerDb
         }
          if (tab === 'Utentes') {
             this.materialTab = false
             this.utentesTab = true
+            this.changePasswordTab = false
+            this.getUtentesByStatus(this.utenteDB)
+        }
+         if (tab === 'Alterar Senha') {
+            this.materialTab = false
+            this.utentesTab = false
+            this.changePasswordTab = true
         }
          this.toggleLeftDrawer()
     },
     getUtentesByStatus (utenteDB) {
+      this.pendings = []
       this.utenteDB.forEach(utente => {
         if (utente.status === 'PENDENTE') {
           return this.pendings.push(utente)
@@ -147,7 +223,31 @@ export default {
           return this.sendeds.push(utente)
         }
       })
-    }
+    },
+   handlerAssociate () {
+     this.selectedUtents.forEach(utente => {
+        // utente.communityMobilizer=communityMobilizerDb
+        utente.status = 'ASSOCIADO'
+      })
+      this.listErrors = []
+      this.submitting = true
+      setTimeout(() => {
+        this.submitting = false
+      }, 300)
+      Utente.api().put('/utente/' + this.selectedUtents[0].id).then(resp => {
+        this.$q.notify({
+          type: 'positive',
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'cloud_done',
+          timeout: 1000,
+          position: 'bottom',
+          classes: 'glossy',
+          progress: true,
+          message: 'A informação foi actualizada com successo!! [ ' + this.selectedUtents[0].id + ' ]'
+        })
+      })
+   }
   },
   computed: {
       infoDB () {
@@ -158,17 +258,18 @@ export default {
         return Utente.all()
       },
         communityMobilizerDb () {
-         return CommunityMobilizer.all()
+         return CommunityMobilizer.find(19)
       }
   },
   components: {
        'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-        'utentes-list': require('components/Shared/ViewUtenteList.vue').default
+       'utentes-list': require('components/Shared/ViewUtenteList.vue').default
        },
         mounted () {
-      this.getUtentesByStatus()
+      this.getUtentesByStatus(this.utenteDB)
        this.getDocsInfo()
        this.getUtente()
+       // this.communityMobilizer = this.communityMobilizerDb
     }
 }
 </script>

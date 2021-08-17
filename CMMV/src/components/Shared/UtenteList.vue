@@ -11,7 +11,7 @@
        <q-icon name="call" color="primary" v-if="associated"/>
     </q-item-section>
     <q-item-section rounded avatar v-if="pending">
-           <q-checkbox v-model="check1" />
+           <q-checkbox v-model="checked"  @click="checkUtente"/>
         </q-item-section>
       </q-item>
 </template>
@@ -28,12 +28,10 @@ export default {
          this.sended = true
       }
     },
-    check () {
-      if (this.checked === true) {
-       return this.checked
-      }
+    checkUtente () {
+      this.$emit('listenerChild', this.utente)
     }
-     },
+    },
      data () {
        let pending, sended, associated
        const checked = false
@@ -43,7 +41,16 @@ export default {
     },
     mounted () {
       this.showPending()
-      this.check()
+     // this.check()
+    },
+    computed: {
+    setUtenteChecked () {
+      // Check if we need to reverse the list
+      if (this.checked === true) {
+       return this.utente.selected
+      }
+      return null
     }
+  }
      }
 </script>
