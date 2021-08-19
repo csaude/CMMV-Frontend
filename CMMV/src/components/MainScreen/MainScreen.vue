@@ -6,18 +6,18 @@
         >
     <div key="main" class=" absolute full-width full-height column">
         <div class="row">
-            <img
+            <q-img
                 src="~src/assets/Main_Screen.png"
-                style="width: 100%; height: 100%"
-                >
+                fit="cover"
+                />
         </div>
         <div class=" absolute-bottom text-center q-mb-xl">
             <q-btn
-            size="lg"
-            unelevated round
-            @click="$emit('nextScreen')"
-            color="primary"
-            icon="chevron_right" />
+                size="xl"
+                unelevated round
+                @click="$emit('nextScreen')"
+                color="primary"
+                icon="chevron_right" />
         </div>
     </div>
 </transition-group>
@@ -27,5 +27,4 @@ export default {
 }
 </script>
 <style>
-
 </style>

@@ -5,20 +5,20 @@
             <div class="col-4">
                 <img class="rounded-borders"
                     src="~src/assets/splash_img.png"
-                    style="width: 120%; height: 150px"
+                    style="width: 100%; height: 150px"
                     >
             </div>
-            <div class="col-8 q-px-xl q-mt-xl">
-                <div class="text-h6 q-pb-sm text-grey-9">{{utente.firstNames + ' ' + utente.lastName}}</div>
+            <div class="col-8 q-pl-lg q-mt-lg">
+                <div class="text-subtitle1 q-pb-sm text-grey-9">{{utente.firstNames + ' ' + utente.lastNames}}</div>
                 <div class="row items-center">
                     <q-icon name="call" size="sm" color="grey-5" />
-                    <div class=" text-subtitle1 q-px-xs text-grey-7" >Nr Telemóvel:</div>
-                    <div class=" text-subtitle1 " >{{utente.cellNumber}}</div>
+                    <div class=" text-subtitle2 q-px-xs text-grey-7" >Nr Telemóvel:</div>
+                    <div class=" text-subtitle2 " >{{utente.cellNumber}}</div>
                 </div>
                 <div class="row items-center">
                     <q-icon name="textsms" size="sm" color="grey-5" />
-                    <div class=" text-subtitle1 q-px-xs text-grey-7" >Nr WhatsApp:</div>
-                    <div class=" text-subtitle1" >{{utente.whatsappNumber}}</div>
+                    <div class=" text-subtitle2 q-px-xs text-grey-7" >Nr WhatsApp:</div>
+                    <div class=" text-subtitle2" >{{utente.whatsappNumber}}</div>
                 </div>
                 <div class="row items-center q-mt-sm">
                         <q-icon name="fmd_good" size="sm" color="grey-5" />
@@ -31,32 +31,32 @@
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center " :class="{'bg-orange-1' : usTab}">
                     <q-card-section>
-                        <q-btn flat round color="primary" size="30px" icon="add" @click="changeTab('us')" />
-                        <div class=" text-primary">Unidade Sanitária</div>
+                        <q-btn flat round color="primary" size="24px" icon="add" @click="changeTab('us')" />
+                        <div class=" text-primary text-caption">Unidade Sanitária</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : mobilizerTab}">
                     <q-card-section>
-                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('mobilizador')"/>
-                        <div class=" text-primary">Visualizar Mobilizador</div>
+                        <q-btn flat round color="primary" size="24px" icon="add"  @click="changeTab('mobilizador')"/>
+                        <div class=" text-primary text-caption">Visualizar Mobilizador</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : consultaTab}">
                     <q-card-section>
-                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('consulta')"/>
-                        <div class=" text-primary">Marcação de Consulta</div>
+                        <q-btn flat round color="primary" size="24px" icon="add"  @click="changeTab('consulta')"/>
+                        <div class=" text-primary text-caption">Marcar Consulta</div>
                     </q-card-section>
                 </q-card>
             </div>
             <div class="col q-ma-xs">
                 <q-card class="my-card text-center" :class="{'bg-orange-1' : materialTab}">
                     <q-card-section>
-                        <q-btn flat round color="primary" size="30px" icon="add"  @click="changeTab('informativeMaterial')"/>
-                        <div class=" text-primary">Material Educativo</div>
+                        <q-btn flat round color="primary" size="24px" icon="add"  @click="changeTab('informativeMaterial')"/>
+                        <div class=" text-primary text-caption">Material Educativo</div>
                     </q-card-section>
                 </q-card>
             </div>
@@ -68,7 +68,8 @@
                 :mobilizer="utente.mobilizer"
                 v-if="mobilizerTab && utente.mobilizer != null"/>
             <consulta
-                :appointment="utente.appointments[0]"
+                :appointment="appointment"
+                @rescheduleAppointment="rescheduleAppointment"
                 v-if="consultaTab" />
             <us
                 :clinic="utente.clinic"
@@ -98,6 +99,7 @@
 <script>
 import { ref } from 'vue'
 import Address from '../../store/models/address/Address'
+import Clinic from '../../store/models/clinic/Clinic'
 export default {
     props: ['utente'],
      data () {
@@ -107,7 +109,8 @@ export default {
             mobilizerTab: false,
             usTab: true,
             consultaTab: false,
-            materialTab: false
+            materialTab: false,
+            currUtente: null
         }
   },
   methods: {
@@ -125,7 +128,6 @@ export default {
         } else if (selectedTab === 'mobilizador') {
             this.mobilizerTab = true
         } else if (selectedTab === 'consulta') {
-            console.log(this.utente.appointments)
             if (this.utente.appointments.length <= 0) {
                 this.$emit('makeAppointment', this.utente)
             } else {
@@ -134,14 +136,32 @@ export default {
         } else if (selectedTab === 'informativeMaterial') {
             this.materialTab = true
         }
+      },
+      rescheduleAppointment (appointment) {
+          this.$emit('rescheduleAppointment', appointment)
+      },
+      loadAppointment () {
+        this.currUtente = this.utente
+        if (this.currUtente.appointments != null && this.currUtente.appointments.length > 0) {
+            this.currUtente.appointments[this.currUtente.appointments.length - 1].clinic = Clinic.find(this.currUtente.appointments[this.currUtente.appointments.length - 1].clinic_id)
+        }
       }
   },
   computed: {
       address () {
           return Address.query().where('utente_id', this.utente.id).get()
+      },
+      appointment () {
+          if (this.currUtente.appointments != null && this.currUtente.appointments.length > 0) {
+              return this.currUtente.appointments[this.currUtente.appointments.length - 1]
+          } else {
+              return null
+          }
       }
   },
-  mounted () {},
+  mounted () {
+      this.loadAppointment()
+  },
   components: {
       noMobilizer: require('components/Home/NoMobilizer.vue').default,
       mobilizer: require('components/Home/Mobilizer.vue').default,

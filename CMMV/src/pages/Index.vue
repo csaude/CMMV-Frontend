@@ -48,6 +48,7 @@
                 v-if="showHomeScreen"
                 :utente="userParent"
                 @makeAppointment="makeAppointment"
+                @rescheduleAppointment="rescheduleAppointment"
                 @searchClinic="searchClinic"/>
             <clinicSearch
                 v-if="showClinicSearchScreen"
@@ -55,14 +56,18 @@
                 :utente="userParent"/>
             <appointment
                 v-if="showAppointmentScreen"
-                :utente="userParent"/>
+                :utente="userParent"
+                :appointmentToUpdate="currAppointment"
+                @goHome="goHome"/>
         </div>
     </q-page>
 </template>
 <script>
 import Address from '../store/models/address/Address'
 import Appointment from '../store/models/appointment/Appointment'
+import Clinic from '../store/models/clinic/Clinic'
 import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
+import Utente from '../store/models/utente/Utente'
 export default {
     data () {
         return {
@@ -81,6 +86,7 @@ export default {
             showClinicSearchScreen: false,
             showAppointmentScreen: false,
             userParent: '',
+            currAppointment: '',
             componentParam: ''
         }
     },
@@ -114,14 +120,23 @@ export default {
         },
         goHome (userParent) {
             let utente = {}
-            utente = userParent
+            Utente.api().get('/utente/' + userParent.id).then(resp => {
+                console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+            utente = Utente.find(userParent.id)
             utente.address = Address.query().where('utente_id', userParent.id).get()[0]
             utente.mobilizer = CommunityMobilizer.find(userParent.mobilizer_id)
             utente.appointments = Appointment.query().where('utente_id', userParent.id).get()
+            if (utente.clinic_id > 0 && utente.clinic === null) {
+                utente.clinic = Clinic.find(utente.clinic_id)
+            }
             console.log(userParent)
-            this.userParent = userParent
+            this.userParent = utente
             this.showSuccessRegistration = false
             this.showLoginScreen = false
+            this.showAppointmentScreen = false
             this.showHomeScreen = true
         },
         searchClinic (utente) {
@@ -129,12 +144,18 @@ export default {
             this.showClinicSearchScreen = true
             this.showHomeScreen = false
         },
-        associarClinic () {
+        associarClinic (utente) {
+            this.userParent = utente
             this.showClinicSearchScreen = false
             this.showHomeScreen = true
         },
         makeAppointment (utente) {
             this.userParent = utente
+            this.showHomeScreen = false
+            this.showAppointmentScreen = true
+        },
+        rescheduleAppointment (appointment) {
+            this.currAppointment = appointment
             this.showHomeScreen = false
             this.showAppointmentScreen = true
         }
