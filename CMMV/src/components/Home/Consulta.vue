@@ -20,7 +20,7 @@
 
                         <q-space />
                         <q-icon name="date_range" size="sm" color="primary" />
-                            <div class="q-px-sm text-grey-7">{{appointment.appointmentDate}}</div>
+                            <div class="q-px-sm text-grey-7">{{formatDate(appointment.appointmentDate)}}</div>
                     </div>
                     <div class="row items-center ">
                         <q-icon name="schedule" size="sm" color="primary" />
@@ -34,7 +34,7 @@
             </div>
             <div class="col-4 q-pa-sm">
                 <q-btn v-if="appointementConfirmed" flat round color="primary" class="no-pointer-events float-right" disabled size="40px" icon="check" />
-                <q-btn v-else rounded color="primary" class="float-right" size="md" label="Re-marcar"  />
+                <q-btn v-else rounded color="primary" class="float-right" size="md" label="Re-marcar" @click="remarcar" />
 
             </div>
         </div>
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { date } from 'quasar'
     export default {
         props: ['appointment'],
         data () {
@@ -54,7 +55,15 @@
             appointementConfirmed () {
                 return this.appointment.status === 'ACEITE'
             }
+        },
+    methods: {
+        formatDate (value) {
+            return date.formatDate(value, 'D-MM-YYYY')
+        },
+        remarcar () {
+            this.$emit('rescheduleAppointment', this.appointment)
         }
+    }
     }
 </script>
 
