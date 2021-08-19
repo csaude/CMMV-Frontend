@@ -1,6 +1,6 @@
 <template>
   <q-page class="absolute full-width full-height column">
-    <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')" />
+    <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')" > Registo do Beneficiário</pageHeader>
     <div class="q-px-sm">
         <div class="row q-my-lg">Endereco</div>
         <div class="row q-mb-md">
@@ -99,12 +99,10 @@ export default {
                 this.currUtente.haspartner = false
             }
             Utente.api().post('/utente', this.currUtente).then(resp => {
-                console.log(resp.response.data)
                 this.$emit('saveUtente', resp.response.data)
             }).catch(error => {
                 console.log(error)
             })
-            this.$emit('nextScreen', this.currUtente)
         }
     },
     mounted () {

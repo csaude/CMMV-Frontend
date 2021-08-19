@@ -6,7 +6,7 @@
       <q-list bordered separator>
       <q-item clickable v-ripple  v-for="doc in docsOrImages" :key="doc">
         <q-item-section  > {{doc.name}}</q-item-section>
-        <q-item-section avatar  > 
+        <q-item-section avatar  >
        <q-icon name="file_download" color="red" />
         </q-item-section>
       </q-item>

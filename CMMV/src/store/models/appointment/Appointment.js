@@ -9,10 +9,10 @@ export default class Appointment extends Model {
     return {
       id: this.attr(null),
       appointmentDate: this.attr(''),
-      timee: this.attr(''),
-      hasHappened: this.attr(''),
+      time: this.attr(''),
+      hasHappened: this.attr(false),
       orderNumber: this.attr(''),
-      status: this.attr(''),
+      status: this.attr('PENDENTE'),
       visitDate: this.attr(''),
       user_id: this.attr(''),
       clinic_id: this.attr(''),

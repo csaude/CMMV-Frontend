@@ -1,7 +1,7 @@
 <template>
   <q-page class="absolute full-width full-height column">
 
-    <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')"/>
+    <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')"> Registo do Beneficiário</pageHeader>
 
     <div class="q-px-sm">
         <div class="row q-my-lg">Dados Pessoais</div>
@@ -98,7 +98,6 @@ export default {
   methods: {
     calculateAge () {
           this.age = Math.floor((new Date() - new Date(this.utente.birthDate)) / 31557600000)
-          console.log(this.age)
         }
   },
   components: {

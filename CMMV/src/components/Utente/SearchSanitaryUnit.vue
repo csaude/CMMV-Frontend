@@ -15,12 +15,15 @@
   </div>
 <buttone  label="Associar" @click="associar" />
   </div>
+
   </q-page>
 </template>
 
 <script>
 import { ref } from 'vue'
 import Clinic from '../../store/models/clinic/Clinic'
+import Utente from '../../store/models/utente/Utente'
+import District from '../../store/models/district/District'
 
 
 const columns = [
@@ -41,7 +44,8 @@ export default {
         return {
             columns,
             filter: ref(''),
-            selected: ref([])
+            selected: ref([]),
+            relatedUtente: null
         }
     },
     computed: {
@@ -59,7 +63,14 @@ export default {
             })
         },
         associar () {
-            this.$emit('associarClinic')
+            this.relatedUtente = this.utente
+            this.relatedUtente.clinic = this.selected[0]
+            this.relatedUtente.address.district = District.find(this.relatedUtente.address.district_id)
+            Utente.api().post('/utente', this.relatedUtente).then(resp => {
+                this.$emit('associarClinic', this.relatedUtente)
+            }).catch(error => {
+                console.log(error)
+            })
         }
     },
     mounted () {

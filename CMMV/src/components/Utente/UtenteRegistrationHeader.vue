@@ -9,7 +9,7 @@
                 icon="chevron_left"
                 @click="$emit('previousScreen')"/>
         </div>
-        <div class="col-8 text-center q-mt-md"><p class="col text-white">Registro do Beneficiario</p></div>
+        <div class="col-8 text-center q-mt-md"><p class="col text-white"><slot></slot></p></div>
         <div class="col"><q-space /></div>
     </div>
 </template>
