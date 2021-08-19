@@ -41,11 +41,9 @@ export default {
     },
     mounted () {
       this.showPending()
-     // this.check()
     },
     computed: {
     setUtenteChecked () {
-      // Check if we need to reverse the list
       if (this.checked === true) {
        return this.utente.selected
       }

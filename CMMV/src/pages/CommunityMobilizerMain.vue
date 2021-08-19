@@ -12,7 +12,7 @@
     <div class="column items-center bg-grey-4" style="height: 450px">
      <div class="col self-center">
        <img src="~src/assets/mobilizador.png">
-  <div class="text-h4 text-weight-light">{{communityMobilizer.firstnames + ' ' + communityMobilizer.lastname}}
+  <div class="text-h4 text-weight-light">{{communityMobilizerDb.firstNames + ' ' + communityMobilizerDb.lastNames}}
   </div>
       </div>
       <div class="col-9" v-if="materialTab" style="width: 90%">
@@ -94,6 +94,26 @@
                 </q-input>
                 <q-btn  text-color="black"  label="Alterar" class="float-right" style="width: 50%" align="center" unelevated rounded color="deep-orange"/>
       </div>
+
+        <div class="col-10" v-if="perfilTab" style="width: 90%">
+           <input-text-field
+                class="col"
+                v-model="communityMobilizer.firstNames"
+                label="Nome" />
+                <input-text-field
+                class="col"
+                v-model="communityMobilizer.lastNames"
+                label="Apelido" />
+                  <input-number-phone-field
+                class="col"
+                v-model="communityMobilizer.cellNumber"
+                label="Numero de Telefone" />
+                 <input-number-phone-field
+                class="col"
+                v-model="communityMobilizer.cellNumber2"
+                label="Numero de Telemovel com Whatsapp" />
+                <q-btn  text-color="black"  label="Editar" class="float-right" style="width: 50%" align="center" unelevated rounded color="deep-orange" @click="handlerEditMobilizer" />
+      </div>
           </div>
    </div>
     <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile" bordered>
@@ -101,7 +121,7 @@
       <div class="q-pa-md">
     <div class="q-gutter-md absolute-center vertical-top">
       <q-skeleton type="circle" size="100px" />
-      <p>Carlos Alberto </p>
+      <p>{{communityMobilizerDb.firstNames}} </p>
       <p>Mobilizador</p>
      <br>
       <q-list>
@@ -137,6 +157,8 @@ import { ref } from 'vue'
 import InfoDocsOrImages from '../store/models/dorcOrImages/InfoDocsOrImages'
 import Utente from '../store/models/utente/Utente'
 import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
+import Clinic from '../store/models/clinic/Clinic'
+import Address from '../store/models/address/Address'
 
 export default {
   data () {
@@ -148,12 +170,19 @@ export default {
           materialTab: false,
           utentesTab: false,
           changePasswordTab: false,
+          perfilTab: false,
           pendings: [],
           associateds: [],
           sendeds: [],
            selectedUtents: [],
       leftDrawerOpen,
-       communityMobilizer: {},
+       communityMobilizer: {
+            id: '',
+            firstNames: '',
+            lastNames: '',
+            cellNumber: '',
+            cellNumber2: ''
+       },
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
@@ -167,6 +196,8 @@ export default {
           InfoDocsOrImages.api().get('/infoDocsOrImages')
           Utente.api().get('/utente')
           CommunityMobilizer.api().get('/communityMobilizer')
+          Clinic.api().get('/clinic')
+          Address.api().get('/address')
       },
       getUtente () {
       },
@@ -197,23 +228,35 @@ export default {
             this.materialTab = true
             this.utentesTab = false
             this.changePasswordTab = false
-            this.communityMobilizer = this.communityMobilizerDb
+            this.perfilTab = false
+           // this.communityMobilizer = this.communityMobilizerDb
         }
          if (tab === 'Utentes') {
             this.materialTab = false
             this.utentesTab = true
             this.changePasswordTab = false
+             this.perfilTab = false
             this.getUtentesByStatus(this.utenteDB)
         }
          if (tab === 'Alterar Senha') {
             this.materialTab = false
             this.utentesTab = false
             this.changePasswordTab = true
+             this.perfilTab = false
+        }
+          if (tab === 'Perfil') {
+            this.materialTab = false
+            this.utentesTab = false
+            this.changePasswordTab = false
+            this.perfilTab = true
+            this.communityMobilizer = this.communityMobilizerDb
         }
          this.toggleLeftDrawer()
     },
-    getUtentesByStatus (utenteDB) {
+    getUtentesByStatus () {
       this.pendings = []
+      this.associateds = []
+       this.sendeds = []
       this.utenteDB.forEach(utente => {
         if (utente.status === 'PENDENTE') {
           return this.pendings.push(utente)
@@ -228,25 +271,25 @@ export default {
      this.selectedUtents.forEach(utente => {
         // utente.communityMobilizer=communityMobilizerDb
         utente.status = 'ASSOCIADO'
+        const utenteAddress = Address.query().where('utente_id', utente.id).get()
+        utente.address = utenteAddress[0]
       })
-      this.listErrors = []
-      this.submitting = true
-      setTimeout(() => {
-        this.submitting = false
-      }, 300)
-      Utente.api().put('/utente/' + this.selectedUtents[0].id).then(resp => {
-        this.$q.notify({
-          type: 'positive',
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          timeout: 1000,
-          position: 'bottom',
-          classes: 'glossy',
-          progress: true,
-          message: 'A informação foi actualizada com successo!! [ ' + this.selectedUtents[0].id + ' ]'
-        })
-      })
+      Utente.api().put('/utente/', this.selectedUtents[0].id).then(resp => {
+                        console.log(resp.response.data)
+                this.$emit('handlerEditMobilizer', resp.response.data)
+            }).catch(error => {
+              // console.log(Utente.api().put('/utente/', this.selectedUtents))
+              console.log(error)
+            })
+   },
+   handlerEditMobilizer () {
+     this.communityMobilizer.clinic = this.clinicDb
+      CommunityMobilizer.api().post('/communityMobilizer/', this.communityMobilizer).then(resp => {
+                console.log(resp.response.data)
+                this.$emit('handlerEditMobilizer', resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
    }
   },
   computed: {
@@ -259,17 +302,25 @@ export default {
       },
         communityMobilizerDb () {
          return CommunityMobilizer.find(19)
+      },
+       clinicDb () {
+         return Clinic.find(7)
+      },
+       AddressDb () {
+         return Address.all()
       }
   },
   components: {
        'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-       'utentes-list': require('components/Shared/ViewUtenteList.vue').default
+       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
+       'input-text-field': require('components/Shared/InputFieldText.vue').default,
+       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
        },
         mounted () {
-      this.getUtentesByStatus(this.utenteDB)
+      this.getUtentesByStatus()
        this.getDocsInfo()
        this.getUtente()
-       // this.communityMobilizer = this.communityMobilizerDb
+        // this.communityMobilizer = this.communityMobilizerDb
     }
 }
 </script>

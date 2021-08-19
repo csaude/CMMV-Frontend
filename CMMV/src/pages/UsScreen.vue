@@ -31,7 +31,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="ConsultasOther">
-            <q-table title="Utentes" :rows="rows" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
+            <q-table title="Utentes" :rows="appointmentsBDD" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
     <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
@@ -48,6 +48,7 @@
 </template>
 <script>
 import { ref } from 'vue'
+import Appointment from '../store/models/appointment/Appointment'
 
 const columns = [
   {
@@ -55,7 +56,7 @@ const columns = [
     required: true,
     label: 'Data',
     align: 'left',
-    field: row => row.appointments === 'undefined' ? ' ' : row.appointments[0].appointmentDate,
+    field: row => row.appointmentDate,
     format: val => `${val}`,
     sortable: true
   },
@@ -64,7 +65,7 @@ const columns = [
     required: true,
     label: 'Hora',
     align: 'left',
-    field: row => row.appointments === 'undefined' ? ' ' : row.appointments[0].time,
+    field: row => row.time,
     format: val => `${val}`,
     sortable: true
   },
@@ -91,14 +92,15 @@ const columns = [
     required: true,
     label: 'Chegou a US?',
     align: 'left',
-  field: row => row.appointments === 'undefined' ? ' ' : row.appointments[0].hasHappened,
+  field: row => row.hasHappened,
     format: val => `${val}`,
     sortable: true
   }
 ]
 export default {
-  setup () {
+  data () {
     return {
+         appointmentsBD: [],
           columns,
             utentes: [
         {
@@ -189,7 +191,22 @@ export default {
         }
       ],
       tab: ref('mails')
+      }
+  },
+ computed: {
+        appointmentsBDD () {
+         appointments= Appointment.all()
+      }
+  },
+       methods: {
+    getAppointments () {
+          Appointment.api().get('/appointment')
+          // Utente.api().get('/utente')
+      },
+      
+       },
+       mounted () {
+         this.getAppointments()
     }
-  }
 }
 </script>
