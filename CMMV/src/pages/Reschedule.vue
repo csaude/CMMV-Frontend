@@ -4,7 +4,7 @@
                 <div class="row q-mb-sm">
                 <div class="col 1 flex-break">
                     <q-input
-                        v-model="taskToSubmit.name"
+                        v-model="appointment.appointmentDate"
                         autofocus
                         ref="name"
                         class="col"
@@ -17,7 +17,7 @@
                 </div>
                 <div class="col 2">
                     <q-input
-                        v-model="taskToSubmit.name"
+                        v-model="appointment.time"
                         autofocus
                         ref="name"
                         class="col"
@@ -32,20 +32,20 @@
                 <div class="row q-mb-sm">
                 <div class="col 1 flex-break">
                     <q-input
-                        v-model="taskToSubmit.dueDate"
+                        v-model="appointment.appointmentDate"
                         label="Data"
                         outlined
                     >
                         <template v-slot:append>
                             <q-icon
-                                v-if="taskToSubmit.dueDate"
+                                v-if="appointment.appointmentDate"
                                 @click="clearDueDate"
                                 class="cursor-pointer"
                                 name="close"
                             />
                             <q-icon name="event" class="cursor-pointer">
                                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="taskToSubmit.dueDate">
+                                    <q-date v-model="appointment.appointmentDate">
                                         <div class="row items-center justify-end">
                                             <q-btn v-close-popup label="Close" color="primary" flat />
                                         </div>
@@ -59,21 +59,21 @@
                     class="col 1 flex-break"
                 >
                     <q-input
-                        v-model="taskToSubmit.dueTime"
+                        v-model="appointment.time"
                         label="Hora"
                         class="col"
                         outlined
                     >
                         <template v-slot:append>
                             <q-icon
-                                v-if="taskToSubmit.dueTime"
-                                @click="taskToSubmit.dueTime = ''"
+                                v-if="appointment.time"
+                                @click="appointment.time = ''"
                                 class="cursor-pointer"
                                 name="close"
                             />
                             <q-icon name="access_time" class="cursor-pointer">
                                 <q-popup-proxy transition-show="scale" transition-hide="scale">
-                                    <q-time v-model="taskToSubmit.dueTime"  :hour-options="hourOptionsTime1"
+                                    <q-time v-model="appointment.time"  :hour-options="hourOptionsTime1"
                          :minute-options="minuteOptionsTime1">
                                         <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="Close" color="primary" flat />
@@ -118,18 +118,13 @@ import { date } from 'quasar'
 export default {
     data () {
         return {
-            taskToSubmit: {
-                name: '',
-                dueDate: '',
-                dueTime: '',
-                completed: false
+            appointment: {
+                appointmentDate: '',
+                time: '',
+                hasHappened: ''
             },
              hourOptionsTime1: [8, 9, 10, 11, 12, 13, 14],
         minuteOptionsTime1: [0],
-      appointment: {
-        date: '',
-        time: ''
-      },
       optionsFn (newDate) {
         return newDate >= date.formatDate(Date.now(), 'YYYY/MM/DD')
       }
