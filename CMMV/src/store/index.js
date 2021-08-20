@@ -9,7 +9,6 @@ import Clinic from './models/clinic/Clinic'
 import Country from './models/country/Country'
 import District from './models/district/District'
 import InfoDocsOrImages from './models/dorcOrImages/InfoDocsOrImages'
-
 import Message from './models/messages/Message'
 import CommunityMobilizer from './models/mobilizer/CommunityMobilizer'
 import Province from './models/province/Province'
@@ -22,7 +21,7 @@ VuexORM.use(VuexORMAxios, {
     headers: {
       'X-Requested-With': 'XMLHttpRequest'
     },
-    baseURL: 'http://localhost:8080/api'
+    baseURL: 'http://localhost:8181/api'
   })
 
     const database = new VuexORM.Database()

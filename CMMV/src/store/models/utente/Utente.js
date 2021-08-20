@@ -25,12 +25,13 @@ export default class Utente extends Model {
       systemNumber: this.attr(''),
       haspartner: this.attr(''),
       status: this.attr(''),
+      selected: this.attr(''),
       mobilizer_id: this.attr(''),
       clinic_id: this.attr(''),
 
       // Relationships
-      address: this.hasOne(Address, 'utente_id'),
-      mobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id'),
+      address: this.hasMany(Address, 'utente_id'),
+      communityMobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id'),
       infoDocsImages: this.hasMany(InfoDocsOrImages, 'infoDocsImages_id'),
       messages: this.hasMany(Message, 'utente_id'),
       appointments: this.hasMany(Appointment, 'utente_id'),

@@ -5,13 +5,22 @@
           :key="key"
           :utente="utente"
           :id="key"
-          :name="name"></utente-list>
+          :name="name"
+          :value="value"
+           v-on:listenerChild="listenerChild">
+          </utente-list>
        </q-list>
 </template>
 
 <script>
 export default {
-    props: ['utentes', 'name'],
+    props: ['utentes', 'name', 'value'],
+    methods: {
+    listenerChild (childUtente) {
+      this.utente = childUtente
+      this.$emit('listenerChild', this.utente)
+    }
+    },
      components: {
     'utente-list': require('components/Shared/UtenteList.vue').default
   }

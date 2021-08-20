@@ -1,6 +1,6 @@
 <template>
       <q-item clickable v-ripple rounded>
-        <q-item-section> {{utente.firstname}}
+        <q-item-section> {{utente.firstNames}}
          <q-item-label caption v-if="sended"> {{utente.cellphone}}
           <div class="row q-pa-md flex-break q-py-md">
           <q-icon name="event" />  {{utente.appointments[0].appointmentDate}}    <br>
@@ -11,7 +11,7 @@
        <q-icon name="call" color="primary" v-if="associated"/>
     </q-item-section>
     <q-item-section rounded avatar v-if="pending">
-           <q-checkbox v-model="check1" />
+           <q-checkbox v-model="checked"  @click="checkUtente"/>
         </q-item-section>
       </q-item>
 </template>
@@ -20,23 +20,35 @@ export default {
     props: ['utente', 'name'],
     methods: {
     showPending () {
-    if (this.utente.status === 'pending') {
+    if (this.utente.status === 'PENDENTE') {
         this.pending = true
-      } else if (this.utente.status === 'associated') {
+      } else if (this.utente.status === 'ASSOCIADO') {
          this.associated = true
-      } else if (this.utente.status === 'sended') {
+      } else if (this.utente.status === 'ENVIADO') {
          this.sended = true
       }
+    },
+    checkUtente () {
+      this.$emit('listenerChild', this.utente)
     }
-     },
+    },
      data () {
        let pending, sended, associated
+       const checked = false
        return {
-         pending, sended, associated
+         pending, sended, associated, checked
     }
     },
     mounted () {
       this.showPending()
+    },
+    computed: {
+    setUtenteChecked () {
+      if (this.checked === true) {
+       return this.utente.selected
+      }
+      return null
     }
+  }
      }
 </script>
