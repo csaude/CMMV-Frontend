@@ -12,7 +12,7 @@
     <div class="column items-center bg-grey-4" style="height: 450px">
      <div class="col self-center">
        <img src="~src/assets/mobilizador.png">
-  <div class="text-h4 text-weight-light">{{communityMobilizerDb.firstNames + ' ' + communityMobilizerDb.lastNames}}
+  <div class="text-h4 text-weight-light">
   </div>
       </div>
       <div class="col-9" v-if="materialTab" style="width: 90%">
@@ -121,7 +121,7 @@
       <div class="q-pa-md">
     <div class="q-gutter-md absolute-center vertical-top">
       <q-skeleton type="circle" size="100px" />
-      <p>{{communityMobilizerDb.firstNames}} </p>
+      <p> 7 </p>
       <p>Mobilizador</p>
      <br>
       <q-list>
@@ -196,8 +196,8 @@ export default {
           InfoDocsOrImages.api().get('/infoDocsOrImages')
           Utente.api().get('/utente')
           CommunityMobilizer.api().get('/communityMobilizer')
-          Clinic.api().get('/clinic')
-          Address.api().get('/address')
+        //  Clinic.api().get('/clinic')
+        //  Address.api().get('/address')
       },
       getUtente () {
       },
