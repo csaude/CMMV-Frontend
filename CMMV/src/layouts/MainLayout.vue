@@ -3,7 +3,9 @@
     <q-header elevated>
     </q-header>
     <q-page-container>
+     <keep-alive>
       <router-view />
+      </keep-alive>
     </q-page-container>
   </q-layout>
 </template>

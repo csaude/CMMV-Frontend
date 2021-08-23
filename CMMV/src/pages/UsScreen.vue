@@ -1,6 +1,6 @@
- <template>
-   <q-page class="absolute full-width full-height column">
- <pageHeader :showPreviousButton="false" @previousScreen="$emit('previousScreen')"> Unidade Sanitaria</pageHeader>
+<template>
+  <q-page class=" absolute full-width full-height column" >
+  <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')"> Unidade Sanitaria</pageHeader>
   <div class="q-pa-md">
     <div class="q-gutter-y-md" style="max-width: 600px">
       <q-card>
@@ -20,8 +20,8 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="ConsultasDay">
-           <q-table title="Utentes" :rows="utentes" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
+          <q-tab-panel name="ConsultasDay" @click="fillUtenteOnAppointment()">
+           <q-table title="Utentes" :rows="utentes" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single">
     <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
@@ -199,7 +199,7 @@ const columns = [
     required: true,
     label: 'Nome do Utente',
     align: 'left',
-    field: row => row.utente.firstname,
+    field: row => row.utente,
     format: val => `${val}`,
     sortable: true
   },
