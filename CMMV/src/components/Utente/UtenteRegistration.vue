@@ -91,6 +91,7 @@ export default {
             documentNumber: '',
             systemNumber: '',
             haspartner: '',
+            status: 'PENDENTE',
             address: null
         }
     }

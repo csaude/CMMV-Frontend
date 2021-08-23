@@ -11,8 +11,8 @@
     </div>
     <div class="column items-center bg-grey-4" style="height: 450px">
      <div class="col self-center">
-       <img src="~src/assets/mobilizador.png">
-  <div class="text-h4 text-weight-light">
+      <q-skeleton type="circle" size="100px" />
+  <div class="text-h4 text-weight-light">{{communityMobilizerDb && communityMobilizerDb.firstNames + ' ' + communityMobilizerDb.lastNames}}
   </div>
       </div>
       <div class="col-9" v-if="materialTab" style="width: 90%">
@@ -21,20 +21,21 @@
      <informative-docs :docsOrImages="infoDB" />
       </div>
       </div>
-      <div class="col-9" v-if="utentesTab" style="width: 100%">
+      <div class="col-8" v-if="utentesTab" style="width: 100%">
    <q-btn-group style="width: 100%">
       <q-btn color="primary" glossy label="Pendentes" @click="handler" style="width: 100%"/>
       <q-btn color="primary" glossy label="Associados" @click="handler1"  style="width: 100%"/>
       <q-btn color="primary" glossy label="Enviados"  @click="handler2"  style="width: 100%"/>
     </q-btn-group>
-     <div class="q-pa-md" style="width: 100%">
+    <div class="q-pa-md" style="width: 100%">
+           <q-scroll-area style="height:200px; max-width: 100%;">
       <utentes-list :utentes="pendings" v-if="pending" v-on:listenerChild="listenerChild"/>
     <utentes-list :utentes="associateds" v-if="associated" :name="call"/>
   <utentes-list :utentes="sendeds" v-if="sended"/>
   <div class="float-right">
-  <br>
   <q-btn class="q-py-xs float-right" align="right"   padding="xs lg" unelevated rounded color="deep-orange" v-show="pending" label="Associar" @click="handlerAssociate" />
   </div>
+  </q-scroll-area>
      </div>
       </div>
        <div class="col-9" v-if="changePasswordTab" style="width: 90%">
@@ -121,7 +122,7 @@
       <div class="q-pa-md">
     <div class="q-gutter-md absolute-center vertical-top">
       <q-skeleton type="circle" size="100px" />
-      <p> 7 </p>
+     <p> {{communityMobilizerDb && communityMobilizerDb.firstNames +' '+ communityMobilizerDb.lastNames}}</p>
       <p>Mobilizador</p>
      <br>
       <q-list>
@@ -183,6 +184,16 @@ export default {
             cellNumber: '',
             cellNumber2: ''
        },
+       clinic: {
+        id: 1,
+        code: 'US002',
+        longitude: '2565',
+        mobilizers: [],
+        name: 'US CAMPOANE',
+        type: 'US',
+        appointments: [],
+        latitude: '1544'
+       },
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
@@ -192,12 +203,18 @@ export default {
     }
   },
   methods: {
-    getDocsInfo () {
+    async getDocsInfo () {
           InfoDocsOrImages.api().get('/infoDocsOrImages')
-          Utente.api().get('/utente')
+        await Utente.api().get('/utente/clinic/' + this.clinic.id).then(resp => {
+                console.log(resp.response.data)
+                console.log(Utente.all())
+               // this.$emit('handlerAssociate', resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
           CommunityMobilizer.api().get('/communityMobilizer')
         //  Clinic.api().get('/clinic')
-        //  Address.api().get('/address')
+       //   Address.api().get('/address')
       },
       getUtente () {
       },
@@ -249,8 +266,8 @@ export default {
             this.utentesTab = false
             this.changePasswordTab = false
             this.perfilTab = true
-            this.communityMobilizer = this.communityMobilizerDb
         }
+        this.communityMobilizer = this.communityMobilizerDb
          this.toggleLeftDrawer()
     },
     getUtentesByStatus () {
@@ -272,14 +289,16 @@ export default {
         // utente.communityMobilizer=communityMobilizerDb
         utente.status = 'ASSOCIADO'
         const utenteAddress = Address.query().where('utente_id', utente.id).get()
-        utente.address = utenteAddress[0]
+        utente.address = utenteAddress[1]
+        utente.clinic = this.clinicDb
       })
-      Utente.api().put('/utente/', this.selectedUtents[0].id).then(resp => {
-                        console.log(resp.response.data)
-                this.$emit('handlerEditMobilizer', resp.response.data)
+       this.communityMobilizer.clinic = this.clinicDb
+       this.communityMobilizer.utentes = this.selectedUtents
+      CommunityMobilizer.api().post('/communityMobilizer/', this.communityMobilizer).then(resp => {
+                console.log(resp.response.data)
+                this.$emit('handlerAssociate', resp.response.data)
             }).catch(error => {
-              // console.log(Utente.api().put('/utente/', this.selectedUtents))
-              console.log(error)
+                console.log(error)
             })
    },
    handlerEditMobilizer () {
@@ -298,13 +317,13 @@ export default {
         return InfoDocsOrImages.all()
       },
       utenteDB () {
-        return Utente.all()
+        return Utente.query().where('clinic_id', this.clinic.id).get()
       },
         communityMobilizerDb () {
-         return CommunityMobilizer.find(19)
+         return CommunityMobilizer.find(1)
       },
        clinicDb () {
-         return Clinic.find(7)
+         return Clinic.find(1)
       },
        AddressDb () {
          return Address.all()
@@ -324,3 +343,9 @@ export default {
     }
 }
 </script>
+<style>
+.scroll-area{
+display : flex;
+flex-grow: 1;
+}
+</style>

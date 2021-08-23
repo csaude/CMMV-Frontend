@@ -9,7 +9,7 @@ import { UtenteLogin } from '../userLogin/UserLoginHierarchy'
 
 export default class Utente extends Model {
   static entity = 'utentes'
-  static eagerLoad = ['address', 'mobilizer', 'clinic', 'appointments', 'infoDocsImages']
+ // static eagerLoad = ['address', 'mobilizer', 'clinic', 'appointments', 'infoDocsImages']
 
   static fields () {
     return {
@@ -24,13 +24,13 @@ export default class Utente extends Model {
       documentNumber: this.attr(''),
       systemNumber: this.attr(''),
       haspartner: this.attr(''),
-      status: this.attr(''),
+      status: this.attr('PENDENTE'),
       selected: this.attr(''),
       mobilizer_id: this.attr(''),
       clinic_id: this.attr(''),
 
       // Relationships
-      address: this.hasMany(Address, 'utente_id'),
+      address: this.hasOne(Address, 'utente_id'),
       communityMobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id'),
       infoDocsImages: this.hasMany(InfoDocsOrImages, 'infoDocsImages_id'),
       messages: this.hasMany(Message, 'utente_id'),
