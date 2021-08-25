@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-  <p></p>
     <div class="q-pa-md">
       <q-card class="my-card" style="max-width: 700px">
       <q-list bordered separator>
@@ -13,7 +12,6 @@
        </q-list>
       </q-card>
   </div>
-    <pre>{{docsOrImages}}</pre>
   </q-page>
 </template>
 <script>

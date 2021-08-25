@@ -5,16 +5,17 @@
         leave-active-class="animated slideOutLeft absolute-top"
         >
   <div key="seventhScreen">
-    <img-component
-        imgUrl="~src/assets/splash_img.png"
-        />
+    <img
+            src="~src/assets/07Escolha.png"
+            style="width: 100%; height: 300px"
+            >
     <div class="row q-pa-md">
-        <q-btn flat round color="deep-orange" icon="west" @click="$emit('previousScreen')"/>
+        <q-btn flat round color="primary" icon="west" @click="$emit('previousScreen')"/>
     </div>
     <page-content
         title="Faça uma escolha consciente"
-        content="A expressão Lorem ipsum em design gráfico e editoração é um texto padrão em latim utilizado
-        na produção gráfica para preencher os espaços de texto em publicações para testar e ajustar aspectos visuais"
+        content="A circuncisão médica é gratuita, segura e rápida; "
+        content1="Passe a palavra ao seu irmão/amigo/vizinho/parente,  com 15 à  49 anos de  idade."
         />
     <div class="absolute-bottom q-px-lg q-mb-lg">
         <div class="text-center q-mb-md">
@@ -31,7 +32,6 @@
 <script>
 export default {
     components: {
-        'img-component': require('components/MainScreen/MainScreenImg.vue').default,
         'page-content': require('components/MainScreen/Content.vue').default
     },
     methods: {}

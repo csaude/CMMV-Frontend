@@ -1,6 +1,7 @@
  <template>
   <q-input
     rounded
+    ref="ref"
     outlined
     :value="description"
     @input="(event) => $emit('update:description', event.target.value)"
@@ -8,6 +9,6 @@
 </template>
 <script>
 export default {
-    props: ['description']
+    props: ['description', 'ref']
 }
 </script>

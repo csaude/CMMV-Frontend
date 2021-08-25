@@ -90,12 +90,12 @@ export default {
     },
     computed: {
         logedUser () {
-            return UtenteLogin.find(21)
+            return UtenteLogin.find(34)
         }
     },
     methods: {
         doLogin () {
-          UtenteLogin.api().get('/userLogin/21').then(resp => {
+          UtenteLogin.api().get('/userLogin/34').then(resp => {
                 console.log(resp.response.data)
             }).catch(error => {
                 console.log(error)
@@ -107,7 +107,12 @@ export default {
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
                 if (this.logedUser != null) {
                     if (this.logedUser.type === 'UTENTELOGIN') {
-                        this.$emit('goHome', Utente.find(this.logedUser.utente_id))
+                        const utente = Utente.query()
+                            .with(['addresses', 'user', 'clinic', 'appointments.clinic', 'communityMobilizer'])
+                            .where('id', this.logedUser.utente_id)
+                            .get()
+                            console.log(utente)
+                        this.$emit('goHome', utente)
                     }
                 }
             }
