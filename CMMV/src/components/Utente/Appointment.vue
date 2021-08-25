@@ -76,9 +76,7 @@ export default {
             return date.formatDate(value, 'YYYY/MM/DD')
         }
     },
-    components: {
-        buttone: require('components/Shared/Button.vue').default,
-        pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
-    }
+   
+   
 }
 </script>
