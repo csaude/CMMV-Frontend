@@ -1,14 +1,15 @@
 <template>
-            <form @submit.prevent="submitForm">
-            <q-card-section class="q-pt-none">
+             <q-card class="q-pa-sm q-gutter-sm" style="width: 650px; max-width: 90vw ;">
+            <q-card-section>
+            <q-btn color="grey-7" round flat icon="close" justify-end v-close-popup />
                 <div class="row q-mb-sm">
                 <div class="col 1 flex-break">
                     <q-input
-                        v-model="appointment.appointmentDate"
                         autofocus
                         ref="name"
                         class="col"
                         label="Codigo"
+                        v-model="this.appointmentToSubmit.status"
                         outlined
                         disabled
                        readonly
@@ -17,7 +18,6 @@
                 </div>
                 <div class="col 2">
                     <q-input
-                        v-model="appointment.time"
                         autofocus
                         ref="name"
                         class="col"
@@ -32,20 +32,20 @@
                 <div class="row q-mb-sm">
                 <div class="col 1 flex-break">
                     <q-input
-                        v-model="appointment.appointmentDate"
+                       v-model="this.appointmentToSubmit.appointmentDate"
                         label="Data"
                         outlined
                     >
                         <template v-slot:append>
                             <q-icon
-                                v-if="appointment.appointmentDate"
+                                v-if="appointmentToSubmit.appointmentDate"
                                 @click="clearDueDate"
                                 class="cursor-pointer"
                                 name="close"
                             />
                             <q-icon name="event" class="cursor-pointer">
                                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="appointment.appointmentDate">
+                                    <q-date v-model="appointmentToSubmit.appointmentDate">
                                         <div class="row items-center justify-end">
                                             <q-btn v-close-popup label="Close" color="primary" flat />
                                         </div>
@@ -59,21 +59,21 @@
                     class="col 1 flex-break"
                 >
                     <q-input
-                        v-model="appointment.time"
+                        v-model="appointmentToSubmit.time"
                         label="Hora"
                         class="col"
                         outlined
                     >
                         <template v-slot:append>
                             <q-icon
-                                v-if="appointment.time"
-                                @click="appointment.time = ''"
+                                v-if="appointmentToSubmit.time"
+                                @click="appointmentToSubmit.time = ''"
                                 class="cursor-pointer"
                                 name="close"
                             />
                             <q-icon name="access_time" class="cursor-pointer">
                                 <q-popup-proxy transition-show="scale" transition-hide="scale">
-                                    <q-time v-model="appointment.time"  :hour-options="hourOptionsTime1"
+                                    <q-time v-model="appointmentToSubmit.time"  :hour-options="hourOptionsTime1"
                          :minute-options="minuteOptionsTime1">
                                         <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="Close" color="primary" flat />
@@ -102,6 +102,7 @@
                     type="cancel"
                     class="text-red"
                     dense
+                    v-close-popup
                 />
                 <q-btn
                     color="red"
@@ -109,43 +110,21 @@
                     type="submit"
                 />
             </q-card-actions>
-        </form>
+             </q-card>
 </template>
 <script>
-import { mapActions } from 'vuex'
-import { date } from 'quasar'
-
 export default {
-    data () {
-        return {
-            appointment: {
-                appointmentDate: '',
-                time: '',
-                hasHappened: ''
-            },
-             hourOptionsTime1: [8, 9, 10, 11, 12, 13, 14],
-        minuteOptionsTime1: [0],
-      optionsFn (newDate) {
-        return newDate >= date.formatDate(Date.now(), 'YYYY/MM/DD')
+    props: ['appointment'],
+     data () {
+    return {
+         appointmentToSubmit: {}
       }
-        }
+  },
+    computed: {
     },
-    methods: {
-        ...mapActions('tasks', ['addTask']),
-        submitForm () {
-            this.$refs.name.validate()
-            if (!this.$refs.name.hasError) {
-                this.submitTask()
-            }
-        },
-        submitTask () {
-            this.addTask(this.taskToSubmit)
-            this.$emit('close')
-        },
-        clearDueDate () {
-            this.taskToSubmit.dueDate = ''
-            this.taskToSubmit.dueTime = ''
-        }
+        mounted () {
+      this.appointmentToSubmit = Object.assign({}, this.appointment)
     }
+
 }
 </script>

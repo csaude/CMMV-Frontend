@@ -328,19 +328,19 @@ export default {
        AddressDb () {
          return Address.all()
       }
-  },
-  components: {
-       'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
-       'input-text-field': require('components/Shared/InputFieldText.vue').default,
-       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
-       },
+      },
         mounted () {
       this.getUtentesByStatus()
        this.getDocsInfo()
        this.getUtente()
         // this.communityMobilizer = this.communityMobilizerDb
-    }
+        },
+     components: {
+       'informative-docs': require('components/Home/MaterialEducativo.vue').default,
+       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
+       'input-text-field': require('components/Shared/InputFieldText.vue').default,
+       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+       }
 }
 </script>
 <style>
