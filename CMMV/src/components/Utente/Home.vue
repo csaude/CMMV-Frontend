@@ -8,6 +8,7 @@
                     style="width: 100%; height: 150px"
                     >
             </div>
+
             <div class="col-8 q-pl-lg q-mt-lg">
                 <div class="text-subtitle1 q-pb-sm text-grey-9">{{utente.firstNames + ' ' + utente.lastNames}}</div>
                 <div class="row items-center">
@@ -22,10 +23,11 @@
                 </div>
                 <div class="row items-center q-mt-sm">
                         <q-icon name="fmd_good" size="sm" color="grey-5" />
-                        <div class="q-px-sm text-grey-7">{{utente.address.city}}</div>
+                        <div class="q-px-sm text-grey-7">{{utente.addresses[0].city}}</div>
                 </div>
             </div>
         </div>
+
         <div class=" q-my-md row text-h6 text-primary text-weight-bold">Detalhes do Beneficiário</div>
         <div class="row">
             <div class="col q-ma-xs">
@@ -61,12 +63,13 @@
                 </q-card>
             </div>
         </div>
+
         <div class="row q-mt-lg rounded-borders bordered">
             <noMobilizer
-                v-if="mobilizerTab && utente.mobilizer === null"/>
+                v-if="mobilizerTab && utente.communityMobilizer === null"/>
             <mobilizer
-                :mobilizer="utente.mobilizer"
-                v-if="mobilizerTab && utente.mobilizer != null"/>
+                :mobilizer="utente.communityMobilizer"
+                v-if="mobilizerTab && utente.communityMobilizer != null"/>
             <consulta
                 :appointment="appointment"
                 @rescheduleAppointment="rescheduleAppointment"
@@ -80,6 +83,7 @@
                 :docsOrImages="docsOrImages" />
         </div>
     </div>
+
     <div class="row">
         <q-tabs
         v-model="tab"
@@ -98,8 +102,6 @@
 
 <script>
 import { ref } from 'vue'
-import Address from '../../store/models/address/Address'
-import Clinic from '../../store/models/clinic/Clinic'
 export default {
     props: ['utente'],
      data () {
@@ -110,26 +112,27 @@ export default {
             usTab: true,
             consultaTab: false,
             materialTab: false,
-            currUtente: null
+            currUtente: {}
         }
   },
   methods: {
-      changeTab (selectedTab) {
+        changeTab (selectedTab) {
         this.mobilizerTab = false
         this.usTab = false
         this.consultaTab = false
         this.materialTab = false
+
         if (selectedTab === 'us') {
-            if (this.utente.clinic === null) {
-                this.$emit('searchClinic', this.utente)
+            if (this.currUtente.clinic === null) {
+                this.$emit('searchClinic', this.currUtente)
             } else {
                 this.usTab = true
             }
         } else if (selectedTab === 'mobilizador') {
             this.mobilizerTab = true
         } else if (selectedTab === 'consulta') {
-            if (this.utente.appointments.length <= 0) {
-                this.$emit('makeAppointment', this.utente)
+            if (this.currUtente.appointments.length <= 0) {
+                this.$emit('makeAppointment', this.currUtente)
             } else {
                 this.consultaTab = true
             }
@@ -139,18 +142,9 @@ export default {
       },
       rescheduleAppointment (appointment) {
           this.$emit('rescheduleAppointment', appointment)
-      },
-      loadAppointment () {
-        this.currUtente = this.utente
-        if (this.currUtente.appointments != null && this.currUtente.appointments.length > 0) {
-            this.currUtente.appointments[this.currUtente.appointments.length - 1].clinic = Clinic.find(this.currUtente.appointments[this.currUtente.appointments.length - 1].clinic_id)
-        }
       }
   },
   computed: {
-      address () {
-          return Address.query().where('utente_id', this.utente.id).get()
-      },
       appointment () {
           if (this.currUtente.appointments != null && this.currUtente.appointments.length > 0) {
               return this.currUtente.appointments[this.currUtente.appointments.length - 1]
@@ -159,16 +153,17 @@ export default {
           }
       }
   },
-  mounted () {
-      this.loadAppointment()
-  },
+  mounted () {},
   components: {
       noMobilizer: require('components/Home/NoMobilizer.vue').default,
       mobilizer: require('components/Home/Mobilizer.vue').default,
       consulta: require('components/Home/Consulta.vue').default,
       us: require('components/Home/SanitaryUnit.vue').default,
       'informative-docs': require('components/Home/MaterialEducativo.vue').default
-  }
+  },
+    created () {
+        this.currUtente = Object.assign({}, this.utente)
+    }
 }
 </script>
 

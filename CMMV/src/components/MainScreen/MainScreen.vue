@@ -4,10 +4,10 @@
         enter-active-class="animated slideInRight"
         leave-active-class="animated slideOutLeft absolute-top"
         >
-    <div key="main" class=" absolute full-width full-height column">
+    <div key="main" class="bg-light-green-2 absolute full-width full-height column">
         <div class="row">
             <q-img
-                src="~src/assets/Main_Screen.png"
+                src="~src/assets/01MainScreen.png"
                 fit="cover"
                 />
         </div>

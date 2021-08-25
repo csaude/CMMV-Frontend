@@ -5,13 +5,13 @@
         leave-active-class="animated slideOutLeft absolute-top"
         >
   <div key="secondScreen">
-    <img-component
-        imgUrl="~src/assets/splash_img.png"
-        />
+        <img
+            src="~src/assets/02Definicao.png"
+            style="width: 100%; height: 300px"
+            >
         <page-content
             title="O que é a circuncisão"
-            content="A expressão Lorem ipsum em design gráfico e editoração é um texto padrão em latim utilizado
-            na produção gráfica para preencher os espaços de texto em publicações para testar e ajustar aspectos visuais"
+            content="Circuncisão masculina médica é uma pequena cirurgia que consiste na retirada da pele que cobre a cabeça do pénis (prepúcio)."
             />
        <navigation-buttons
             @nextScreen="$emit('nextScreen')"
@@ -24,7 +24,6 @@
 export default {
     components: {
         'navigation-buttons': require('components/MainScreen/NavigationButtons.vue').default,
-        'img-component': require('components/MainScreen/MainScreenImg.vue').default,
         'page-content': require('components/MainScreen/Content.vue').default
     }
 }
