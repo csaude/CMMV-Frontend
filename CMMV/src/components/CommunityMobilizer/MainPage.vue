@@ -155,11 +155,12 @@
 
 <script>
 import { ref } from 'vue'
-import InfoDocsOrImages from '../store/models/dorcOrImages/InfoDocsOrImages'
-import Utente from '../store/models/utente/Utente'
-import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
-import Clinic from '../store/models/clinic/Clinic'
-import Address from '../store/models/address/Address'
+import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
+import Utente from '../../store/models/utente/Utente'
+import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
+import Clinic from '../../store/models/clinic/Clinic'
+import Address from '../../store/models/address/Address'
+import Appointment from '../../store/models/appointment/Appointment'
 
 export default {
   data () {
@@ -203,11 +204,10 @@ export default {
     }
   },
   methods: {
-    async getDocsInfo () {
+     getDocsInfo () {
           InfoDocsOrImages.api().get('/infoDocsOrImages')
-        await Utente.api().get('/utente/clinic/' + this.clinic.id).then(resp => {
+       Utente.api().get('/utente/clinic/' + this.clinic.id).then(resp => {
                 console.log(resp.response.data)
-                console.log(Utente.all())
                // this.$emit('handlerAssociate', resp.response.data)
             }).catch(error => {
                 console.log(error)
@@ -300,6 +300,7 @@ export default {
             }).catch(error => {
                 console.log(error)
             })
+            this.getUtentesByStatus()
    },
    handlerEditMobilizer () {
      this.communityMobilizer.clinic = this.clinicDb
@@ -317,7 +318,7 @@ export default {
         return InfoDocsOrImages.all()
       },
       utenteDB () {
-        return Utente.query().where('clinic_id', this.clinic.id).get()
+        return Utente.query().with('appointments').where('clinic_id', this.clinic.id).get()
       },
         communityMobilizerDb () {
          return CommunityMobilizer.find(1)
@@ -327,20 +328,23 @@ export default {
       },
        AddressDb () {
          return Address.all()
+      },
+       AppointmentBD () {
+         return Appointment.all()
       }
-  },
-  components: {
-       'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
-       'input-text-field': require('components/Shared/InputFieldText.vue').default,
-       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
-       },
+      },
         mounted () {
       this.getUtentesByStatus()
        this.getDocsInfo()
        this.getUtente()
         // this.communityMobilizer = this.communityMobilizerDb
-    }
+        },
+     components: {
+       'informative-docs': require('components/Home/MaterialEducativo.vue').default,
+       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
+       'input-text-field': require('components/Shared/InputFieldText.vue').default,
+       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+       }
 }
 </script>
 <style>
