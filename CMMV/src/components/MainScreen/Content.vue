@@ -7,13 +7,19 @@
             <p>
                 {{content}}
             </p>
+            <p>
+                {{content1}}
+            </p>
+            <p>
+                {{content2}}
+            </p>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['title', 'content']
+    props: ['title', 'content', 'content1', 'content2']
 }
 </script>
 

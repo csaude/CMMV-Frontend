@@ -53,21 +53,18 @@
             <clinicSearch
                 v-if="showClinicSearchScreen"
                 @associarClinic="associarClinic"
+                @previousScreen="showClinicSearchScreen=false, showHomeScreen = true"
                 :utente="userParent"/>
             <appointment
                 v-if="showAppointmentScreen"
                 :utente="userParent"
                 :appointmentToUpdate="currAppointment"
+                @previousScreen="showAppointmentScreen=false, showHomeScreen = true"
                 @goHome="goHome"/>
         </div>
     </q-page>
 </template>
 <script>
-import Address from '../store/models/address/Address'
-import Appointment from '../store/models/appointment/Appointment'
-import Clinic from '../store/models/clinic/Clinic'
-import CommunityMobilizer from '../store/models/mobilizer/CommunityMobilizer'
-import Utente from '../store/models/utente/Utente'
 export default {
     data () {
         return {
@@ -85,7 +82,7 @@ export default {
             showHomeScreen: false,
             showClinicSearchScreen: false,
             showAppointmentScreen: false,
-            userParent: '',
+            userParent: {},
             currAppointment: '',
             componentParam: ''
         }
@@ -118,22 +115,14 @@ export default {
             this.showEightScreen = false
             this.showAddressScreen = true
         },
-        goHome (userParent) {
-            let utente = {}
-            Utente.api().get('/utente/' + userParent.id).then(resp => {
-                console.log(resp.response.data)
-            }).catch(error => {
-                console.log(error)
+        goHome (utente) {
+            // this.userParent = Object.assign({}, utente)
+            let ut
+            Object.keys(utente).forEach(function (key) {
+                ut = utente[key]
             })
-            utente = Utente.find(userParent.id)
-            utente.address = Address.query().where('utente_id', userParent.id).get()[0]
-            utente.mobilizer = CommunityMobilizer.find(userParent.mobilizer_id)
-            utente.appointments = Appointment.query().where('utente_id', userParent.id).get()
-            if (utente.clinic_id > 0 && utente.clinic === null) {
-                utente.clinic = Clinic.find(utente.clinic_id)
-            }
-            console.log(userParent)
-            this.userParent = utente
+            this.userParent = Object.assign({}, ut)
+            console.log(this.userParent)
             this.showSuccessRegistration = false
             this.showLoginScreen = false
             this.showAppointmentScreen = false

@@ -5,14 +5,23 @@
         leave-active-class="animated slideOutLeft absolute-top"
         >
   <div key="sixthScreen">
-    <img-component
-        imgUrl="~src/assets/splash_img.png"
-        />
-        <page-content
-            title="Cuidados Pós-operatórios"
-            content="A expressão Lorem ipsum em design gráfico e editoração é um texto padrão em latim utilizado
-            na produção gráfica para preencher os espaços de texto em publicações para testar e ajustar aspectos visuais"
-            />
+    <img
+            src="~src/assets/06Cuidados.png"
+            style="width: 100%; height: 300px"
+            >
+        <div class="q-ma-lg">
+            <div class="row q-mb-lg">
+                <q-item-label class="text-h5">Cuidados Pós-operatórios</q-item-label>
+            </div>
+            <div class="row">
+                <ul>
+                    <li>O penso deve ser removido na unidade sanitária 48 horas após a circuncisão;</li>
+                    <li>O circuncisado retoma no  7º dia após o procedimento para avaliação do clínico ;</li>
+                    <li>Remota a 6 semana para ultima avaliação e alta definitiva;</li>
+                    <li>Em caso de qualquer problema depois do procedimento volte de imediato a unidade sanitária  ou ligue para o contacto recebido na unidade de circuncisão. </li>
+                </ul>
+            </div>
+        </div>
        <navigation-buttons
             @nextScreen="$emit('nextScreen')"
             @previousScreen="$emit('previousScreen')" />
@@ -23,9 +32,7 @@
 <script>
 export default {
     components: {
-        'navigation-buttons': require('components/MainScreen/NavigationButtons.vue').default,
-        'img-component': require('components/MainScreen/MainScreenImg.vue').default,
-        'page-content': require('components/MainScreen/Content.vue').default
+        'navigation-buttons': require('components/MainScreen/NavigationButtons.vue').default
     }
 }
 </script>

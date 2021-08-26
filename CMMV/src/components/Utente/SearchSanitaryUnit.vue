@@ -1,8 +1,8 @@
 <template>
   <q-page>
-  <p>Associe-se a Uma Unidade Sanitaria  </p>
+  <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')" > Associe-se a Uma Unidade Sanitaria</pageHeader>
     <div class="q-pa-md absolute full-width full-height column">
- <div class="q-pa-md">
+ <div class="q-pa-sm q-mb-lg">
     <q-table title="" :rows="clinics" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
     <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -24,8 +24,7 @@ import { ref } from 'vue'
 import Clinic from '../../store/models/clinic/Clinic'
 import Utente from '../../store/models/utente/Utente'
 import District from '../../store/models/district/District'
-
-
+import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
 const columns = [
   {
     name: 'name',
@@ -65,7 +64,9 @@ export default {
         associar () {
             this.relatedUtente = this.utente
             this.relatedUtente.clinic = this.selected[0]
-            this.relatedUtente.address.district = District.find(this.relatedUtente.address.district_id)
+            this.relatedUtente.addresses[0].district = District.find(this.relatedUtente.addresses[0].district_id)
+            this.relatedUtente.user = UserLogin.find(this.relatedUtente.user.id)
+            console.log(this.relatedUtente)
             Utente.api().post('/utente', this.relatedUtente).then(resp => {
                 this.$emit('associarClinic', this.relatedUtente)
             }).catch(error => {
@@ -78,7 +79,8 @@ export default {
         this.getAllClinics(offset)
     },
     components: {
-        buttone: require('components/Shared/Button.vue').default
+        buttone: require('components/Shared/Button.vue').default,
+        pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
     }
 }
 </script>

@@ -2,6 +2,7 @@
   <q-input
     rounded
     outlined
+    ref="ref"
     type="tel"
     :value="phoneNumber"
     @input="$emit('update:phoneNumber' ,$event)"
