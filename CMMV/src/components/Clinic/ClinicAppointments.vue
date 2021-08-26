@@ -42,6 +42,7 @@
     </div>
 </template>
 <script>
+import { date } from 'quasar'
 import { ref } from 'vue'
 import Appointment from '../../store/models/appointment/Appointment'
 import Utente from '../../store/models/utente/Utente'
@@ -51,7 +52,7 @@ const columns = [
     required: true,
     label: 'Data',
     align: 'left',
-    field: row => row.appointmentDate,
+    field: row => date.formatDate(row.appointmentDate, 'DD/MM/YYYY'),
     format: val => `${val}`,
     sortable: true
   },
@@ -78,7 +79,7 @@ const columns = [
     required: true,
     label: 'Nome do Utente',
     align: 'left',
-    field: row => row.utente,
+    field: row => row.utente != null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ',
     format: val => `${val}`,
     sortable: true
   },
@@ -87,7 +88,7 @@ const columns = [
     required: true,
     label: 'Chegou a US?',
     align: 'left',
-  field: row => row.hasHappened,
+    field: row => row.hasHappened === false ? 'Nao' : 'Sim',
     format: val => `${val}`,
     sortable: true
   }
@@ -96,99 +97,13 @@ export default {
   data () {
     return {
          appointmentsBD: [],
+         appointmentsToday: [],
+         appointmentsOtherDays: [],
           columns,
-            utentes: [
-        {
-          id: 1,
-          firstname: 'Mario Kanda',
-          selected: false,
-          status: 'pending',
-          cellphone: '8446425456',
-           appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 2,
-          firstname: 'Muhammad Chona',
-          selected: false,
-           status: 'pending',
-           cellphone: '8446425456',
-            appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 3,
-          firstname: 'Chona',
-          selected: false,
-           status: 'pending',
-           cellphone: '8446425456',
-            appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 4,
-          firstname: 'Eurico',
-          selected: false,
-          status: 'associated',
-          cellphone: '8446425456',
-           appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 5,
-          firstname: 'Roxanne',
-          selected: false,
-           status: 'associated',
-           cellphone: '8446425456',
-            appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 6,
-          firstname: 'Sarah',
-          selected: false,
-           status: 'associated',
-           cellphone: '8446425456',
-            appointments: [
-                {
-                }
-                ]
-        },
-        {
-          id: 7,
-          firstname: 'Themos',
-          selected: false,
-          status: 'sended',
-          cellphone: '8446425456',
-           appointments: [
-                {
-                    appointmentDate: '25/06/2021',
-                    time: '13:03',
-                    hasHappened: false,
-                    confirmedByUS: false,
-                    orderNumber: 6,
-                    clinic: {
-                        code: 'BOANE',
-                        name: 'Boane'
-                    }
-                }
-                ]
-        }
-      ],
-      tab: ref('ConsultasDay')
-    }
+      tab: ref('mails')
+      }
   },
-  computed: {
+ computed: {
         appointmentsBDD () {
          return Appointment.all()
       },
@@ -204,18 +119,26 @@ export default {
        fillUtenteOnAppointment () {
          this.appointmentsBDD.forEach(appointment => {
           this.UtenteBD.forEach(utente => {
-            if (appointment.user_id === utente.id) {
-                 appointment.user = utente
-            }
+            if (appointment.utente_id === utente.id && appointment.appointmentDate !== '') {
+                 appointment.utente = utente
+             }
           })
+          if (this.formatDate(appointment.appointmentDate) === this.formatDate(Date.now())) {
+            this.appointmentsToday.push(appointment)
+          } if (this.formatDate(appointment.appointmentDate) !== this.formatDate(Date.now())) {
+            this.appointmentsOtherDays.push(appointment)
+          }
        })
-       }
+       },
+       formatDate (value) {
+            return date.formatDate(value, 'YYYY/MM/DD')
+        }
        },
        mounted () {
          this.getAppointments()
          this.fillUtenteOnAppointment()
     },
-  components: {
+    components: {
       UserMessage: require('components/Clinic/UserMessage.vue').default
   }
 }

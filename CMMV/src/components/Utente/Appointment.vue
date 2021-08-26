@@ -75,8 +75,6 @@ export default {
         formatDate (value) {
             return date.formatDate(value, 'YYYY/MM/DD')
         }
-    },
-   
-   
+    }
 }
 </script>

@@ -5,8 +5,9 @@
         </q-item-section>
 
         <q-item-section>
-            <q-item-label>30 Aug (9:00)</q-item-label>
-            <q-item-label caption>Consulta Marcada [Codigo: MGIF21-008]</q-item-label>
+            <q-item-label>&nbsp;{{appointment && this.formatDateShort(appointment.appointmentDate)}} &nbsp;- {{appointment && appointment.time}} </q-item-label>
+            <q-item-label caption><span >Utente: {{appointment.utente && appointment.utente.firstNames}}
+            <span >  &nbsp; &nbsp;Codigo&nbsp;:{{appointment.utente && appointment.utente.systemNumber}} </span> </span></q-item-label>
         </q-item-section>
 
         <q-item-section side>
@@ -16,8 +17,14 @@
 </template>
 
 <script>
+import { date } from 'quasar'
 export default {
-    props: ['appointment']
+    props: ['appointment'],
+    methods: {
+        formatDateShort (value) {
+            return date.formatDate(value, 'DD-MM')
+        }
+}
 }
 </script>
 
