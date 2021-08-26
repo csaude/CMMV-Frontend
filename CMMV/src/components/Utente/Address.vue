@@ -57,7 +57,6 @@
   </q-page>
 </template>
 <script>
-import District from '../../store/models/district/District'
 import Province from '../../store/models/province/Province'
 import Utente from '../../store/models/utente/Utente'
 export default {
@@ -77,10 +76,10 @@ export default {
     },
     computed: {
         provinces () {
-            return Province.all()
+            return Province.query().with('districts').get()
         },
         districts () {
-            return District.query().where('province_id', this.selectedProvince.id).get()
+            return this.selectedProvince.districts
         }
     },
     methods: {
