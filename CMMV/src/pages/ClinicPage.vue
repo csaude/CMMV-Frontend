@@ -42,34 +42,55 @@
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="dashboard">
-            <AppointmentSchedule />
+            <AppointmentSchedule :clinic="currClinic"/>
           </q-tab-panel>
 
           <q-tab-panel name="consulta">
-          <AppointmentList />
+            <AppointmentList :clinic="currClinic"/>
+          </q-tab-panel>
+
+          <q-tab-panel name="reports"></q-tab-panel>
+
+          <q-tab-panel name="mobilizer">
+            <MobilizerManagement :clinic="currClinic"/>
           </q-tab-panel>
 
 
         </q-tab-panels>
-
         <Footer></Footer>
     </q-page>
 </template>
 
 <script>
 import { ref } from 'vue'
+import Clinic from '../store/models/clinic/Clinic'
 export default {
     data () {
         return {
-            tab: ref('dashboard')
+            tab: ref('mobilizer')
         }
     },
     components: {
         Footer: require('components/Clinic/Footer.vue').default,
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
+        MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default
     },
-    methods: {}
+    methods: {
+        getCurrClinic () {
+            Clinic.api().get('/clinic/35').then(resp => {
+                console.log(resp.response.data)
+            })
+        }
+    },
+    computed: {
+        currClinic () {
+            return Clinic.find(35)
+        }
+    },
+    mounted () {
+        this.getCurrClinic()
+    }
 }
 </script>
 
