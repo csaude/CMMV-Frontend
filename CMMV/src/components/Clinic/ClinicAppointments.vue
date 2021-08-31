@@ -2,7 +2,7 @@
     <div>
         <UserMessage />
         <div class="row q-mx-xl q-mt-md ">
-            Hoje dia 30 Aug 2021
+            Hoje dia {{currDate}}
         </div>
         <div class="q-mx-xl">
             <q-toolbar >
@@ -109,6 +109,9 @@ export default {
       },
         UtenteBD () {
          return Utente.all()
+      },
+      currDate () {
+          return date.formatDate(Date.now(), 'DD-MM-YYYY')
       }
   },
        methods: {
