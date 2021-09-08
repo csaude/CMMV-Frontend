@@ -1,5 +1,6 @@
  <template>
   <q-input
+    dense
     type="number"
     rounded outlined
     ref="ref"

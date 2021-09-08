@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
    <div class="q-pa-md">
-       <div class="column bg-red-4" style="height: 450px">
+       <div class="column bg-primary">
       <q-toolbar>
         <div class="col-auto">
             <q-btn color="black-7" round flat icon="more_vert" @click="toggleLeftDrawer">
@@ -333,18 +333,18 @@ export default {
          return Appointment.all()
       }
       },
-        mounted () {
+    mounted () {
       this.getUtentesByStatus()
-       this.getDocsInfo()
-       this.getUtente()
+      this.getDocsInfo()
+      this.getUtente()
         // this.communityMobilizer = this.communityMobilizerDb
-        },
-     components: {
-       'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-       'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
-       'input-text-field': require('components/Shared/InputFieldText.vue').default,
-       'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
-       }
+    },
+    components: {
+      'informative-docs': require('components/Home/MaterialEducativo.vue').default,
+      'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
+      'input-text-field': require('components/Shared/InputFieldText.vue').default,
+      'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+      }
 }
 </script>
 <style>

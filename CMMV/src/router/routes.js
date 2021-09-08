@@ -10,6 +10,11 @@ const routes = [
     ]
   },
 
+  {
+    path: '/mobilizerHome',
+    component: () => import('components/CommunityMobilizer/MainPage')
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
