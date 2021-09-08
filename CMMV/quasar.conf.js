@@ -31,15 +31,15 @@ module.exports = configure(function (ctx) {
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
-      // 'ionicons-v4',
-      // 'mdi-v5',
-      // 'fontawesome-v5',
-      // 'eva-icons',
-      // 'themify',
-      // 'line-awesome',
+      'ionicons-v4',
+      'mdi-v5',
+      'fontawesome-v5',
+      'eva-icons',
+      'themify',
+      'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
+      // 'roboto-font', // optional, you are not bound to it
       'material-icons' // optional, you are not bound to it
     ],
 
@@ -74,13 +74,22 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
-      port: 8080,
+      port: 8880,
       open: true // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+        cordova: {
+          // Quasar handles app exit on mobile phone back button.
+          backButtonExit: true/false/'*'/['/login', '/home', '/my-page'],
+  
+          // On the other hand, the following completely
+          // disables Quasar's back button management.
+          backButton: true/false
+        }
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -95,13 +104,17 @@ module.exports = configure(function (ctx) {
       // Quasar plugins
       plugins: [
         'Notify',
-        'Dialog'
+        'Dialog',
+        'Loading',
+        'Meta',
+        'LocalStorage',
+        'SessionStorage'
       ]
     },
 
-    // animations: 'all', // --- includes all animations
+     animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: ['zoomIn', 'zoomOut', 'slideInRight', 'slideOutLeft'],
+    // animations: ['zoomIn', 'zoomOut', 'slideInRight', 'slideOutLeft'],
 
     // https://v2.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {

@@ -1,6 +1,6 @@
 <template>
-  <q-page class=" absolute full-width full-height column">
-  <div class="row q-px-md q-mt-lg">
+  <q-page >
+    <div class="row q-px-md q-mt-lg">
         <q-btn flat round color="primary" icon="chevron_left" @click="$emit('previousScreen')"/>
     </div>
     <div class="row q-pa-xl texte-center q-mt-lg column">
@@ -12,10 +12,8 @@
             v-model="tab"
             class="bg-grey-12 userTab col rounded-borders"
             dense
-            align="center"
-        >
+            align="center">
             <q-tab class="text-primary" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
-            <q-tab class="text-grey-7" name="utente" icon="person" label="Utente" />
         </q-tabs>
     </div>
     <form @submit.prevent="authUser">
@@ -73,12 +71,11 @@
 <script>
 import { ref } from 'vue'
 import { UtenteLogin } from '../../store/models/userLogin/UserLoginHierarchy'
-import Utente from '../../store/models/utente/Utente'
 export default {
     data () {
         return {
             isPwd: ref(true),
-            tab: ref('utente'),
+            tab: ref('mobilizer'),
             user: {
                 username: '',
                 password: ''
@@ -86,7 +83,7 @@ export default {
         }
     },
     mounted () {
-      this.doLogin()
+    //   this.doLogin()
     },
     computed: {
         logedUser () {
@@ -105,16 +102,17 @@ export default {
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
-                if (this.logedUser != null) {
-                    if (this.logedUser.type === 'UTENTELOGIN') {
-                        const utente = Utente.query()
-                            .with(['addresses', 'user', 'clinic', 'appointments.clinic', 'communityMobilizer'])
-                            .where('id', this.logedUser.utente_id)
-                            .get()
-                            console.log(utente)
-                        this.$emit('goHome', utente)
-                    }
-                }
+                // if (this.logedUser != null) {
+                    this.$router.push({ path: 'mobilizerHome' })
+                    // if (this.logedUser.type === 'UTENTELOGIN') {
+                    //     const utente = Utente.query()
+                    //         .with(['addresses', 'user', 'clinic', 'appointments.clinic', 'communityMobilizer'])
+                    //         .where('id', this.logedUser.utente_id)
+                    //         .get()
+                    //         console.log(utente)
+                    // this.$emit('goHome', utente)
+                    // }
+                // }
             }
         }
     }

@@ -1,5 +1,5 @@
  <template>
-  <q-select ref="ref" rounded outlined :value="description" :options="options" />
+  <q-select dense ref="ref" rounded outlined :value="description" :options="options" />
  </template>
  <script>
 export default {
