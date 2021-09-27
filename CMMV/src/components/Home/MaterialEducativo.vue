@@ -5,13 +5,21 @@
         leave-active-class="animated zoomOut absolute-top"
         >
      <q-card key="material" class="my-card full-width q-pt-lg">
-      <q-list bordered separator>
+      <q-list bordered separator v-if="this.infoDocsOrImages.length > 0">
        <view-docs-or-images
-          v-for="(docs, key) in docsI"
-          :key="key"
+          v-for="docs in this.infoDocsOrImages"
+          :key="docs.id"
           :file="docs"
-          :id="key"></view-docs-or-images>
+          :id="docs.id"/>
        </q-list>
+       <q-list v-else separator>
+                <q-item v-ripple>
+                  <q-item-section avatar>
+                    <q-icon color="red" name="mood_bad" />
+                  </q-item-section>
+                <q-item-section class="text-left">Sem resultados na lista</q-item-section>
+              </q-item>
+          </q-list>
       </q-card>
 </transition-group>
 </template>
@@ -22,25 +30,11 @@ export default {
     props: ['docsOrImages'],
     data () {
         return {
-            docsI: [
-        {
-          id: 1,
-          name: 'Folheto de Convite'
-        },
-        {
-          id: 2,
-          name: 'Folheto Para Criancas'
-        },
-        {
-          id: 2,
-          name: 'Seriado Activista'
-        }
-      ]
         }
     },
     computed: {
         infoDocsOrImages () {
-            return InfoDocsOrImages.all()
+            return InfoDocsOrImages.query().where('forMobilizer', true)
         }
     },
     mounted () {

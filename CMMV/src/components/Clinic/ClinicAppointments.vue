@@ -1,145 +1,145 @@
 <template>
     <div>
-        <UserMessage />
-        <div class="row q-mx-xl q-mt-md ">
-            Hoje dia 30 Aug 2021
+        <div class="row q-py-lg q-mt-md text-weight-bold text-subtitle1">
+            Hoje, {{this.formatDateDDMMMYYYY(new Date())}}
         </div>
-        <div class="q-mx-xl">
+        <div class="">
             <q-toolbar >
                 <q-tabs v-model="tab" shrink stretch>
                     <q-tab name="ConsultasDay" label="Consultas do dia" />
                     <q-tab name="ConsultasOther" label="Outras Consultas" />
+                    <q-tab name="ConsultasDone" label="Consultas Realizadas" />
                 </q-tabs>
             </q-toolbar>
             <q-separator class="q-mx-md"/>
 
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="ConsultasDay">
-                    <q-table :rows="utentes" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
-                        <template v-slot:top-right>
-                            <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-                            <template v-slot:append>
-                                <q-icon name="search" />
-                            </template>
-                                </q-input>
-                        </template>
-                    </q-table>
+                  <clinic-appointments-table  :rows="getAppointmentsToday" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
                 </q-tab-panel>
-
                 <q-tab-panel name="ConsultasOther">
-                    <q-table :rows="appointmentsBDD" :columns="columns" row-key="name" flat bordered :filter="filter"  selection="single" v-model:selected="selected">
-                        <template v-slot:top-right>
-                            <q-input outlined dense debounce="300" v-model="filter" placeholder="Search">
-                                <template v-slot:append>
-                                    <q-icon name="search" />
-                                </template>
-                            </q-input>
-                        </template>
-                    </q-table>
+                   <clinic-appointments-table  :rows="appointmentsBDD" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
+                </q-tab-panel>
+                <q-tab-panel name="ConsultasDone">
+                  <clinic-appointments-table  :rows="appointmentsDone" :columns="columns2" :updateClinicAppoitment="updateClinicAppoitment"/>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
     </div>
 </template>
 <script>
-import { date } from 'quasar'
+import { date, useQuasar } from 'quasar'
 import { ref } from 'vue'
 import Appointment from '../../store/models/appointment/Appointment'
-import Utente from '../../store/models/utente/Utente'
+
 const columns = [
-  {
-    name: 'appointmentDate',
-    required: true,
-    label: 'Data',
-    align: 'left',
-    field: row => date.formatDate(row.appointmentDate, 'DD/MM/YYYY'),
-    format: val => `${val}`,
-    sortable: true
-  },
-   {
-    name: 'time',
-    required: true,
-    label: 'Hora',
-    align: 'left',
-    field: row => row.time,
-    format: val => `${val}`,
-    sortable: true
-  },
-   {
-    name: 'code',
-    required: true,
-    label: 'Codigo',
-    align: 'left',
-    field: row => row.utente,
-    format: val => `${val}`,
-    sortable: true
-  },
-   {
-    name: 'nameUser',
-    required: true,
-    label: 'Nome do Utente',
-    align: 'left',
-    field: row => row.utente != null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ',
-    format: val => `${val}`,
-    sortable: true
-  },
-   {
-    name: 'arrivedUs',
-    required: true,
-    label: 'Chegou a US?',
-    align: 'left',
-    field: row => row.hasHappened === false ? 'Nao' : 'Sim',
-    format: val => `${val}`,
-    sortable: true
-  }
+  { name: 'appointmentDate', required: true, label: 'Data', align: 'left', field: row => row.appointmentDate, format: val => `${val}`, sortable: true },
+  { name: 'time', required: true, label: 'Hora', align: 'left', field: row => row.time, format: val => `${val}`, sortable: true },
+  { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
+  { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
+  { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
+]
+const columns2 = [
+  { name: 'visitDate', required: true, label: 'Data da Visita', align: 'left', field: row => row.visitDate, format: val => `${val}`, sortable: true },
+  { name: 'time', required: true, label: 'Hora', align: 'left', field: row => row.time, format: val => `${val}`, sortable: true },
+  { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
+  { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
+  { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
 ]
 export default {
   data () {
+    const $q = useQuasar()
+
     return {
-         appointmentsBD: [],
-         appointmentsToday: [],
-         appointmentsOtherDays: [],
-          columns,
-      tab: ref('mails')
-      }
+        columns,
+        columns2,
+        $q,
+        tab: ref('ConsultasDay')
+    }
   },
  computed: {
-        appointmentsBDD () {
-         return Appointment.all()
+      getAppointmentsToday () {
+          return Appointment.query()
+                           .with('utente')
+                           .with('clinic')
+                           .with('utente.address')
+                           .with('utente.clinic')
+                           .where((appointment) => {
+                                  return appointment.status === 'CONFIRMADO' &&
+                                  appointment.hasHappened === false &&
+                                  appointment.appointmentDate !== '' &&
+                                  appointment.appointmentDate !== null &&
+                                  appointment.appointmentDate !== undefined &&
+                                  ((new Date(appointment.appointmentDate)).getDate() === new Date().getDate()) &&
+                                  appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                                  })
+                          .orderBy('appointmentDate', 'desc')
+                          .get()
       },
-        UtenteBD () {
-         return Utente.all()
+      appointmentsBDD () {
+          return Appointment.query()
+                           .with('utente')
+                           .with('clinic')
+                           .with('utente.address')
+                           .with('utente.clinic')
+                           .where((appointment) => {
+                                  return appointment.status === 'CONFIRMADO' &&
+                                  appointment.hasHappened === false &&
+                                  (appointment.visitDate === null || appointment.visitDate === '' || appointment.visitDate === undefined) &&
+                                  appointment.appointmentDate !== '' &&
+                                  appointment.appointmentDate !== null &&
+                                  appointment.appointmentDate !== undefined &&
+                                  ((new Date(appointment.appointmentDate)).getDate() < new Date().getDate()) &&
+                                  appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                                  })
+                          .orderBy('appointmentDate', 'desc')
+                          .get()
+      },
+      appointmentsDone () {
+          return Appointment.query()
+                           .with('utente')
+                           .with('clinic')
+                           .with('utente.address')
+                           .with('utente.clinic')
+                           .where((appointment) => {
+                                  return appointment.status === 'CONFIRMADO' &&
+                                  appointment.visitDate !== '' &&
+                                  appointment.visitDate !== null &&
+                                  appointment.visitDate !== undefined &&
+                                  appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                                  })
+                          .orderBy('appointmentDate', 'desc')
+                          .get()
       }
   },
-       methods: {
+  methods: {
     getAppointments () {
           Appointment.api().get('/appointment')
-          // Utente.api().get('/utente')
        },
-       fillUtenteOnAppointment () {
-         this.appointmentsBDD.forEach(appointment => {
-          this.UtenteBD.forEach(utente => {
-            if (appointment.utente_id === utente.id && appointment.appointmentDate !== '') {
-                 appointment.utente = utente
-             }
+    updateClinicAppoitment (appointment) {
+      Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
+        console.log(resp.response.data)
+        this.$q.notify({
+              message: 'Consulta do paciente foi actualizada.',
+              color: 'teal'
           })
-          if (this.formatDate(appointment.appointmentDate) === this.formatDate(Date.now())) {
-            this.appointmentsToday.push(appointment)
-          } if (this.formatDate(appointment.appointmentDate) !== this.formatDate(Date.now())) {
-            this.appointmentsOtherDays.push(appointment)
-          }
-       })
-       },
-       formatDate (value) {
-            return date.formatDate(value, 'YYYY/MM/DD')
-        }
-       },
-       mounted () {
-         this.getAppointments()
-         this.fillUtenteOnAppointment()
+      }).catch(error => {
+        console.log('Erro no code ' + error)
+        })
+        Appointment.update(appointment)
     },
-    components: {
-      UserMessage: require('components/Clinic/UserMessage.vue').default
+    formatDate (value) {
+        return date.formatDate(value, 'YYYY/MM/DD')
+    },
+    formatDateDDMMMYYYY (value) {
+        return date.formatDate(value, 'DD MMM YYYY')
+    }
+  },
+  mounted () {
+    this.getAppointments()
+  },
+  components: {
+    'clinic-appointments-table': require('components/Clinic/ClinicAppointmentsTable.vue').default
   }
 }
 </script>

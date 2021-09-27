@@ -23,7 +23,7 @@
         <q-card flat bordered class="fixed bottom-instruction-right text-white" style="background: radial-gradient(circle, #939597 30%, #6b6661 100%)">
           <q-card-section>
             <div class="text-h6">Instruções de Uso</div>
-            <div class="text-h7">Botão para navegar para tela anterior</div>
+            <div class="text-h7">Botão para navegar para próxima tela</div>
           </q-card-section>
           <q-card-section class="row items-center q-gutter-sm">
             <q-btn v-close-popup label="OK" color="primary" />
@@ -48,6 +48,19 @@ export default {
     return {
       dialog: ref(true),
       dialog2: ref(false)
+    }
+  },
+  mounted () {
+    this.checkInstruction()
+  },
+  methods: {
+    checkInstruction () {
+      if (localStorage.getItem('SecondInstruction')) {
+        this.dialog = false
+        localStorage.setItem('SecondInstruction', false)
+      } else {
+        localStorage.setItem('SecondInstruction', true)
+      }
     }
   }
 }
@@ -109,18 +122,18 @@ export default {
 }
 
 .bottom-instruction-left {
-  top: 80%;
-  left: 0%;
-  border-radius: 10%;
+  top: 85%;
+  left: 7%;
+  border-bottom-left-radius: 2em;
   transition: transform 0.2s, opacity 0.2s;
   transform: translate(5%, -40%);
 }
 .bottom-instruction-right {
-  top: 80%;
-  left: 0%;
-  border-radius: 10%;
+  top: 85%;
+  left: 7%;
+   border-bottom-right-radius: 2em;
   transition: transform 0.2s, opacity 0.2s;
-  transform: translate(90%, -40%);
+  transform: translate(70%, -40%);
 }
 @keyframes pulsing {
   0% {
