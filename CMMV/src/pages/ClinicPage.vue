@@ -64,7 +64,6 @@
 <script>
 import { ref } from 'vue'
 import Clinic from 'src/store/models/clinic/Clinic'
-
 export default {
     data () {
         return {
@@ -75,12 +74,17 @@ export default {
         // Footer: require('components/Clinic/Footer.vue').default,
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default,
+       // MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default
     },
     methods: {
         displayClinic () {
             return Clinic.query().find(localStorage.getItem('id_clinicUser'))
         }
+    },
+    computed: {
+    },
+    mounted () {
     }
 }
 </script>

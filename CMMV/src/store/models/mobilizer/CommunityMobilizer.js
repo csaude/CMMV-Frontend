@@ -7,6 +7,14 @@ import Clinic from '../clinic/Clinic'
 export default class CommunityMobilizer extends Model {
   static entity = 'communityMobilizers'
 
+  get contacts () {
+    return `${this.cellNumber} ${this.cellNumber2}`
+  }
+
+  get fullName () {
+    return `${this.firstNames} ${this.lastNames}`
+  }
+
   static fields () {
     return {
       id: this.attr(null),
