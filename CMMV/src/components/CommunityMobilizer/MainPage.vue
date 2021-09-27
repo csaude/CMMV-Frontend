@@ -1,350 +1,233 @@
 <template>
   <q-layout view="hHh lpR fFf">
-   <div class="q-pa-md">
-       <div class="column bg-primary">
-      <q-toolbar>
-        <div class="col-auto">
-            <q-btn color="black-7" round flat icon="more_vert" @click="toggleLeftDrawer">
-            </q-btn>
-          </div>
-          </q-toolbar>
-    </div>
-    <div class="column items-center bg-grey-4" style="height: 450px">
-     <div class="col self-center">
-      <q-skeleton type="circle" size="100px" />
-  <div class="text-h4 text-weight-light">{{communityMobilizerDb && communityMobilizerDb.firstNames + ' ' + communityMobilizerDb.lastNames}}
-  </div>
-      </div>
-      <div class="col-9" v-if="materialTab" style="width: 90%">
-    <q-btn color="white" text-color="black"  label="Material Educativo" class="col" style="width: 100%"/>
-      <div class="q-mt-lg rounded-borders">
-     <informative-docs :docsOrImages="infoDB" />
-      </div>
-      </div>
-      <div class="col-8" v-if="utentesTab" style="width: 100%">
-   <q-btn-group style="width: 100%">
-      <q-btn color="primary" glossy label="Pendentes" @click="handler" style="width: 100%"/>
-      <q-btn color="primary" glossy label="Associados" @click="handler1"  style="width: 100%"/>
-      <q-btn color="primary" glossy label="Enviados"  @click="handler2"  style="width: 100%"/>
-    </q-btn-group>
-    <div class="q-pa-md" style="width: 100%">
-           <q-scroll-area style="height:200px; max-width: 100%;">
-      <utentes-list :utentes="pendings" v-if="pending" v-on:listenerChild="listenerChild"/>
-    <utentes-list :utentes="associateds" v-if="associated" :name="call"/>
-  <utentes-list :utentes="sendeds" v-if="sended"/>
-  <div class="float-right">
-  <q-btn class="q-py-xs float-right" align="right"   padding="xs lg" unelevated rounded color="deep-orange" v-show="pending" label="Associar" @click="handlerAssociate" />
-  </div>
-  </q-scroll-area>
-     </div>
-      </div>
-       <div class="col-9" v-if="changePasswordTab" style="width: 90%">
-           <q-input
-                    v-model="communityMobilizer"
-                    rounded
-                    outlined
-                    class="col"
-                    label="Senha Actual"
-                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
-                    ref="password"
-                    :type="isPwd ? 'password' : 'text'">
-                    <template v-slot:append>
-                        <q-icon
-                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                            class="cursor-pointer"
-                            @click="isPwd = !isPwd"
-                            color="primary"
-                        />
-                    </template>
-                </q-input>
-                <q-input
-                    v-model="communityMobilizer"
-                    rounded
-                    outlined
-                    class="col"
-                    label="Nova Senha"
-                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
-                    ref="password"
-                    :type="isPwd ? 'password' : 'text'">
-                    <template v-slot:append>
-                        <q-icon
-                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                            class="cursor-pointer"
-                            @click="isPwd = !isPwd"
-                            color="primary"
-                        />
-                    </template>
-                </q-input>
-                <q-input
-                    v-model="communityMobilizer"
-                    rounded
-                    outlined
-                    class="col"
-                    label="Repeticao da Nova Senha"
-                    :rules="[ val => val.length >= 4 || 'A senha deve ter um minimo de 4 caracteres']"
-                    ref="password"
-                    :type="isPwd ? 'password' : 'text'">
-                    <template v-slot:append>
-                        <q-icon
-                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                            class="cursor-pointer"
-                            @click="isPwd = !isPwd"
-                            color="primary"
-                        />
-                    </template>
-                </q-input>
-                <q-btn  text-color="black"  label="Alterar" class="float-right" style="width: 50%" align="center" unelevated rounded color="deep-orange"/>
-      </div>
-
-        <div class="col-10" v-if="perfilTab" style="width: 90%">
-           <input-text-field
-                class="col"
-                v-model="communityMobilizer.firstNames"
-                label="Nome" />
-                <input-text-field
-                class="col"
-                v-model="communityMobilizer.lastNames"
-                label="Apelido" />
-                  <input-number-phone-field
-                class="col"
-                v-model="communityMobilizer.cellNumber"
-                label="Numero de Telefone" />
-                 <input-number-phone-field
-                class="col"
-                v-model="communityMobilizer.cellNumber2"
-                label="Numero de Telemovel com Whatsapp" />
-                <q-btn  text-color="black"  label="Editar" class="float-right" style="width: 50%" align="center" unelevated rounded color="deep-orange" @click="handlerEditMobilizer" />
-      </div>
-          </div>
+  <div class="q-pa-sm">
+  <utente-registration
+                v-if="this.showUtenteRegistrationScreen" :mobilizer="mobilizer"
+                v-model:showUtenteRegistrationScreenProp="showUtenteRegistrationScreen"/>
    </div>
-    <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile" bordered>
-     <q-btn color="grey-7" round flat icon="close"  />
-      <div class="q-pa-md">
-    <div class="q-gutter-md absolute-center vertical-top">
-      <q-skeleton type="circle" size="100px" />
-     <p> {{communityMobilizerDb && communityMobilizerDb.firstNames +' '+ communityMobilizerDb.lastNames}}</p>
-      <p>Mobilizador</p>
-     <br>
-      <q-list>
-      <q-item clickable v-ripple  v-for="op in opcoes" :key="op" @click="getTab(op)">
-        <q-item-section  > {{op}}</q-item-section>
-      </q-item>
-       </q-list>
-     </div>
-  </div>
-    </q-drawer>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-    <div class="row">
-        <q-tabs
-        v-model="tab"
-        narrow-indicator
-        dense
-        align="justify"
-        class="text-grey-7 full-width absolute-bottom q-mb-xs"
-      >
-        <q-tab :ripple="false" name="home" icon="home" label="Inicio" />
-        <q-tab :ripple="false" name="message" icon="message" label="Mensagens" />
-        <q-tab :ripple="false" name="settings" icon="settings" label="Definições" />
-      </q-tabs>
+   <div v-if="!this.showUtenteRegistrationScreen">
+    <q-card :square="false" class="q-mt-sm qmr-sr">
+    <div class="column bg-primary" style="height: 190px">
+        <q-toolbar>
+          <div class="col-auto q-py-sm">
+              <q-btn color="black-7" round flat icon="more_vert" @click="leftDrawerOpen = !leftDrawerOpen">
+              </q-btn>
+          </div>
+        </q-toolbar>
     </div>
+      <q-drawer v-model="leftDrawerOpen" show-if-above bordered content-class="text-gray-8" >
+      <q-card class="bg-primary" v-if="this.mobilizer !== null">
+        <q-card-section class="flex flex-center q-ma-lg" avatar>
+          <q-avatar class="q-py-lg" size="90px">
+            <img src="../../assets/User-Profile.png">
+          </q-avatar>
+        </q-card-section>
+          <div class="text-h6 text-white text-weight-bolder text-center">{{this.mobilizer.firstNames}} {{this.mobilizer.lastNames}}</div>
+          <div class="text-subtitle2 text-white text-center">{{ this.mobilizer.cellNumber }}</div>
+      </q-card>
 
+      <q-list padding class="q-my-lg">
+      <q-item to="/" active-class="q-item-no-link-highlighting">
+        <q-item-section avatar>
+          <q-icon name="manage_accounts" class="round"/>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Perfil</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item to="/" active-class="q-item-no-link-highlighting">
+        <q-item-section avatar>
+          <q-icon name="vpn_key" class="round"/>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Alterar Senha</q-item-label>
+        </q-item-section>
+      </q-item>
+        <q-separator/>
+            <q-item active-class="absolute q-item-no-link-highlighting" clickable v-close-popup @click="onItemClick" to="/">
+            <q-item-section avatar>
+                <q-icon color="red" name="power_settings_new"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Sair</q-item-label>
+              </q-item-section>
+            </q-item>
+        </q-list>
+    </q-drawer>
+    <q-card-section>
+      <div class="col-auto text-grey text-caption q-pt-md row no-wrap items-center justify-center">
+              <q-btn
+                  round
+                  size="50px"
+                  class="absolute bg-white"
+                  style="middle: 12px; transform: translateY(-30%);">
+                  <q-avatar size="150px">
+                    <q-img src="../../assets/User-Profile.png"/>
+                  </q-avatar>
+              </q-btn>
+      </div>
+    </q-card-section>
+     <q-card-section class="q-pt-xl">
+        <div class="text-h5 text-center" v-if="this.mobilizer !== null">
+         {{this.mobilizer.firstNames}} {{this.mobilizer.lastNames}}
+        </div>
+        <div class="text-h6 text-grey text-center">
+          Mobilizador Comunitário
+        </div>
+      </q-card-section>
+    </q-card>
+    <q-space/>
+    <div class="q-pt-sm" style="row">
+      <q-list>
+      <q-expansion-item
+          group="MobilizerGroup"
+          popup default-opened
+          icon="groups"
+          header-class="text-primary"
+          label="Utentes">
+        <q-separator />
+       <q-tabs
+        v-model="tab"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
+          class="text-grey q-mb-lg">
+        <!--q-tab name="pendentes" label="Pendentes" /-->
+        <q-tab name="associados" label="Associados" />
+        <q-tab name="enviados" label="Enviados" />
+      </q-tabs>
+      <div class="q-gutter-y-sm">
+        <q-tab-panels
+          v-model="tab"
+          animated
+          transition-prev="slide-right"
+          transition-next="slide-left"
+          class="text-dark text-left"
+          style="border-radius: 5%">
+          <!--q-tab-panel name="pendentes">
+            <div class="text-h6">Pendentes</div>
+            <utentes-view-list :utentes="utentesPendente"/>
+          </q-tab-panel-->
+          <q-tab-panel name="associados">
+            <utentes-view-list v-if="this.mobilizer" :utentes="utentesAssociados" v-model:showUtenteULinkScreenProp="showUtenteULinkScreen" />
+              <div class="row justify-center">
+                <q-btn size="xl" fab icon="add" @click="showUtenteRegistrationScreen = true" color="primary" />
+              </div>
+          </q-tab-panel>
+          <q-tab-panel name="enviados">
+           <utentes-view-list :utentes="utentesEnviados"/>
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
+      </q-expansion-item>
+      <q-expansion-item
+            group="MobilizerGroup"
+            popup icon="snippet_folder"
+            header-class="text-primary"
+            label="Material Educativo">
+        <q-separator />
+        <view-docs/>
+      </q-expansion-item>
+    </q-list>
+    </div>
+   </div>
   </q-layout>
 </template>
-
 <script>
 import { ref } from 'vue'
-import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
-import Utente from '../../store/models/utente/Utente'
-import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
-import Clinic from '../../store/models/clinic/Clinic'
-import Address from '../../store/models/address/Address'
-import Appointment from '../../store/models/appointment/Appointment'
-
+import Utente from 'src/store/models/utente/Utente'
+import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
+import Clinic from 'src/store/models/clinic/Clinic'
 export default {
-  data () {
-    const leftDrawerOpen = ref(false)
+  setup () {
     return {
-         pending: false,
-          associated: false,
-          sended: false,
-          materialTab: false,
-          utentesTab: false,
-          changePasswordTab: false,
-          perfilTab: false,
-          pendings: [],
-          associateds: [],
-          sendeds: [],
-           selectedUtents: [],
-      leftDrawerOpen,
-       communityMobilizer: {
-            id: '',
-            firstNames: '',
-            lastNames: '',
-            cellNumber: '',
-            cellNumber2: ''
-       },
-       clinic: {
-        id: 1,
-        code: 'US002',
-        longitude: '2565',
-        mobilizers: [],
-        name: 'US CAMPOANE',
-        type: 'US',
-        appointments: [],
-        latitude: '1544'
-       },
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
+       tab: ref('associados'),
+       leftDrawerOpen: ref(false),
+       showUtenteRegistrationScreen: ref(false),
+       showUtenteULinkScreen: ref(false),
+       clientList: ref(false)
+      }
+  },
+  computed: {
+     mobilizer: {
+      get () {
+        return CommunityMobilizer.query().with('utentes').find(this.$route.params.id)
       },
-       opcoes: [
-        'Material Educativo', 'Utentes', 'Perfil', 'Alterar Senha'
-      ]
+      set (mobilizer) {
+        this.$emit('update:jurisdicao', '')
+        CommunityMobilizer.update(mobilizer)
+      }
+    },
+    getAllNewClinics () {
+      return Clinic.query().get()
+    },
+    utentesPendente () {
+      return Utente.query()
+                   .with('clinic')
+                   .with('communityMobilizer')
+                   .with('appointments.clinic')
+                   .where('status', 'PENDENTE')
+                   .get()
+    },
+     utentesAssociados () {
+      return Utente.query()
+                   .with('clinic')
+                   .with('communityMobilizer')
+                   .with('appointments.clinic')
+                   .where('status', 'ASSOCIADO')
+                   .get()
+    },
+     utentesEnviados () {
+      return Utente.query()
+                   .with('clinic')
+                   .with('communityMobilizer')
+                   .with('appointments.clinic')
+                   .where('status', 'ENVIADO')
+                   .get()
     }
   },
   methods: {
-     getDocsInfo () {
-          InfoDocsOrImages.api().get('/infoDocsOrImages')
-       Utente.api().get('/utente/clinic/' + this.clinic.id).then(resp => {
-                console.log(resp.response.data)
-               // this.$emit('handlerAssociate', resp.response.data)
+     async getAllUtente (offset) {
+      await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
+             offset = offset + 100
+            // if (resp.response.data.length > 0) {
+            //   setTimeout(this.getAllUtente(offset), 2)
+            // }
+        }).catch(error => {
+            console.log(error)
+        })
+     },
+     async getAllClinics (offset) {
+        await Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+            offset = offset + 100
+            // if (resp.response.data.length > 0) {
+            //   setTimeout(this.getAllClinics(offset), 2)
+            // }
             }).catch(error => {
                 console.log(error)
             })
-          CommunityMobilizer.api().get('/communityMobilizer')
-        //  Clinic.api().get('/clinic')
-       //   Address.api().get('/address')
-      },
-      getUtente () {
-      },
-    handler () {
-         this.pending = true
-         this.sended = false
-         this.associated = false
     },
-    handler1 () {
-        this.pending = false
-        this.associated = true
-        this.sended = false
-    },
-    handler2 () {
-         this.pending = false
-         this.sended = true
-         this.associated = false
-    },
-    listenerChild (reply) {
-     if (this.selectedUtents.includes(reply)) {
-        this.selectedUtents.pop(reply)
-      } else {
-     this.selectedUtents.push(reply)
-           }
-      },
-    getTab (tab) {
-        if (tab === 'Material Educativo') {
-            this.materialTab = true
-            this.utentesTab = false
-            this.changePasswordTab = false
-            this.perfilTab = false
-           // this.communityMobilizer = this.communityMobilizerDb
-        }
-         if (tab === 'Utentes') {
-            this.materialTab = false
-            this.utentesTab = true
-            this.changePasswordTab = false
-             this.perfilTab = false
-            this.getUtentesByStatus(this.utenteDB)
-        }
-         if (tab === 'Alterar Senha') {
-            this.materialTab = false
-            this.utentesTab = false
-            this.changePasswordTab = true
-             this.perfilTab = false
-        }
-          if (tab === 'Perfil') {
-            this.materialTab = false
-            this.utentesTab = false
-            this.changePasswordTab = false
-            this.perfilTab = true
-        }
-        this.communityMobilizer = this.communityMobilizerDb
-         this.toggleLeftDrawer()
-    },
-    getUtentesByStatus () {
-      this.pendings = []
-      this.associateds = []
-       this.sendeds = []
-      this.utenteDB.forEach(utente => {
-        if (utente.status === 'PENDENTE') {
-          return this.pendings.push(utente)
-        } else if (utente.status === 'ASSOCIADO') {
-          return this.associateds.push(utente)
-        } else if (utente.status === 'ENVIADO') {
-          return this.sendeds.push(utente)
-        }
-      })
-    },
-   handlerAssociate () {
-     this.selectedUtents.forEach(utente => {
-        // utente.communityMobilizer=communityMobilizerDb
-        utente.status = 'ASSOCIADO'
-        const utenteAddress = Address.query().where('utente_id', utente.id).get()
-        utente.address = utenteAddress[1]
-        utente.clinic = this.clinicDb
-      })
-       this.communityMobilizer.clinic = this.clinicDb
-       this.communityMobilizer.utentes = this.selectedUtents
-      CommunityMobilizer.api().post('/communityMobilizer/', this.communityMobilizer).then(resp => {
-                console.log(resp.response.data)
-                this.$emit('handlerAssociate', resp.response.data)
-            }).catch(error => {
-                console.log(error)
-            })
-            this.getUtentesByStatus()
-   },
-   handlerEditMobilizer () {
-     this.communityMobilizer.clinic = this.clinicDb
-      CommunityMobilizer.api().post('/communityMobilizer/', this.communityMobilizer).then(resp => {
-                console.log(resp.response.data)
-                this.$emit('handlerEditMobilizer', resp.response.data)
-            }).catch(error => {
-                console.log(error)
-            })
-   }
+     async getMobilizer () {
+       await CommunityMobilizer.api().get('/communityMobilizer/' + localStorage.getItem('id_mobilizer')).then(resp => {
+        }).catch(error => {
+            console.log(error)
+        })
+     }
   },
-  computed: {
-      infoDB () {
-        // console.log(this.InfoDocsOrImages.all)
-        return InfoDocsOrImages.all()
-      },
-      utenteDB () {
-        return Utente.query().with('appointments').where('clinic_id', this.clinic.id).get()
-      },
-        communityMobilizerDb () {
-         return CommunityMobilizer.find(1)
-      },
-       clinicDb () {
-         return Clinic.find(1)
-      },
-       AddressDb () {
-         return Address.all()
-      },
-       AppointmentBD () {
-         return Appointment.all()
-      }
-      },
-    mounted () {
-      this.getUtentesByStatus()
-      this.getDocsInfo()
-      this.getUtente()
-        // this.communityMobilizer = this.communityMobilizerDb
-    },
-    components: {
-      'informative-docs': require('components/Home/MaterialEducativo.vue').default,
-      'utentes-list': require('components/Shared/ViewUtenteList.vue').default,
-      'input-text-field': require('components/Shared/InputFieldText.vue').default,
-      'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
-      }
+  created () {
+  },
+  mounted () {
+    const offset = 0
+    this.getMobilizer()
+    this.getAllClinics(offset)
+    this.getAllUtente(offset)
+  },
+  components: {
+     'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
+     'utentes-view-list': require('components/Shared/ViewUtenteList.vue').default,
+     'view-docs': require('components/Home/MaterialEducativo.vue').default
+    }
 }
 </script>
 <style>

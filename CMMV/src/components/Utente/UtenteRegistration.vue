@@ -1,6 +1,19 @@
 <template>
   <q-page >
-    <pageHeader :showPreviousButton="true" @previousScreen="$emit('previousScreen')"> Registo do Beneficiário</pageHeader>
+    <div class="row items-center q-mb-md bg-deep-orange-3">
+        <div class="col q-my-sm">
+            <q-btn
+                flat
+                round
+                color="white"
+                icon="chevron_left"
+                @click="closeRegistration(false)"/>
+        </div>
+         <div class="row text-white text-weight-bolder justify-center">
+            Registar Utente
+        </div>
+        <div class="col"><q-space /></div>
+    </div>
     <form @submit.prevent="validateUtente">
         <div class="q-px-sm">
             <div class="row q-my-lg">Dados Pessoais</div>
@@ -82,30 +95,36 @@
             <div class="row q-mb-md">
                 <combo-field
                     class="col"
-                    v-model="selectedProvince"
+                    v-model="address.province"
                     :options="provinces"
+                    transition-show="flip-up"
+                    transition-hide="flip-down"
                     ref="province"
                     option-value="id"
                     option-label="description"
-                    :rules="[ val => val.length > 0 || 'Por favor indique a província']"
+                    :rules="[ val => ( val != null ) || ' Por favor indique a província']"
+                    lazy-rules
                     label="Província" />
             </div>
             <div class="row q-mb-md">
                 <combo-field
                     class="col"
+                     transition-show="flip-up"
+                    transition-hide="flip-down"
                     v-model="address.district"
                     :options="districts"
                     ref="district"
                     option-value="id"
                     option-label="description"
-                    :rules="[ val => !!val && val.length > 0 || 'Por favor indique o distrito']"
+                    :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
+                    lazy-rules
                     label="Distrito/Cidade" />
             </div>
             <div class="row q-mb-md">
                 <q-input
                     class="col"
                     v-model="address.residence"
-                    :rules="[ val => val.length > 0 || 'Por favor indique a morada']"
+                    :rules="[ val => (val.length > 0) || 'Por favor indique a morada']"
                     lazy-rules
                     outlined
                     dense
@@ -114,7 +133,7 @@
                     label="Morada"
                     />
             </div>
-            <div class="row q-mb-md" >
+            <!--div class="row q-mb-md" >
                 <div class="col-2">
                     <q-btn push  dense color="white" text-color="black" round icon="my_location" />
                 </div>
@@ -124,7 +143,7 @@
                 <div class="col-4 q-pl-md">
                     <input-text-field v-model="address.longitude" label="Longitude" />
                 </div>
-            </div>
+            </div-->
         </div>
           <div class="absolute-bottomg">
           <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -155,7 +174,8 @@ export default {
             haspartner: '',
             age: '',
             status: 'PENDENTE',
-            addresses: []
+            addresses: [],
+            communityMobilizer: {}
         },
         currUtente: {},
         selectedProvince: '',
@@ -164,17 +184,20 @@ export default {
             residence: ' ',
             latitude: '',
             longitude: '',
-            district: null
+            district: null,
+            province: null
         }
     }
   },
-   components: {
+    props: ['mobilizer', 'showUtenteRegistrationScreenProp'],
+    emits: ['update:showUtenteRegistrationScreenProp'],
+    components: {
         'combo-field': require('components/Shared/ComboField.vue').default,
         'input-text-field': require('components/Shared/InputFieldText.vue').default,
         'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default,
-        'input-number-field': require('components/Shared/InputNumberField.vue').default,
-        //  buttone: require('components/Shared/Button.vue').default,
-        pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
+        'input-number-field': require('components/Shared/InputNumberField.vue').default
+        // buttone: require('components/Shared/Button.vue').default,
+        // pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
     },
     created () {
         this.currUtente = Object.assign({}, this.utente)
@@ -192,43 +215,51 @@ export default {
             return Province.all()
         },
         districts () {
-            return District.query().where('province_id', this.selectedProvince.id).get()
+        if (this.address.province !== null) {
+            return District.query().withAll().where('province_id', 1).get()
+        } else {
+            return null
+        }
         }
     },
     methods: {
         calculateAge1 () {
           this.utente.age = this.calculateAge
         },
+        closeRegistration (close) {
+           this.$emit('update:showUtenteRegistrationScreenProp', close)
+        },
         validateUtente () {
             this.$refs.nome.$refs.ref.validate()
             this.$refs.apelido.$refs.ref.validate()
             this.$refs.phone.$refs.ref.validate()
             this.$refs.whatsapp.$refs.ref.validate()
-            this.$refs.birthDate.validate()
             this.$refs.age.$refs.ref.validate()
-            this.$refs.province.$refs.ref.validate()
-            this.$refs.district.$refs.ref.validate()
             this.$refs.morada.validate()
             if (!this.$refs.nome.hasError && !this.$refs.apelido.hasError &&
                 !this.$refs.phone.hasError && !this.$refs.whatsapp.hasError &&
-                !this.$refs.birthDate.hasError && !this.$refs.age.hasError &&
-                !this.$refs.district.hasError && !this.$refs.morada.hasError) {
-                console.log(this.currUtente)
+                !this.$refs.age.hasError && !this.$refs.district.hasError &&
+                !this.$refs.morada.hasError) {
+                this.saveUtente()
             }
         },
         saveUtente () {
         this.address.city = this.address.district.description
-        this.currUtente.addresses.push(this.address)
-        this.currUtente.birthDate = new Date(this.currUtente.birthDate)
-        if (this.currUtente.haspartner === 'true') {
-            this.currUtente.haspartner = true
-        } else {
-            this.currUtente.haspartner = false
+        this.utente.addresses.push(this.address)
+        this.utente.birthDate = new Date(this.utente.birthDate)
+        this.utente.communityMobilizer = this.mobilizer
+        this.utente.communityMobilizer_id = this.mobilizer.id
+
+        if (this.utente.communityMobilizer !== null) {
+             this.utente.status = 'ASSOCIADO'
         }
-        console.log(this.currUtente)
-        Utente.api().post('/utente', this.currUtente).then(resp => {
-            this.$emit('saveUtente', resp.response.data)
-            console.log(resp.response.data)
+        if (this.utente.haspartner === 'true') {
+            this.utente.haspartner = true
+        } else {
+            this.utente.haspartner = false
+        }
+        Utente.api().post('/utente', this.utente).then(resp => {
+            this.closeRegistration(false)
         }).catch(error => {
             console.log(error)
         })

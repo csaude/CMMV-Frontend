@@ -34,30 +34,42 @@
                         </template>
                     </q-input>
                </div>
-               <div class="row q-mb-md">
-                    <q-input
-                        class="col"
-                        outlined
-                        type="textarea"
-                        label="Morada"
-                        />
-                </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
-                <q-btn type="submit" label="Cancelar" color="primary" @click="$emit('close')"/>
-                <q-btn type="submit" label="Submeter" color="primary" />
+                <q-btn type="submit" rounded label="Cancelar" color="primary" @click="$emit('close')"/>
+                <q-btn type="submit" rounded label="Submeter" color="primary" @click.stop="promptToConfirm(appointment)" />
             </q-card-actions>
         </form>
     </q-card>
 </template>
 
 <script>
+import { date } from 'quasar'
+import Appointment from 'src/store/models/appointment/Appointment'
 export default {
     props: ['appointment'],
     data () {
         return {
             editedAppointment: {}
         }
+    },
+    methods: {
+        formatDateShort (value) {
+            return date.formatDate(value, 'DD-MM')
+        },
+        promptToConfirm (appointmentToConfirm) {
+            this.$q.dialog({ title: 'Confirm', message: 'Deseja Confirmar?', cancel: true, persistent: true }).onOk(() => {
+            appointmentToConfirm.appointmentDate = new Date(this.editedAppointment.appointmentDate)
+            appointmentToConfirm.time = this.editedAppointment.time
+            appointmentToConfirm.status = 'CONFIRMADO'
+            console.log(appointmentToConfirm)
+            Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
+                this.$emit('appointmentConfirm', resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+        })
+      }
     },
     created () {
         this.editedAppointment = Object.assign({}, this.appointment)

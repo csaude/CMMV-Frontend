@@ -43,6 +43,19 @@ export default {
       dialog: ref(true),
       dialog2: ref(true)
     }
+  },
+  mounted () {
+    this.checkInstruction()
+  },
+  methods: {
+    checkInstruction () {
+      if (localStorage.getItem('SeventhInstruction')) {
+        this.dialog2 = false
+        localStorage.setItem('SeventhInstruction', false)
+      } else {
+        localStorage.setItem('SeventhInstruction', true)
+      }
+    }
   }
 }
 </script>
@@ -104,11 +117,12 @@ export default {
   transform: translate(5%, -40%);
 }
 .bottom-instruction-right {
-  top: 80%;
-  left: 0%;
-  border-radius: 10%;
+  top: 75%;
+  left: 20%;
+  border-bottom-right-radius: 2em;
+  border-bottom-left-radius: 2em;
   transition: transform 0.2s, opacity 0.2s;
-  transform: translate(60%, -60%);
+  transform: translate(0%, 0%);
 }
 @keyframes pulsing {
   0% {

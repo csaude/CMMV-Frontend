@@ -2,7 +2,10 @@
   <div class="q-pa-md">
     <!--q-btn label="Open Dialog" color="primary" @click="dialog = true" /-->
     <q-dialog persistent v-model="dialog">
-      <q-card flat bordered class="fixed bottom text-white" style="background: radial-gradient(circle, #939597 30%, #6b6661 100%)">
+    <div class="row justify-end">
+      <q-card flat bordered
+              class="fixed bottom text-white bottom-instruction-right"
+              style="border-bottom-left-radius: 2em; background: radial-gradient(circle, #939597 30%, #6b6661 100%)">
         <q-card-section>
           <div class="text-h6">Instruções de Uso</div>
            <div class="text-h7">Botão inicial, seguir para a próxima tela</div>
@@ -11,6 +14,7 @@
           <q-btn v-close-popup label="OK" color="primary" />
         </q-card-section>
       </q-card>
+    </div>
       <div class="absolute-bottom flex flex-center q-ma-xl">
         <div class="stage">
             <div class="icon pulsing">
@@ -34,6 +38,19 @@ export default {
   setup () {
     return {
       dialog: ref(true)
+    }
+  },
+  mounted () {
+    this.checkInstruction()
+  },
+  methods: {
+    checkInstruction () {
+      if (localStorage.getItem('firstInstruction')) {
+        this.dialog = false
+        localStorage.setItem('firstInstruction', false)
+      } else {
+        localStorage.setItem('firstInstruction', true)
+      }
     }
   }
 }
@@ -91,9 +108,16 @@ export default {
 .bottom {
   top: 70%;
   left: 0%;
-  border-radius: 10%;
+/*  border-radius: 10%;*/
   transition: transform 0.2s, opacity 0.2s;
   transform: translate(5%, -40%);
+}
+.bottom-instruction-right {
+  top: 77%;
+  left: 50%;
+  border-left-radius: 10%;
+  transition: transform 0.2s, opacity 0.2s;
+  transform: translate(0%, -40%);
 }
 
 @keyframes pulsing {

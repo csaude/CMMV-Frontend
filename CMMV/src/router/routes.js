@@ -3,18 +3,21 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-        {
-            path: '',
-            component: () => import('src/pages/ClinicPage.vue')
-        }
+        { path: '', component: () => import('src/pages/Index.vue') }
     ]
   },
-
   {
-    path: '/mobilizerHome',
-    component: () => import('components/CommunityMobilizer/MainPage')
+    path: '/mobilizerHome/:id',
+    component: () => import('components/CommunityMobilizer/MainPage'),
+    children: [
+  ]
   },
-
+  {
+    path: '/clinicHome/:id',
+    component: () => import('src/pages/ClinicPage.vue'),
+    children: [
+  ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

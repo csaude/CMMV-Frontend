@@ -13,6 +13,10 @@ module.exports = {
   env: {
     browser: true
   },
+  rules: {
+    '@typescript-eslint/camelcase': 'off',
+    'camelcase': 'off'
+  },
 
   // Rules order is important, please avoid shuffling them
   extends: [

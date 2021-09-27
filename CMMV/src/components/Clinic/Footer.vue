@@ -1,12 +1,17 @@
 <template>
-    <q-footer>
-        <q-toolbar>
-        </q-toolbar>
-      </q-footer>
+    
 </template>
 
 <script>
+
 export default {
+  setup () {
+      return {
+      }
+  },
+  components: {
+        
+  }
 
 }
 </script>

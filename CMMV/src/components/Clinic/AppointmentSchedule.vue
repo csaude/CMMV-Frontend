@@ -5,30 +5,25 @@
         leave-active-class="animated zoomOut absolute-top">
 
         <div key="app-to-accept">
-
             <UserMessage />
-
-            <div class="row q-mx-xl q-mt-md text-bold">
+            <div class="row q-mt-md text-bold">
                 Marcação de Consultas ({{appointmentsPending.length}})
             </div>
-
             <q-list
                 bordered
                 separator
-                class="rounded-borders q-mx-xl q-mt-md"
+                class="rounded-borders q-mt-md"
                  v-for="appointment in appointmentsPending"
                 :key="appointment.id" >
-                <PendingApp :appointment="appointment" :utenteDb="this.UtenteBD" />
+                <PendingApp :appointment="appointment" />
             </q-list>
-
-            <div class="row q-mx-xl q-mt-lg text-bold">
+            <div class="row q-mt-lg text-bold">
                 Consultas Marcadas ({{appointmentsConfirmed.length}})
             </div>
-
             <q-list
                 bordered
                 separator
-                class="rounded-borders q-mx-xl q-mt-md"
+                class="rounded-borders q-mt-md"
                  v-for="appointment in appointmentsConfirmed"
                 :key="appointment.id" >
                 <AcceptedApp :appointment="appointment"/>
@@ -51,22 +46,41 @@ export default {
   },
  computed: {
         appointmentsPending () {
-         return Appointment.query().with('utente').with('clinic').with('utente.address').with('utente.clinic').where((appointment) => { return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' }).get()
+         return Appointment.query()
+                           .with('utente')
+                           .with('clinic')
+                           .with('utente.address')
+                           .with('utente.clinic')
+                           .where((appointment) => {
+                                  return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                                  })
+                          .orderBy('appointmentDate', 'desc')
+                          .get()
       },
       appointmentsConfirmed () {
-         return Appointment.query().with('utente').with('clinic').with('utente.address').with('utente.clinic').where((appointment) => { return appointment.status === 'CONFIRMADO' && appointment.appointmentDate !== '' }).get()
+         return Appointment.query()
+                           .with('utente')
+                           .with('clinic')
+                           .with('utente.address')
+                           .with('utente.clinic')
+                           .where((appointment) => { return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser')) })
+                           .orderBy('appointmentDate', 'desc')
+                           .get()
       },
         UtenteBD () {
          return Utente.all()
       },
         clinicDB () {
-         return Clinic.find(1)
+         return Clinic.find(localStorage.getItem('id_clinicUser'))
       }
   },
-       methods: {
-    getAppointments () {
+    methods: {
+  async getAppointments () {
        // Buscar as consults pelo id da clinica logada
-          Appointment.api().get('/appointment/clinic/' + 1)
+    await Appointment.api().get('/appointment/clinic/' + localStorage.getItem('id_clinicUser')).then(resp => {
+          }).catch(error => {
+          console.log('Erro no code ' + error)
+        })
           // Utente.api().get('/utente')
        },
       handlerEdit () {
@@ -82,7 +96,7 @@ export default {
     },
     components: {
       // reschedule: require('pages/Reschedule.vue').default,
-         PendingApp: require('components/Clinic/PendingAppointment.vue').default,
+        PendingApp: require('components/Clinic/PendingAppointment.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default,
         AcceptedApp: require('components/Clinic/AcceptedAppointment.vue').default
        }

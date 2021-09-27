@@ -1,19 +1,29 @@
 <template>
   <q-page >
-    <div class="row q-px-md q-mt-lg">
-        <q-btn flat round color="primary" icon="chevron_left" @click="$emit('previousScreen')"/>
+   <q-card :square="false"
+        style="background: radial-gradient(circle at left, #E9BFB1 10%, #EE764E 100%); border-bottom-left-radius: 100em; border-bottom-right-radius: 100em">
+    <div class="row q-py-lg q-ml-lg">
+        <q-btn flat round color="white" icon="chevron_left" @click="$emit('previousScreen')"/>
     </div>
     <div class="row q-pa-xl texte-center q-mt-lg column">
-        <div class="row text-center column text-h6 q-mb-md">BEM VINDO</div>
-        <div class="row text-center column text-weight-medium">Sistema móvel para o <br/> acompanhamento de Circuncisão <br/>Masculina</div>
+        <div style="font-family: 'Arial';font-size: 40px; font-weight: bold" class="row text-center column text-white q-mb-md">BEM VINDO</div>
+        <div class="row text-center column text-white text-subtitle1 text-weight-bold">Sistema móvel para o <br/> acompanhamento de Circuncisão <br/>Masculina</div>
     </div>
+   </q-card>
+
     <div class="row q-mt-md text-center q-px-xl">
         <q-tabs
             v-model="tab"
-            class="bg-grey-12 userTab col rounded-borders"
             dense
+            class=" text-grey userTab col"
+            active-color="white"
+            indicator-color="primary"
+            active-bg-color="primary"
+            narrow-indicator
+            style="border-radius: 2em; border-style: solid;border-color: #EE764E;"
             align="center">
-            <q-tab class="text-primary" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
+            <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
+            <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="clinic" icon="local_hospital" label="Ponto de Serviço" />
         </q-tabs>
     </div>
     <form @submit.prevent="authUser">
@@ -54,15 +64,18 @@
                     </template>
                 </q-input>
             </div>
-            <div class="row float-right">Esqueceu a senha?</div>
-        </div>
-        <div class="row column q-pa-xl">
-            <q-btn
-                class="q-py-sm"
-                unelevated rounded
-                color="primary"
-                type="submit"
-                label="Entrar" />
+            <div class="row">
+                <q-btn
+                    class="full-width q-py-sm"
+                    unelevated rounded
+                    color="primary"
+                    type="submit"
+                    label="Entrar" />
+            </div>
+            <div class="row q-py-lg float-right">
+            <span class="text-h7">Esqueceu as suas credenciais?
+                <q-btn flat style="color: #FF0080" color="primary" label="Clique aqui." no-caps/></span>
+            </div>
         </div>
     </form>
   </q-page>
@@ -71,6 +84,7 @@
 <script>
 import { ref } from 'vue'
 import { UtenteLogin } from '../../store/models/userLogin/UserLoginHierarchy'
+import Clinic from 'src/store/models/clinic/Clinic'
 export default {
     data () {
         return {
@@ -83,36 +97,47 @@ export default {
         }
     },
     mounted () {
-    //   this.doLogin()
+        const offset = 0
+        this.doLogin()
+        this.getAllClinic(offset)
     },
     computed: {
-        logedUser () {
-            return UtenteLogin.find(34)
+        displayClinics () {
+            return Clinic.all()
         }
     },
     methods: {
         doLogin () {
-          UtenteLogin.api().get('/userLogin/34').then(resp => {
+          UtenteLogin.api().get('/userLogin/1').then(resp => {
                 console.log(resp.response.data)
             }).catch(error => {
                 console.log(error)
             })
         },
+        getAllClinic (offset) {
+            if (offset >= 0) {
+                Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+                this.submitting = false
+                offset = offset + 100
+                if (resp.response.data.length > 0) {
+                    setTimeout(this.getAllClinic(offset), 2)
+                }
+                }).catch(error => {
+                console.log('Erro no code ' + error)
+                })
+            }
+        },
         authUser () {
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
-                // if (this.logedUser != null) {
-                    this.$router.push({ path: 'mobilizerHome' })
-                    // if (this.logedUser.type === 'UTENTELOGIN') {
-                    //     const utente = Utente.query()
-                    //         .with(['addresses', 'user', 'clinic', 'appointments.clinic', 'communityMobilizer'])
-                    //         .where('id', this.logedUser.utente_id)
-                    //         .get()
-                    //         console.log(utente)
-                    // this.$emit('goHome', utente)
-                    // }
-                // }
+                if (this.tab === 'mobilizer') {
+                    localStorage.setItem('id_mobilizer', 1)
+                    this.$router.push({ path: '/mobilizerHome/1' })
+                } else {
+                    localStorage.setItem('id_clinicUser', Clinic.query().first().id)
+                    this.$router.push({ path: '/clinicHome/' + Clinic.query().first().id })
+                }
             }
         }
     }
