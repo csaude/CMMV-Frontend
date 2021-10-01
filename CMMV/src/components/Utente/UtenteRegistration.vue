@@ -150,6 +150,9 @@
             <q-btn size="xl" fab icon="save" type="submit" color="primary" />
           </q-page-sticky>
         </div>
+         <q-inner-loading :showing="visible">
+        <q-spinner size="100px" color="primary" />
+      </q-inner-loading>
     </form>
   </q-page>
 </template>
@@ -186,7 +189,8 @@ export default {
             longitude: '',
             district: null,
             province: null
-        }
+        },
+        visible: false
     }
   },
     props: ['mobilizer', 'showUtenteRegistrationScreenProp'],
@@ -227,7 +231,10 @@ export default {
           this.utente.age = this.calculateAge
         },
         closeRegistration (close) {
-           this.$emit('update:showUtenteRegistrationScreenProp', close)
+            setTimeout(() => {
+          this.visible = false
+         this.$emit('update:showUtenteRegistrationScreenProp', close)
+        }, 2000)
         },
         validateUtente () {
             this.$refs.nome.$refs.ref.validate()
@@ -244,6 +251,7 @@ export default {
             }
         },
         saveUtente () {
+        this.visible = true
         this.address.city = this.address.district.description
         this.utente.addresses.push(this.address)
         this.utente.birthDate = new Date(this.utente.birthDate)
@@ -258,6 +266,7 @@ export default {
         } else {
             this.utente.haspartner = false
         }
+        console.log(this.utente)
         Utente.api().post('/utente', this.utente).then(resp => {
             this.closeRegistration(false)
         }).catch(error => {

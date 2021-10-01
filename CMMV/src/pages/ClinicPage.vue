@@ -40,11 +40,14 @@
             <UserMessage />
             </div>
             <q-tab-panels v-model="tab" animated>
-              <q-tab-panel name="dashboard">
+              <q-tab-panel name="dashboard" v-if="backToDashBoard">
                 <AppointmentSchedule />
               </q-tab-panel>
               <q-tab-panel name="consulta">
                 <AppointmentList />
+              </q-tab-panel>
+               <q-tab-panel name="clinics" :backToDashBoard="backToDashBoard" >
+                <AddClinic  />
               </q-tab-panel>
           </q-tab-panels>
             <q-footer>
@@ -54,6 +57,7 @@
                         <q-tab name="consulta" icon="date_range" label="Consulta" />
                         <q-tab name="reports" icon="show_chart" label="Relatórios" />
                         <q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" />
+                         <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" />
                     </q-tabs>
                 </q-toolbar>
             </q-footer>
@@ -67,13 +71,15 @@ import Clinic from 'src/store/models/clinic/Clinic'
 export default {
     data () {
         return {
-            tab: ref('dashboard')
+            tab: ref('dashboard'),
+            backToDashBoard: ref(true)
         }
     },
     components: {
         // Footer: require('components/Clinic/Footer.vue').default,
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default,
+        AddClinic: require('components/Clinic/AddClinic.vue').default,
        // MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default
     },
