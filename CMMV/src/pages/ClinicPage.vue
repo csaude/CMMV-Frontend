@@ -49,6 +49,9 @@
                <q-tab-panel name="clinics" >
                 <AddClinic  />
               </q-tab-panel>
+             <!--  <q-tab-panel name="mobilizer" >
+                <MobilizerManagement  />
+              </q-tab-panel> -->
           </q-tab-panels>
             <q-footer>
                 <q-toolbar>
@@ -80,7 +83,7 @@ export default {
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default,
         AddClinic: require('components/Clinic/AddClinic.vue').default,
-       // MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
+      //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default
     },
     methods: {

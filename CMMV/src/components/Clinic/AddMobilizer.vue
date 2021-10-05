@@ -44,6 +44,34 @@
                     v-model="mobilizer.cellNumber2"
                     label="Numero de Telefone 2" />
             </div>
+             <div class="row q-mb-md">
+                <combo-field
+                    class="col"
+                    v-model="province"
+                    :options="provinces"
+                    transition-show="flip-up"
+                    transition-hide="flip-down"
+                    ref="province"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null ) || ' Por favor indique a província']"
+                    lazy-rules
+                    label="Província" />
+            </div>
+            <div class="row q-mb-md">
+                <combo-field
+                    class="col"
+                     transition-show="flip-up"
+                    transition-hide="flip-down"
+                    v-model="mobilizer.district"
+                    :options="districts"
+                    ref="district"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
+                    lazy-rules
+                    label="Distrito/Cidade" />
+            </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
                 <q-btn label="Cancelar" color="primary" @click="$emit('close')"/>
@@ -56,16 +84,32 @@
 
 <script>
 import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
+import Province from 'src/store/models/province/Province'
+import District from 'src/store/models/district/District'
 export default {
-    props: ['clinic'],
     data () {
         return {
-            currClinic: {},
-            mobilizer: {}
+            mobilizer: {},
+            province: null
+        }
+    },
+     mounted () {
+        const provinceOffset = 0
+        this.getAllProvinces(provinceOffset)
+    },
+    computed: {
+          provinces () {
+            return Province.all()
+        },
+        districts () {
+        if (this.province !== null) {
+            return District.query().withAll().where('province_id', 1).get()
+        } else {
+            return null
+        }
         }
     },
     created () {
-        this.currClinic = Object.assign({}, this.clinic)
         this.mobilizer.clinic = Object.assign({}, this.clinic)
     },
     methods: {
@@ -78,11 +122,22 @@ export default {
             }).catch(error => {
                 console.log(error)
             })
+        },
+        getAllProvinces (offset) {
+        if (this.provinces.length <= 0) {
+                Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+                    offset = offset + 100
+                    if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
+                }).catch(error => {
+                    console.log(error)
+                })
         }
+    }
     },
     components: {
         'input-text-field': require('components/Shared/InputFieldText.vue').default,
-        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default,
+        'combo-field': require('components/Shared/ComboField.vue').default
     }
 
 }
