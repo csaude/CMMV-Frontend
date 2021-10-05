@@ -43,7 +43,7 @@
             </div>
              <div class="row q-mb-md" >
                 <div class="col-2">
-                    <q-btn push  dense color="white" text-color="black" round icon="my_location" />
+                    <q-btn push  dense color="white" text-color="black" round icon="my_location" @click="locateMe"/>
                 </div>
                 <div class="col-4 q-pl-md">
                     <input-text-field v-model="newClinic.latitude" lazy-rules label="Latitude" ref="latitude" :rules="[ val => val.length > 0 || 'O nome indicado é inválido']" />
@@ -79,7 +79,7 @@ export default {
             },
             clinico: '',
              clinicTypes: [
-              '', 'US', 'Clinicas Móveis', 'Hospital', 'Posto de Saúde'
+              '', 'Unidade Sanitária', 'Clinicas Móveis', 'Hospital', 'Posto de Saúde'
             ]
         }
     },
@@ -97,7 +97,42 @@ export default {
         }
     },
     methods: {
- validateClinic () {
+    async getLocation () {
+          return new Promise((resolve, reject) => {
+            if (!('geolocation' in navigator)) {
+              reject(new Error('Localização Geográfica não está disponível.'))
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          resolve(pos)
+        }, err => {
+          reject(err)
+        })
+      })
+    },
+    async locateMe () {
+        this.$q.loading.show({
+          message: 'Carregando a sua localização. Por favor, aguarde...'
+        })
+      this.gettingLocation = true
+      try {
+        this.gettingLocation = false
+        this.location = await this.getLocation()
+        this.newClinic.latitude = this.location.coords.latitude
+        this.newClinic.longitude = this.location.coords.longitude
+        this.$q.loading.hide()
+      } catch (e) {
+        this.gettingLocation = false
+         this.errorStr = e.message
+          this.$q.loading.hide()
+          this.$q.dialog({
+          title: 'Erro no carregamento da localização',
+          message: this.errorStr
+        }).onOk(() => {
+          this.$q.loading.hide()
+        })
+      }
+    },
+    validateClinic () {
             this.$refs.nome.$refs.ref.validate()
              this.$refs.code.$refs.ref.validate()
             this.$refs.latitude.$refs.ref.validate()

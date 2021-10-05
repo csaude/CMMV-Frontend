@@ -40,13 +40,13 @@
             <UserMessage />
             </div>
             <q-tab-panels v-model="tab" animated>
-              <q-tab-panel name="dashboard" v-if="backToDashBoard">
+              <q-tab-panel name="dashboard">
                 <AppointmentSchedule />
               </q-tab-panel>
               <q-tab-panel name="consulta">
                 <AppointmentList />
               </q-tab-panel>
-               <q-tab-panel name="clinics" :backToDashBoard="backToDashBoard" >
+               <q-tab-panel name="clinics" >
                 <AddClinic  />
               </q-tab-panel>
           </q-tab-panels>
@@ -55,9 +55,9 @@
                     <q-tabs v-model="tab" class="absolute-center">
                         <q-tab name="dashboard" icon="pie_chart" label="Dashboard" />
                         <q-tab name="consulta" icon="date_range" label="Consulta" />
-                        <q-tab name="reports" icon="show_chart" label="Relatórios" />
-                        <q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" />
-                         <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" />
+                        <!--q-tab name="reports" icon="show_chart" label="Relatórios" /-->
+                        <!--q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" /-->
+                        <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" />
                     </q-tabs>
                 </q-toolbar>
             </q-footer>

@@ -29,8 +29,15 @@
                 {{ props.row.utente.firstNames }} {{ props.row.utente.lastNames }}
             </q-td>
             <q-td key="hasHappened" :props="props">
-             <q-checkbox v-model="props.row.hasHappened" color="primary"  @click="getSelectedString(props.row)"/>
-             <span v-if="props.row.hasHappened">  Sim </span>
+             <q-checkbox v-model="props.row.hasHappened"
+                        color="primary"
+                        v-if="(new Date(new Date(props.row.visitDate).setHours(0,0,0,0)).getTime() === new Date(new Date().setHours(0,0,0,0)).getTime())"
+                        @click="getSelectedString(props.row)"/>
+             <q-checkbox v-model="props.row.hasHappened"
+                        color="primary"
+                        v-else-if="!props.row.hasHappened"
+                        @click="getSelectedString(props.row)"/>
+             <span v-if="props.row.hasHappened"> Sim </span>
              <span v-else> Não </span>
             </q-td>
             </q-tr>
