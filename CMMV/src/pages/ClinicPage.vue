@@ -40,7 +40,7 @@
             <UserMessage />
             </div>
             <q-tab-panels v-model="tab" animated>
-              <q-tab-panel name="dashboard" v-if="backToDashBoard">
+              <q-tab-panel name="dashboard" v-if="backToDashBoard" >
                 <AppointmentSchedule />
               </q-tab-panel>
               <q-tab-panel name="consulta">
@@ -49,6 +49,9 @@
                <q-tab-panel name="clinics" :backToDashBoard="backToDashBoard" >
                 <AddClinic  />
               </q-tab-panel>
+             <!--  <q-tab-panel name="mobilizer" >
+                <MobilizerManagement  />
+              </q-tab-panel> -->
           </q-tab-panels>
             <q-footer>
                 <q-toolbar>
@@ -80,7 +83,7 @@ export default {
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default,
         AddClinic: require('components/Clinic/AddClinic.vue').default,
-       // MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
+      //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default
     },
     methods: {

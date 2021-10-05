@@ -41,6 +41,34 @@
                     lazy-rules
                     label="Tipo de Clinica" />
             </div>
+             <div class="row q-mb-md">
+                <combo-field
+                    class="col"
+                    v-model="newClinic.province"
+                    :options="provinces"
+                    transition-show="flip-up"
+                    transition-hide="flip-down"
+                    ref="province"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null ) || ' Por favor indique a província']"
+                    lazy-rules
+                    label="Província" />
+            </div>
+            <div class="row q-mb-md">
+                <combo-field
+                    class="col"
+                     transition-show="flip-up"
+                    transition-hide="flip-down"
+                    v-model="newClinic.district"
+                    :options="districts"
+                    ref="district"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
+                    lazy-rules
+                    label="Distrito/Cidade" />
+            </div>
              <div class="row q-mb-md" >
                 <div class="col-2">
                     <q-btn push  dense color="white" text-color="black" round icon="my_location" />
@@ -64,6 +92,8 @@
 
 <script>
 import Clinic from '../../store/models/clinic/Clinic'
+import Province from 'src/store/models/province/Province'
+import District from 'src/store/models/district/District'
 
 export default {
       props: ['clinic', 'backToDashBoard'],
@@ -75,7 +105,9 @@ export default {
                 name: '',
                 type: '',
                 latitude: '',
-                longitude: ''
+                longitude: '',
+                province: null,
+                district: null
             },
             clinico: '',
              clinicTypes: [
@@ -88,12 +120,24 @@ export default {
     },
       mounted () {
         const offset = 0
+        const provinceOffset = 0
         this.getAllClinics(offset)
+        this.getAllProvinces(provinceOffset)
         this.extractDatabaseCodes()
     },
     computed: {
          clinicos () {
             return Clinic.all()
+        },
+          provinces () {
+            return Province.all()
+        },
+        districts () {
+        if (this.newClinic.province !== null) {
+            return District.query().withAll().where('province_id', 1).get()
+        } else {
+            return null
+        }
         }
     },
     methods: {
@@ -122,6 +166,16 @@ export default {
                 Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
                     offset = offset + 100
                     if (resp.response.data.length > 0) { setTimeout(this.getAllClinics(offset), 2) }
+                }).catch(error => {
+                    console.log(error)
+                })
+        }
+    },
+    getAllProvinces (offset) {
+        if (this.provinces.length <= 0) {
+                Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+                    offset = offset + 100
+                    if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
                 }).catch(error => {
                     console.log(error)
                 })
