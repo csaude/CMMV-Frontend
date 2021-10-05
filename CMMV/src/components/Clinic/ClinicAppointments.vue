@@ -70,7 +70,7 @@ export default {
                                   appointment.appointmentDate !== '' &&
                                   appointment.appointmentDate !== null &&
                                   appointment.appointmentDate !== undefined &&
-                                  ((new Date(appointment.appointmentDate)).getDate() === new Date().getDate()) &&
+                                  ((new Date(appointment.appointmentDate)).getTime() === new Date().getTime()) &&
                                   appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
                           .orderBy('appointmentDate', 'desc')
@@ -89,7 +89,7 @@ export default {
                                   appointment.appointmentDate !== '' &&
                                   appointment.appointmentDate !== null &&
                                   appointment.appointmentDate !== undefined &&
-                                  ((new Date(appointment.appointmentDate)).getDate() < new Date().getDate()) &&
+                                  ((new Date(appointment.appointmentDate)).getTime() < new Date().getTime()) &&
                                   appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
                           .orderBy('appointmentDate', 'desc')
@@ -118,7 +118,6 @@ export default {
        },
     updateClinicAppoitment (appointment) {
       Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
-        console.log(resp.response.data)
         this.$q.notify({
               message: 'Consulta do paciente foi actualizada.',
               color: 'teal'
