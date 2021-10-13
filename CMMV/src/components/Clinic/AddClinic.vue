@@ -1,18 +1,86 @@
 <template>
-<transition-group
-        appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut absolute-top">
-  <div class="row q-py-lg q-mt-md text-weight-bold text-subtitle1">
-         Cadastrar Clinica
+    <div class="q-pt-xl">
+        <q-table
+        title="Unidade de Serviço"
+        :rows="clinicos"
+        :columns="columns"
+        row-key="id"
+        :filter="filter"
+        binary-state-sort
+        >
+        <template v-slot:top-right>
+            <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+            <template v-slot:append>
+                <q-icon name="search" />
+            </template>
+            </q-input>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="name" :props="props">
+              {{ props.row.name }}
+            </q-td>
+            <q-td key="type" :props="props">
+              <div class="text-pre-wrap">{{ props.row.type}}</div>
+            </q-td>
+            <q-td key="province" :props="props">
+              <div class="text-pre-wrap">{{ props.row.province.description }}</div>
+            </q-td>
+            <q-td key="district" :props="props">
+              <div class="text-pre-wrap">{{ props.row.district.description }}</div>
+            </q-td>
+            <q-td key="actions" :props="props">
+             <div class="q-gutter-sm">
+              <q-btn round icon="edit" color="orange" size=sm no-caps @click.stop="editClinic(props.row)">
+                <q-tooltip content-class="bg-white text-primary shadow-4"
+                          :offset="[10, 10]"
+                          transition-show="rotate"
+                          transition-hide="rotate">
+                </q-tooltip>
+                </q-btn>
+              <!--q-btn round glossy icon="delete_forever" color="red" size=sm no-caps>
+                <q-tooltip content-class="bg-red text-white shadow-4"
+                          :offset="[10, 10]"
+                          transition-show="rotate"
+                          transition-hide="rotate">
+                </q-tooltip>
+                </q-btn-->
+             </div>
+            </q-td>
+          </q-tr>
+        </template>
+        </q-table>
+        <div class="absolute-bottom">
+          <q-page-sticky position="bottom-right" :offset="[18, 18]">
+            <q-btn size="xl" fab icon="add" @click="show_dialog = true" no-cap color="primary" />
+          </q-page-sticky>
         </div>
-  <q-card  class="q-pt-lg">
+    <!--q-table title="Unidade de Serviço" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
+      <template v-slot:top-right>
+      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+              <template v-slot:append>
+                <q-icon name="search"/>
+              </template>
+            </q-input>
+      <div class="q-pa-md q-gutter-sm">
+      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter=!show_filter" flat/>
+        <q-btn outline rounded color="primary" icon="add" @click="show_dialog = true" no-caps/>
+      </div>
+      </template>
+    </q-table-->
+    </div>
+   <q-dialog v-model="show_dialog" persistent>
+    <q-card  class="q-pt-lg" style="width: 1100px; max-width: 90vw;">
+     <q-toolbar>
+        <q-toolbar-title class="text-subtitle1 flex-center text-width-strong">Cadastrar Unidade de Serviço</q-toolbar-title>
+        <q-btn flat v-close-popup round dense icon="close" @click="show_dialog = false"/>
+      </q-toolbar>
         <form @submit.prevent="validateClinic" >
             <q-card-section class="q-px-md">
                <div class="row q-mt-md">
                 <input-text-field
                     ref="nome"
-                    square
+                    rounded
                     v-model="newClinic.name"
                     :rules="[ val => val.length >= 3 || 'O nome indicado é inválido']"
                     lazy-rules
@@ -22,9 +90,9 @@
               <div class="row q-mt-md">
                 <input-text-field
                     ref="code"
-                    square
+                    rounded
                     v-model="newClinic.code"
-                    :rules="[ val => !this.databaseCodes.includes(val) || 'o Codigo indicado ja existe']"
+                    :rules="[ val => (val.length > 0 ) || 'o Codigo indicado ja existe']"
                     lazy-rules
                     class="col fild-radius"
                     label="Codigo" />
@@ -74,32 +142,42 @@
                     <q-btn push  dense color="white" text-color="black" round icon="my_location" @click="locateMe"/>
                 </div>
                 <div class="col-4 q-pl-md">
-                    <input-text-field v-model="newClinic.latitude" lazy-rules label="Latitude" ref="latitude" :rules="[ val => val.length > 0 || 'O nome indicado é inválido']" />
+                    <input-text-field v-model="newClinic.latitude" lazy-rules label="Latitude" ref="latitude" :rules="[ val => ( new String(val).length ) > 0 || 'O valor indicado é inválido ']" />
                 </div>
                 <div class="col-4 q-pl-md">
-                    <input-text-field v-model="newClinic.longitude" lazy-rules label="Longitude" ref="longitude" :rules="[ val => val.length > 0 || 'O nome indicado é inválido']" />
+                    <input-text-field v-model="newClinic.longitude" lazy-rules label="Longitude" ref="longitude" :rules="[ val => new String(val).length > 0 || 'O valor indicado é inválido']" />
                 </div>
             </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
-                <q-btn type="submit" label="Submeter" color="primary"/>
+                <q-btn type="submit" :loading="submitting" label="Submeter" color="primary"/>
             </q-card-actions>
         </form>
-        <pre>{{clinic}}</pre>
     </q-card>
-</transition-group>
+   </q-dialog>
 </template>
 
 <script>
 import Clinic from '../../store/models/clinic/Clinic'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 export default {
       props: ['clinic', 'backToDashBoard'],
     data () {
-        return {
+    const filter = ref('')
+     const $q = useQuasar()
+    return {
+            filter,
+            $q,
+            show_dialog: false,
+            show_filter: false,
+            submitting: false,
+            editedIndex: -1,
             databaseCodes: [],
+            listErrors: [],
             currClinic: {},
             newClinic: {
                 name: '',
@@ -109,8 +187,15 @@ export default {
                 province: null,
                 district: null
             },
+            columns: [
+                { name: 'name', align: 'left', label: 'Nome', field: row => row.name, format: val => `${val}`, sortable: true },
+                { name: 'type', align: 'left', label: 'Tipo', field: row => row.type, format: val => `${val}`, sortable: true },
+                { name: 'province', align: 'left', label: 'Província', field: row => row.province, format: val => `${val}`, sortable: true },
+                { name: 'district', align: 'left', label: 'Distrito', field: row => row.district, format: val => `${val}`, sortable: true },
+                { name: 'actions', label: 'Movimento', field: 'actions' }
+            ],
             clinico: '',
-             clinicTypes: [
+            clinicTypes: [
               '', 'Unidade Sanitária', 'Clinicas Móveis', 'Hospital', 'Posto de Saúde'
             ]
         }
@@ -120,21 +205,20 @@ export default {
     },
       mounted () {
         const offset = 0
-        const provinceOffset = 0
         this.getAllClinics(offset)
-        this.getAllProvinces(provinceOffset)
+        this.getAllProvinces(offset)
         this.extractDatabaseCodes()
     },
     computed: {
          clinicos () {
-            return Clinic.all()
+            return Clinic.query().withAll().get()
         },
           provinces () {
-            return Province.all()
+            return Province.query().withAll().get()
         },
         districts () {
         if (this.newClinic.province !== null) {
-            return District.query().withAll().where('province_id', 1).get()
+            return District.query().withAll().where('province_id', this.newClinic.province.id).get()
         } else {
             return null
         }
@@ -181,40 +265,103 @@ export default {
              this.$refs.code.$refs.ref.validate()
             this.$refs.latitude.$refs.ref.validate()
             this.$refs.longitude.$refs.ref.validate()
-            console.log(!this.$refs.nome.$refs.ref.validate() && !this.$refs.latitude.hasError && !this.$refs.longitude.hasError)
+            console.log(this.$refs.latitude.$refs.ref.validate())
             if (this.$refs.nome.$refs.ref.validate() && this.$refs.latitude.$refs.ref.validate() && this.$refs.longitude.$refs.ref.validate() && this.$refs.code.$refs.ref.validate()) {
+                this.submitting = true
                 this.submitClinic()
             }
         },
-        submitClinic () {
+        async submitClinic () {
             console.log(this.newClinic)
-            Clinic.api().post('/clinic', this.newClinic).then(resp => {
+          if (this.editedIndex !== 0) {
+            await Clinic.api().post('/clinic', this.newClinic).then(resp => {
                 console.log(resp.response.data)
+                this.show_dialog = false
+                this.submitting = false
                 this.$emit('update:backToDashBoard', true)
-                alert('Clinica Cadastrada Com Sucesso')
+              this.$q.notify({
+              message: 'Clínica registrada com sucesso.',
+              color: 'teal'
+          })
+            }).catch(error => {
+            this.submitting = false
+            console.log(error)
+            if (error.request.status !== 0) {
+            const arrayErrors = JSON.parse(error.request.response)
+            if (arrayErrors.total == null) {
+              this.listErrors.push(arrayErrors.message)
+            } else {
+              arrayErrors._embedded.errors.forEach(element => {
+                this.listErrors.push(element.message)
+              })
+            }
+              this.$emit('update:backToDashBoard', true)
+              this.$q.notify({
+              message: 'Error: ' + this.listErrors,
+              color: 'red'
+              })
+            console.log(this.listErrors)
+          }
+            })
+          } else {
+            await Clinic.api().patch('/clinic/' + this.newClinic.id, this.newClinic).then(resp => {
+              console.log(resp.response.data)
+              this.show_dialog = false
+              this.submitting = false
+              this.$emit('update:backToDashBoard', true)
+              this.$q.notify({
+              message: 'Clínica actualizada com sucesso.',
+              color: 'teal'
+          })
+            }).catch(error => {
+            this.submitting = false
+            console.log(error)
+            if (error.request.status !== 0) {
+            const arrayErrors = JSON.parse(error.request.response)
+            if (arrayErrors.total == null) {
+              this.listErrors.push(arrayErrors.message)
+            } else {
+              arrayErrors._embedded.errors.forEach(element => {
+                this.listErrors.push(element.message)
+              })
+            }
+              this.$emit('update:backToDashBoard', true)
+              this.$q.notify({
+              message: 'Error: ' + this.listErrors,
+              color: 'red'
+              })
+            console.log(this.listErrors)
+          }
+            })
+            this.editedIndex = -1
+            this.listErrors = []
+          }
+        },
+       async getAllClinics (offset) {
+        if (offset >= 0) {
+           await Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+                console.log(resp.response.data)
             }).catch(error => {
                 console.log(error)
             })
-        },
-        getAllClinics (offset) {
-        if (this.clinicos.length <= 0) {
-                Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
-                    offset = offset + 100
-                    if (resp.response.data.length > 0) { setTimeout(this.getAllClinics(offset), 2) }
-                }).catch(error => {
-                    console.log(error)
-                })
         }
     },
-    getAllProvinces (offset) {
-        if (this.provinces.length <= 0) {
-                Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
-                    offset = offset + 100
-                    if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
-                }).catch(error => {
-                    console.log(error)
-                })
+    async getAllProvinces (offset) {
+        if (offset >= 0) {
+            await Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+              offset = offset + 100
+              // if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
+            }).catch(error => {
+                console.log(error)
+            })
         }
+    },
+    editClinic (clinic) {
+      this.editedIndex = 0
+      this.newClinic = Object.assign({}, clinic)
+      this.newClinic.province = Province.query().withAll().find(clinic.province_id)
+      this.newClinic.district = District.query().withAll().find(clinic.district_id)
+      this.show_dialog = true
     },
     validateThis (code) {
       this.clinicos.forEach(element => {
@@ -226,7 +373,7 @@ export default {
             this.databaseCodes.push(element.code)
     })
     },
-        navRedirect (e, go) {
+    navRedirect (e, go) {
       e.preventDefault() // we cancel the default navigation
       go({ query: { tab: '2', noScroll: true } })
     }

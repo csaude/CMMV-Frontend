@@ -135,7 +135,7 @@
                         </div>
                   <q-stepper-navigation class="row justify-center">
                     <q-btn flat icon="chevron_left" @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
-                    <q-btn rounded color="primary" :disable="appointment.appointmentDate.length <=0" @click="() => { this.associar(); done3 = true}" label="Associar" />
+                    <q-btn rounded color="primary" :loading="this.submitting" :disable="appointment.appointmentDate.length <=0" @click="() => { this.associar(); done3 = true; this.submitting = true}" label="Associar" />
                   </q-stepper-navigation>
                 </q-step>
               </q-stepper>
@@ -231,7 +231,7 @@ export default {
       }
     },
     methods: {
-        associar () {
+     async   associar () {
           const newDate = new Date(this.appointment.appointmentDate)
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
@@ -243,7 +243,7 @@ export default {
             this.appointment.time = newDate.getHours() + ':' + newDate.getMinutes()
             this.appointment.utente = this.relatedUtente
 
-            Appointment.api().post('/appointment', this.appointment).then(resp => {
+            await Appointment.api().post('/appointment', this.appointment).then(resp => {
                 this.$emit('update:utente', this.relatedUtente)
                 this.submitting = false
                 this.closeRegistration(false)
@@ -323,7 +323,7 @@ export default {
       let calcDist = 0
       let clinic = {}
       this.clinics = []
-      for (clinic of Clinic.all()) {
+      for (clinic of Clinic.query().with('province.*').with('district.*').get()) {
         if (clinic.longitude !== undefined && clinic.longitude !== null) {
         if (this.myLocation.distance === '<1km') {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)

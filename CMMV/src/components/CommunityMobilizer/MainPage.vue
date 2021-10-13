@@ -139,6 +139,8 @@ import { ref } from 'vue'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Clinic from 'src/store/models/clinic/Clinic'
+import Province from 'src/store/models/province/Province'
+import District from 'src/store/models/district/District'
 export default {
   setup () {
     return {
@@ -155,7 +157,6 @@ export default {
         return CommunityMobilizer.query().with('utentes').find(this.$route.params.id)
       },
       set (mobilizer) {
-        this.$emit('update:jurisdicao', '')
         CommunityMobilizer.update(mobilizer)
       }
     },
@@ -164,25 +165,31 @@ export default {
     },
     utentesPendente () {
       return Utente.query()
-                   .with('clinic')
+                   .with('clinic.province')
+                   .with('clinic.district.province')
                    .with('communityMobilizer')
-                   .with('appointments.clinic')
+                   .with('appointments.clinic.province')
+                   .with('appointments.clinic.district.province')
                    .where('status', 'PENDENTE')
                    .get()
     },
      utentesAssociados () {
       return Utente.query()
-                   .with('clinic')
+                   .with('clinic.province')
+                   .with('clinic.district.province')
                    .with('communityMobilizer')
-                   .with('appointments.clinic')
+                   .with('appointments.clinic.province')
+                   .with('appointments.clinic.district.province')
                    .where('status', 'ASSOCIADO')
                    .get()
     },
      utentesEnviados () {
       return Utente.query()
-                   .with('clinic')
+                   .with('clinic.province')
+                   .with('clinic.district.province')
                    .with('communityMobilizer')
-                   .with('appointments.clinic')
+                   .with('appointments.clinic.province')
+                   .with('appointments.clinic.district.province')
                    .where('status', 'ENVIADO')
                    .get()
     }
@@ -191,6 +198,7 @@ export default {
      async getAllUtente (offset) {
       await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
              offset = offset + 100
+             console.log(resp.response.data)
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllUtente(offset), 2)
             // }
@@ -200,6 +208,26 @@ export default {
      },
      async getAllClinics (offset) {
         await Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+            offset = offset + 100
+            // if (resp.response.data.length > 0) {
+            //   setTimeout(this.getAllClinics(offset), 2)
+            // }
+            }).catch(error => {
+                console.log(error)
+            })
+    },
+    async getAllProvinces (offset) {
+        await Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+            offset = offset + 100
+            // if (resp.response.data.length > 0) {
+            //   setTimeout(this.getAllClinics(offset), 2)
+            // }
+            }).catch(error => {
+                console.log(error)
+            })
+    },
+    async getAllDistricts (offset) {
+        await District.api().get('/district?offset=' + offset + '&max=100').then(resp => {
             offset = offset + 100
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllClinics(offset), 2)
@@ -222,6 +250,8 @@ export default {
     this.getMobilizer()
     this.getAllClinics(offset)
     this.getAllUtente(offset)
+    this.getAllProvinces(offset)
+    this.getAllDistricts(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
