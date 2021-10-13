@@ -23,7 +23,7 @@
             style="border-radius: 2em; border-style: solid;border-color: #EE764E;"
             align="center">
             <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
-            <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="clinic" icon="local_hospital" label="Ponto de Serviço" />
+            <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="clinic" icon="local_hospital" label="Unidade de Serviço" />
         </q-tabs>
     </div>
     <form @submit.prevent="authUser">
@@ -98,7 +98,7 @@ export default {
     },
     mounted () {
         const offset = 0
-        this.doLogin()
+       // this.doLogin()
         this.getAllClinic(offset)
     },
     computed: {

@@ -61,9 +61,9 @@ export default {
       getAppointmentsToday () {
           return Appointment.query()
                            .with('utente')
-                           .with('clinic')
-                           .with('utente.address')
-                           .with('utente.clinic')
+                           .with('clinic.*')
+                           .with('utente.address.*')
+                           .with('utente.clinic.*')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -79,9 +79,9 @@ export default {
       appointmentsBDD () {
           return Appointment.query()
                            .with('utente')
-                           .with('clinic')
-                           .with('utente.address')
-                           .with('utente.clinic')
+                           .with('clinic.*')
+                           .with('utente.address.*')
+                           .with('utente.clinic.*')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -98,9 +98,9 @@ export default {
       appointmentsDone () {
           return Appointment.query()
                            .with('utente')
-                           .with('clinic')
+                           .with('clinic.*')
                            .with('utente.address')
-                           .with('utente.clinic')
+                           .with('utente.clinic.*')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.visitDate !== '' &&

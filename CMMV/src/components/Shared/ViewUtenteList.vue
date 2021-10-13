@@ -4,7 +4,7 @@
           <q-card-section>
             <q-list v-if="utentes.length > 0" separator>
              <q-scroll-area :visible="false" style="height: 300px; width: 100%; max-width:90vw;">
-             <q-slide-item v-for="utente in utentes" :key="utente.id"  left-color="orange" right-color="red" @right="onRight(utente)">
+             <q-slide-item v-for="utente in utentes" :key="utente.id"  left-color="orange" right-color="red" @right="opt => onRight(opt,utente)">
                 <template v-slot:right v-if="utente.status === 'ENVIADO'">
                   <q-icon name="highlight_off" color="white" />
                 </template>
@@ -61,23 +61,34 @@ import { ref } from 'vue'
 import { date, useQuasar } from 'quasar'
 // import Appointment from 'src/store/models/appointment/Appointment'
 import Utente from 'src/store/models/utente/Utente'
+import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 export default {
     props: ['utentes', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
     emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:showUtenteRegistrationScreen'],
     setup () {
        const $q = useQuasar()
+       let timer
+
       return {
         show_dialog: ref(false),
         utente: {},
         $q,
+        timer,
         confirm: ref(false)
       }
     },
     methods: {
-       onRight (utente) {
+      finalize (reset) {
+        this.timer = setTimeout(() => {
+          reset()
+        }, 1000)
+      },
+      async onRight ({ reset }, utente) {
          utente.appointments = []
          utente.status = 'ASSOCIADO'
-         Utente.api().patch('/utente/' + utente.id, utente).then(resp => {
+         utente.communityMobilizer = CommunityMobilizer.find(localStorage.getItem('id_mobilizer'))
+         utente.communityMobilizer_id = Number(localStorage.getItem('id_mobilizer'))
+         await Utente.api().patch('/utente/' + utente.id, utente).then(resp => {
          this.$emit('update:utente', utente)
               this.$q.notify({
                   message: 'O utente ' + utente.firstNames + ' ' + utente.lastNames + ' foi removido da lista.',
@@ -88,6 +99,7 @@ export default {
                   message: 'Aconteceu um erro inesperado.',
                   color: 'red'
           })
+          this.finalize(reset)
           console.log('Erro no code ' + error)
         })
       },

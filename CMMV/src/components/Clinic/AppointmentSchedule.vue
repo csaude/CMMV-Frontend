@@ -48,9 +48,11 @@ export default {
         appointmentsPending () {
          return Appointment.query()
                            .with('utente')
-                           .with('clinic')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
                            .with('utente.address')
-                           .with('utente.clinic')
+                           .with('utente.province')
+                           .with('utente.district.province')
                            .where((appointment) => {
                                   return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
@@ -60,9 +62,11 @@ export default {
       appointmentsConfirmed () {
          return Appointment.query()
                            .with('utente')
-                           .with('clinic')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
                            .with('utente.address')
-                           .with('utente.clinic')
+                           .with('utente.province')
+                           .with('utente.district.province')
                            .where((appointment) => { return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser')) })
                            .orderBy('appointmentDate', 'desc')
                            .get()

@@ -1,0 +1,7 @@
+{
+  "appId": "mz.org.fgh.cmmv",
+  "appName": "cmmv",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

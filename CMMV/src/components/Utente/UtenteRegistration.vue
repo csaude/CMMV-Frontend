@@ -145,13 +145,13 @@
                 </div>
             </div-->
         </div>
-          <div class="absolute-bottomg">
+          <div class="absolute-bottom">
           <q-page-sticky position="bottom-right" :offset="[18, 18]">
             <q-btn size="xl" fab icon="save" type="submit" color="primary" />
           </q-page-sticky>
         </div>
-         <q-inner-loading :showing="visible">
-        <q-spinner size="100px" color="primary" />
+      <q-inner-loading :showing="visible">
+        <q-spinner-ios size="100px" color="primary" />
       </q-inner-loading>
     </form>
   </q-page>
@@ -266,7 +266,6 @@ export default {
         } else {
             this.utente.haspartner = false
         }
-        console.log(this.utente)
         Utente.api().post('/utente', this.utente).then(resp => {
             this.closeRegistration(false)
         }).catch(error => {
