@@ -18,9 +18,9 @@
                             >
                         <page-content
                             title="Onde fazer a circuncisão"
-                            content="A circuncisão é feita na unidade sanitária que oferece os serviços de circuncisão;"
-                            content1="É seguro fazer a circuncisão na unidade sanitária porque o procedimento é feito por profissionais de saúde qualificados e usa-se anestesia para evitar a dor e leva medicamento para tomar quando anestesia passar e não sentir a dor;"
-                            content2="A circuncisão é feita de forma rápida e segura dura 30 minutos, depois de terminar  apessoa pode ir para casa, a pé ou de chapa;"
+                            content="A circuncisão é feita na unidade sanitária que oferece os serviços de circuncisão."
+                            content1="É seguro fazer a circuncisão na unidade sanitária porque o procedimento é feito por profissionais de saúde qualificados e usa-se anestesia para evitar a dor e leva medicamento para tomar quando anestesia passar e não sentir a dor."
+                            content2="A circuncisão é feita de forma rápida e segura dura 30 minutos, depois de terminar  a pessoa pode ir para casa, a pé ou de chapa."
                             />
                 </div>
             </q-item>

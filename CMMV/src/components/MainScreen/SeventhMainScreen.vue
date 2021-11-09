@@ -23,10 +23,10 @@
                 </div>
             </q-item>
         </q-slide-item>
-        <div class="absolute-bottom q-px-lg q-mb-lg">
-            <div class="text-center q-mb-md">
+        <div class="absolute-bottom-middle q-px-lg q-py-sm">
+            <!--div class="text-center q-mb-md">
                 <q-btn disabled class="full-width q-py-xs" unelevated rounded color="primary" label="Registar" @click="$emit('nextScreen')" />
-            </div>
+            </div-->
             <div class="text-center">
                 <q-btn class="full-width q-py-xs" unelevated rounded color="primary" label="Entrar" @click="$emit('login')"/>
             </div>
@@ -34,8 +34,7 @@
         <transition
             appear
             enter-active-class="animated fadeIn"
-            leave-active-class="animated fadeOut"
-        >
+            leave-active-class="animated fadeOut">
         <seventh-screen-instruction/>
         </transition>
 

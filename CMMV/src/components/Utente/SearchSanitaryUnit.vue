@@ -27,7 +27,7 @@
       </q-card>
       <q-separator/>
         <div class="col q-pa-lg text-subtitle1 text-weight-bolder flex-center ellipsis">
-            Assiciar a Unidade Sanitária Preferida
+            Associar a Unidade Sanitária Preferida
         </div>
           <q-separator/>
           <div >
@@ -80,7 +80,7 @@
                         <q-item-label caption>{{clinic.type}}</q-item-label>
                       </q-item-section>
                       <q-item-section side top>
-                        <q-item-label>{{clinic.distance}}Km</q-item-label>
+                        <q-item-label>{{clinic.distance}}m</q-item-label>
                       </q-item-section>
                     </q-item>
                   </q-list>
@@ -149,7 +149,7 @@
 
 <script>
 import { ref } from 'vue'
-import { date, useQuasar } from 'quasar'
+import { date, useQuasar, QSpinnerIos } from 'quasar'
 import Clinic from '../../store/models/clinic/Clinic'
 import Appointment from 'src/store/models/appointment/Appointment'
 // import Utente from '../../store/models/utente/Utente'
@@ -179,7 +179,7 @@ export default {
                 distance: ''
             },
             rangekm: [
-              '<1km', '2km', '3km', '4km', '5km', '>5km'
+              '<1km', '1km - 5km', '5km - 10km', '>10km'
             ],
             appointment: {
                 appointmentDate: '',
@@ -189,7 +189,7 @@ export default {
                 status: ''
             },
             optionsFn (newDate) {
-                return newDate >= date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm')
+                return newDate >= date.formatDate(new Date(), 'YYYY-MM-DD HH:mm')
             },
             columns: [
             {
@@ -231,7 +231,7 @@ export default {
       }
     },
     methods: {
-     async   associar () {
+     async associar () {
           const newDate = new Date(this.appointment.appointmentDate)
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
@@ -263,7 +263,7 @@ export default {
         async getLocation () {
           return new Promise((resolve, reject) => {
             if (!('geolocation' in navigator)) {
-              reject(new Error('Localização Geográfica não está disponível.'))
+              reject(new Error('Localização Geográfica não está disponível. Por favor, ligue a Localização Geográfica no seu dispositivo.'))
         }
         navigator.geolocation.getCurrentPosition(pos => {
           resolve(pos)
@@ -274,6 +274,7 @@ export default {
     },
     async locateMe () {
         this.$q.loading.show({
+          spinner: QSpinnerIos,
           message: 'Carregando a sua localização. Por favor, aguarde...'
         })
       this.gettingLocation = true
@@ -324,53 +325,39 @@ export default {
       let clinic = {}
       this.clinics = []
       for (clinic of Clinic.query().with('province.*').with('district.*').get()) {
+         console.log(this.myLocation.distance)
         if (clinic.longitude !== undefined && clinic.longitude !== null) {
-        if (this.myLocation.distance === '<1km') {
+        if (this.myLocation.distance.includes('<1km')) {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-          if (calcDist <= 1) {
+          if (calcDist <= 1000) {
             clinic.distance = this.round(calcDist, -1)
             this.clinics.push(clinic)
           }
         } else {
-              if (this.myLocation.distance === '2km') {
+              if (this.myLocation.distance.includes('1km - 5km')) {
                  calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-                if (calcDist <= 2) {
-                   clinic.distance = this.round(calcDist, -1)
-                  this.clinics.push(clinic)
-                }
-              } else {
-                if (this.myLocation.distance === '3km') {
-                   calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-                  if (calcDist <= 3) {
-                     clinic.distance = this.round(calcDist, -1)
+                  if (calcDist > 1000 && calcDist <= 5000) {
+                    clinic.distance = this.round(calcDist, -1)
                     this.clinics.push(clinic)
                   }
               } else {
-                if (this.myLocation.distance === '4km') {
-                   calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-                  if (calcDist <= 4) {
-                     clinic.distance = this.round(calcDist, -1)
-                    this.clinics.push(clinic)
-                  }
-                } else {
-                   if (this.myLocation.distance === '5km') {
-                      calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-                     if (calcDist <= 5) {
+                if (this.myLocation.distance.includes('5km - 10km')) {
+                    calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
+                     console.log(calcDist)
+                    if (calcDist > 5000 && calcDist <= 10000) {
                       clinic.distance = this.round(calcDist, -1)
                       this.clinics.push(clinic)
-                     }
-                   } else {
+                    }
+                  } else {
                       calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
-                     if (calcDist > 5) {
-                        clinic.distance = this.round(calcDist, -1)
-                        this.clinics.push(clinic)
+                      if (calcDist > 10000) {
+                          clinic.distance = this.round(calcDist, -1)
+                          this.clinics.push(clinic)
+                    }
                   }
                 }
               }
-            }
-           }
           }
-        }
         }
         return this.clinics
       }

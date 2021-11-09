@@ -22,10 +22,10 @@
                             </div>
                             <div class="row">
                                 <ul>
-                                    <li>O penso deve ser removido na unidade sanitária 48 horas após a circuncisão;</li>
-                                    <li>O circuncisado retoma no  7º dia após o procedimento para avaliação do clínico ;</li>
-                                    <li>Remota a 6 semana para ultima avaliação e alta definitiva;</li>
-                                    <li>Em caso de qualquer problema depois do procedimento volte de imediato a unidade sanitária  ou ligue para o contacto recebido na unidade de circuncisão. </li>
+                                    <li>O penso deve ser removido na unidade sanitária 48 horas após a circuncisão</li>
+                                    <li>O circuncisado retorna no  7º dia após o procedimento para avaliação do clínico</li>
+                                    <li>Retorna a 6ª semana para última avaliação e alta definitiva</li>
+                                    <li>Em caso de qualquer problema depois do procedimento volte de imediato a unidade sanitária ou ligue para o contacto recebido na unidade de circuncisão. </li>
                                 </ul>
                             </div>
                         </div>

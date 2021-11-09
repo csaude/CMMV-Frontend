@@ -162,7 +162,7 @@ import Clinic from '../../store/models/clinic/Clinic'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, QSpinnerIos } from 'quasar'
 
 export default {
       props: ['clinic', 'backToDashBoard'],
@@ -239,6 +239,7 @@ export default {
     },
     async locateMe () {
         this.$q.loading.show({
+          spinner: QSpinnerIos,
           message: 'Carregando a sua localização. Por favor, aguarde...'
         })
       this.gettingLocation = true

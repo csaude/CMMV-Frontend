@@ -23,7 +23,7 @@
                 {{ props.row.time }}
             </q-td>
             <q-td key="code" :props="props">
-                {{ props.row.utente.code }}
+                {{ props.row.utente.systemNumber }}
             </q-td>
             <q-td key="nameUser" :props="props">
                 {{ props.row.utente.firstNames }} {{ props.row.utente.lastNames }}
@@ -38,7 +38,7 @@
                         v-else-if="!props.row.hasHappened"
                         @click="getSelectedString(props.row)"/>
              <span v-if="props.row.hasHappened"> Sim </span>
-             <span v-else> Não </span>
+             <!--span v-else> Não </span-->
             </q-td>
             </q-tr>
         </template>
@@ -51,7 +51,7 @@ import { date } from 'quasar'
 
 export default {
   props: ['rows', 'columns', 'updateClinicAppoitment'],
-  emits: ['update:appointment'],
+  emits: ['update:appointment', 'update:rows'],
   setup () {
     const selected = ref([])
     const lastIndex = ref(null)
@@ -69,7 +69,6 @@ export default {
   methods: {
     getSelectedString (appointment) {
       const newAppointment = {}
-      console.log(appointment)
         newAppointment.id = appointment.id
         newAppointment.hasHappened = appointment.hasHappened
       if (!appointment.hasHappened) {
@@ -78,6 +77,11 @@ export default {
         newAppointment.visitDate = new Date()
       }
       this.updateClinicAppoitment(newAppointment)
+      this.$emit('update:rows')
+
+      if (!appointment.hasHappened) {
+          this.$router.go(0)
+      }
     },
     formatDateDDMMMYYYY (value) {
         return date.formatDate(value, 'DD MMM YYYY')

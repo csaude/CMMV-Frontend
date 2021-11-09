@@ -21,7 +21,7 @@
             active-bg-color="primary"
             narrow-indicator
             style="border-radius: 2em; border-style: solid;border-color: #EE764E;"
-            align="center">
+            align="justify">
             <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
             <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="clinic" icon="local_hospital" label="Unidade de Serviço" />
         </q-tabs>

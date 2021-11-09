@@ -3,14 +3,17 @@
     <q-card style="width: 100%; max-width:100vw; border-radius: 3%">
           <q-card-section>
             <q-list v-if="utentes.length > 0" separator>
-             <q-scroll-area :visible="false" style="height: 300px; width: 100%; max-width:90vw;">
-             <q-slide-item v-for="utente in utentes" :key="utente.id"  left-color="orange" right-color="red" @right="opt => onRight(opt,utente)">
+             <q-scroll-area :visible="false" style="height: 280px; width: 100%; max-width:100vw;">
+             <q-slide-item v-for="utente in utentes" :key="utente.id" left-color="orange" right-color="red" @left="opt => onLeft(opt, utente)" @right="opt => onRight(opt,utente)">
                 <template v-slot:right v-if="utente.status === 'ENVIADO'">
                   <q-icon name="highlight_off" color="white" />
                 </template>
+                <template v-slot:left v-if="utente.status === 'ASSOCIADO'">
+                  <q-icon name="edit" color="white" />
+                </template>
                 <q-item>
-                    <q-item-section avatar>
-                      <q-avatar color="grey-6" text-color="white">
+                    <q-item-section side avatar>
+                      <q-avatar color="grey-6" text-color="white" :v-slot="utente">
                         {{ utente.firstNames.charAt(0).toUpperCase() }}
                       </q-avatar>
                     </q-item-section>
@@ -58,13 +61,13 @@
 
 <script>
 import { ref } from 'vue'
-import { date, useQuasar } from 'quasar'
+import { date, useQuasar, QSpinnerIos } from 'quasar'
 // import Appointment from 'src/store/models/appointment/Appointment'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 export default {
-    props: ['utentes', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
-    emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:showUtenteRegistrationScreen'],
+    props: ['indexEdit', 'utentes', 'utenteEdit', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
+    emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:indexEdit', 'update:utenteEdit', 'update:showUtenteRegistrationScreen'],
     setup () {
        const $q = useQuasar()
        let timer
@@ -81,30 +84,66 @@ export default {
       finalize (reset) {
         this.timer = setTimeout(() => {
           reset()
-        }, 1000)
+        }, 100)
+      },
+      onLeft ({ reset }, utenteOld) {
+        this.$q.dialog({
+              title: 'Confirmação',
+              message: 'Pretende editar os dados do Utente?',
+              ok: {
+              label: 'OK',
+              push: true,
+              color: 'blue'
+              },
+              cancel: {
+              label: 'Cancelar',
+              push: true,
+              color: 'negative'
+              },
+              persistent: true
+          }).onOk(() => {
+                this.$emit('update:utenteEdit', utenteOld)
+                this.$emit('update:indexEdit', 0)
+                this.$emit('update:showUtenteRegistrationScreen', true)
+          }).onCancel(() => {
+              // console.log('>>>> Cancel')
+               this.finalize(reset)
+          }).onDismiss(() => {
+            // this.finalize(reset)
+              // console.log('I am triggered on both OK and Cancel')
+          })
+        // native Javascript event
+        // console.log(evt)
       },
       async onRight ({ reset }, utente) {
+         this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+         })
          utente.appointments = []
          utente.status = 'ASSOCIADO'
          utente.communityMobilizer = CommunityMobilizer.find(localStorage.getItem('id_mobilizer'))
          utente.communityMobilizer_id = Number(localStorage.getItem('id_mobilizer'))
          await Utente.api().patch('/utente/' + utente.id, utente).then(resp => {
          this.$emit('update:utente', utente)
+          this.$q.loading.hide()
               this.$q.notify({
                   message: 'O utente ' + utente.firstNames + ' ' + utente.lastNames + ' foi removido da lista.',
                   color: 'teal'
               })
          }).catch(error => {
+          this.$q.loading.hide()
            this.$q.notify({
                   message: 'Aconteceu um erro inesperado.',
                   color: 'red'
           })
           this.finalize(reset)
+          this.$q.loading.hide()
           console.log('Erro no code ' + error)
         })
       },
       displayDate (newDate) {
-        return date.formatDate(newDate, 'YYYY-MM-DD')
+        return date.formatDate(newDate, 'DD-MM-YYYY')
       },
       activeUSForm (open, utente) {
         Utente.update(utente)

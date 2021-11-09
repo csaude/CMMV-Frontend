@@ -15,20 +15,20 @@
 
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="ConsultasDay">
-                  <clinic-appointments-table  :rows="getAppointmentsToday" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
+                  <clinic-appointments-table  v-model:rows="getAppointmentsToday" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
                 </q-tab-panel>
                 <q-tab-panel name="ConsultasOther">
-                   <clinic-appointments-table  :rows="appointmentsBDD" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
+                   <clinic-appointments-table  v-model:rows="appointmentsBDD" :columns="columns" :updateClinicAppoitment="updateClinicAppoitment"/>
                 </q-tab-panel>
                 <q-tab-panel name="ConsultasDone">
-                  <clinic-appointments-table  :rows="appointmentsDone" :columns="columns2" :updateClinicAppoitment="updateClinicAppoitment"/>
+                  <clinic-appointments-table  v-model:rows="appointmentsDone" :columns="columns2" :updateClinicAppoitment="updateClinicAppoitment"/>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
     </div>
 </template>
 <script>
-import { date, useQuasar } from 'quasar'
+import { date, useQuasar, QSpinnerIos } from 'quasar'
 import { ref } from 'vue'
 import Appointment from '../../store/models/appointment/Appointment'
 
@@ -70,7 +70,7 @@ export default {
                                   appointment.appointmentDate !== '' &&
                                   appointment.appointmentDate !== null &&
                                   appointment.appointmentDate !== undefined &&
-                                  ((new Date(appointment.appointmentDate)).getTime() === new Date().getTime()) &&
+                                  ((new Date(this.formatDate(appointment.appointmentDate))).getTime() === new Date(this.formatDate(new Date())).getTime()) &&
                                   appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
                           .orderBy('appointmentDate', 'desc')
@@ -89,7 +89,7 @@ export default {
                                   appointment.appointmentDate !== '' &&
                                   appointment.appointmentDate !== null &&
                                   appointment.appointmentDate !== undefined &&
-                                  ((new Date(appointment.appointmentDate)).getTime() < new Date().getTime()) &&
+                                  ((new Date(this.formatDate(appointment.appointmentDate))).getTime() < new Date(this.formatDate(new Date())).getTime()) &&
                                   appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
                           .orderBy('appointmentDate', 'desc')
@@ -106,6 +106,7 @@ export default {
                                   appointment.visitDate !== '' &&
                                   appointment.visitDate !== null &&
                                   appointment.visitDate !== undefined &&
+                                  appointment.hasHappened !== false &&
                                   appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
                           .orderBy('appointmentDate', 'desc')
@@ -113,19 +114,27 @@ export default {
       }
   },
   methods: {
-    getAppointments () {
-          Appointment.api().get('/appointment')
+    async getAppointments () {
+        await Appointment.api().get('/appointment').then(resp => {
+             this.$q.loading.hide()
+          }).catch(error => {
+         this.$q.loading.hide()
+        console.log('Erro no code ' + error)
+        })
        },
-    updateClinicAppoitment (appointment) {
-      Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
+    async updateClinicAppoitment (appointment) {
+      await Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
+        console.log(resp.response.data)
+        Appointment.update(resp.response.data)
+        this.$q.loading.hide()
         this.$q.notify({
               message: 'Consulta do paciente foi actualizada.',
               color: 'teal'
           })
       }).catch(error => {
+         this.$q.loading.hide()
         console.log('Erro no code ' + error)
         })
-        Appointment.update(appointment)
     },
     formatDate (value) {
         return date.formatDate(value, 'YYYY/MM/DD')
@@ -135,6 +144,10 @@ export default {
     }
   },
   mounted () {
+    this.$q.loading.show({
+      spinner: QSpinnerIos,
+      message: 'Por favor, aguarde...'
+    })
     this.getAppointments()
   },
   components: {

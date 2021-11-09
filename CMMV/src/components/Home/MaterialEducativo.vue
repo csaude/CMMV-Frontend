@@ -26,18 +26,25 @@
 
 <script>
 import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
+import { useQuasar, QSpinnerIos } from 'quasar'
 export default {
     props: ['docsOrImages'],
     data () {
+         const $q = useQuasar()
         return {
+        $q
         }
     },
     computed: {
         infoDocsOrImages () {
-            return InfoDocsOrImages.query().where('forMobilizer', true)
+            return InfoDocsOrImages.query().where('forMobilizer', true).get()
         }
     },
     mounted () {
+        this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+     })
         const offset = 0
         this.getInfoDocsOrImages(offset)
     },
@@ -45,8 +52,10 @@ export default {
        getInfoDocsOrImages (offset) {
             InfoDocsOrImages.api().get('/infoDocsOrImages?offset=' + offset + '&max=100').then(resp => {
                 offset = offset + 100
-                if (resp.response.data.length > 0) { setTimeout(this.getInfoDocsOrImages(offset), 2) }
+                console.log(resp.response.data)
+                 this.$q.loading.hide()
             }).catch(error => {
+                 this.$q.loading.hide()
                 console.log(error)
             })
         }
