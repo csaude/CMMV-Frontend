@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf">
   <div class="q-pa-sm">
   <utente-registration
-                v-if="this.showUtenteRegistrationScreen" :mobilizer="mobilizer"
+                v-if="this.showUtenteRegistrationScreen" :mobilizer="mobilizer" v-model:utenteUpdate="utente" v-model:indexEdit="indexEdit"
                 v-model:showUtenteRegistrationScreenProp="showUtenteRegistrationScreen"/>
    </div>
    <div v-if="!this.showUtenteRegistrationScreen">
@@ -77,65 +77,97 @@
       </q-card-section>
     </q-card>
     <q-space/>
-    <div class="q-pt-sm" style="row">
-      <q-list>
-      <q-expansion-item
-          group="MobilizerGroup"
-          popup default-opened
-          icon="groups"
-          header-class="text-primary"
-          label="Utentes">
-        <q-separator />
-       <q-tabs
-        v-model="tab"
-          active-color="primary"
-          indicator-color="primary"
-          align="justify"
-          narrow-indicator
-          class="text-grey q-mb-lg">
-        <!--q-tab name="pendentes" label="Pendentes" /-->
-        <q-tab name="associados" label="Associados" />
-        <q-tab name="enviados" label="Enviados" />
-      </q-tabs>
-      <div class="q-gutter-y-sm">
-        <q-tab-panels
-          v-model="tab"
-          animated
-          transition-prev="slide-right"
-          transition-next="slide-left"
-          class="text-dark text-left"
-          style="border-radius: 5%">
-          <!--q-tab-panel name="pendentes">
-            <div class="text-h6">Pendentes</div>
-            <utentes-view-list :utentes="utentesPendente"/>
-          </q-tab-panel-->
-          <q-tab-panel name="associados">
-            <utentes-view-list v-if="this.mobilizer" :utentes="utentesAssociados" v-model:showUtenteULinkScreenProp="showUtenteULinkScreen" />
-              <div class="row justify-center">
-                <q-btn size="xl" fab icon="add" @click="showUtenteRegistrationScreen = true" color="primary" />
+    <div class="q-pt-xl q-gutter-xl flex flex-center" style="row" v-if="this.optionButtons">
+          <q-btn
+            outline
+            push
+            wait-for-ripple
+            dense
+            color=“primary”
+            padding="xl"
+            class="text-primary"
+            @click="this.optionButtons = false, this.docsDisplay = false, this.clientsManager = true">
+             <div class="">
+             <q-icon name="group" size="100px"/>
+             <div>UTENTES</div>
+             </div>
+       </q-btn>
+        <q-btn
+              outline
+              push
+              wait-for-ripple
+              dense
+              color=“primary”
+              padding="xl"
+              class="text-primary"
+              @click="this.optionButtons = false, this.clientsManager = false, this.docsDisplay = true">
+              <div class="">
+              <q-icon name="snippet_folder" size="100px"/>
+              <div>MATERIAL EDUCATIVO</div>
               </div>
-          </q-tab-panel>
-          <q-tab-panel name="enviados">
-           <utentes-view-list :utentes="utentesEnviados"/>
-          </q-tab-panel>
-        </q-tab-panels>
-      </div>
-      </q-expansion-item>
-      <q-expansion-item
-            group="MobilizerGroup"
-            popup icon="snippet_folder"
-            header-class="text-primary"
-            label="Material Educativo">
-        <q-separator />
+        </q-btn>
+    </div>
+     <div class="q-pa-md" style="max-width: 100%" v-if="this.clientsManager">
+            <q-tabs
+              v-model="tab"
+                active-color="white"
+                indicator-color="primary"
+                align="justify"
+                active-bg-color="primary"
+                narrow-indicator
+                style="border-radius: 2em; border-style: solid;border-color: #EE764E;"
+                class="text-grey q-mb-lg">
+              <!--q-tab name="pendentes" label="Pendentes"/-->
+              <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="associados" label="Associados"/>
+              <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="enviados" label="Enviados" />
+            </q-tabs>
+            <div class="q-gutter-y-sm">
+              <q-tab-panels
+                v-model="tab"
+                animated
+                transition-prev="slide-right"
+                transition-next="slide-left"
+                class="text-dark text-left"
+                style="border-radius: 5%">
+                <q-tab-panel name="pendentes">
+                  <div class="text-h6">Pendentes</div>
+                  <utentes-view-list :utentes="utentesPendente"/>
+                </q-tab-panel>
+                <q-tab-panel name="associados">
+                  <utentes-view-list
+                        v-if="this.mobilizer"
+                        :mobilizer="mobilizer"
+                        :utentes="utentesAssociados"
+                        v-model:indexEdit="indexEdit"
+                        v-model:utenteEdit="utente"
+                        v-model:showUtenteULinkScreenProp="showUtenteULinkScreen"
+                        v-model:showUtenteRegistrationScreen="showUtenteRegistrationScreen" />
+                    <q-page-sticky position="bottom-left" :offset="[18, 18]">
+                      <q-btn flat round color="primary" icon="west" @click="this.optionButtons = true, this.clientsManager = false, this.docsDisplay = false" />
+                    </q-page-sticky>
+                    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+                      <q-btn size="xl" fab icon="add" @click="showUtenteRegistrationScreen = true, this.indexEdit = 1" color="primary" />
+                    </q-page-sticky>
+                </q-tab-panel>
+                <q-tab-panel name="enviados">
+                <utentes-view-list :utentes="utentesEnviados"/>
+                </q-tab-panel>
+              </q-tab-panels>
+            </div>
+     </div>
+    <div class="q-pa-md" style="max-width: 100%" v-if="this.docsDisplay">
+      <q-separator />
         <view-docs/>
-      </q-expansion-item>
-    </q-list>
+        <q-page-sticky position="bottom-left" :offset="[18, 18]">
+          <q-btn flat round color="primary" icon="west" @click="this.optionButtons = true, this.clientsManager = false, this.docsDisplay = false" />
+        </q-page-sticky>
     </div>
    </div>
   </q-layout>
 </template>
 <script>
 import { ref } from 'vue'
+import { useQuasar, QSpinnerIos } from 'quasar'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Clinic from 'src/store/models/clinic/Clinic'
@@ -143,12 +175,34 @@ import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 export default {
   setup () {
+    const $q = useQuasar()
     return {
        tab: ref('associados'),
        leftDrawerOpen: ref(false),
        showUtenteRegistrationScreen: ref(false),
        showUtenteULinkScreen: ref(false),
-       clientList: ref(false)
+       clientList: ref(false),
+       optionButtons: ref(true),
+       clientsManager: ref(false),
+       docsDisplay: ref(false),
+       indexEdit: 1,
+       $q,
+       utente: {
+            firstNames: '',
+            lastNames: '',
+            birthDate: '',
+            cellNumber: '',
+            whatsappNumber: '',
+            preferedLanguage: '',
+            documentType: '',
+            documentNumber: '',
+            systemNumber: '',
+            haspartner: '',
+            age: '',
+            status: 'PENDENTE',
+            addresses: [],
+            communityMobilizer: {}
+        }
       }
   },
   computed: {
@@ -170,7 +224,9 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
+                   .with('addresses')
                    .where('status', 'PENDENTE')
+                   .orderBy('firstNames')
                    .get()
     },
      utentesAssociados () {
@@ -180,7 +236,9 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
+                   .with('addresses')
                    .where('status', 'ASSOCIADO')
+                   .orderBy('firstNames')
                    .get()
     },
      utentesEnviados () {
@@ -190,7 +248,9 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
+                   .with('addresses')
                    .where('status', 'ENVIADO')
+                   .orderBy('firstNames')
                    .get()
     }
   },
@@ -199,10 +259,12 @@ export default {
       await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
              offset = offset + 100
              console.log(resp.response.data)
+              this.$q.loading.hide()
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllUtente(offset), 2)
             // }
         }).catch(error => {
+           this.$q.loading.hide()
             console.log(error)
         })
      },
@@ -229,10 +291,12 @@ export default {
     async getAllDistricts (offset) {
         await District.api().get('/district?offset=' + offset + '&max=100').then(resp => {
             offset = offset + 100
+             this.$q.loading.hide()
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllClinics(offset), 2)
             // }
             }).catch(error => {
+               this.$q.loading.hide()
                 console.log(error)
             })
     },
@@ -244,14 +308,23 @@ export default {
      }
   },
   created () {
+    this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+     })
+    const offset = 0
+    this.getMobilizer()
+    this.getAllProvinces(offset)
+    this.getAllDistricts(offset)
   },
   mounted () {
     const offset = 0
-    this.getMobilizer()
+     this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+     })
     this.getAllClinics(offset)
     this.getAllUtente(offset)
-    this.getAllProvinces(offset)
-    this.getAllDistricts(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,

@@ -25,9 +25,7 @@
     "plugins": {
       "cordova-plugin-whitelist": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-geolocation": {
-        "GPS_REQUIRED": "true"
-      },
+      "cordova-plugin-geolocation": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-wkwebview-engine": {},
       "cordova-support-google-services": {}

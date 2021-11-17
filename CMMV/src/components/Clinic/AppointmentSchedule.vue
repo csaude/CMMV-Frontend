@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { date } from 'quasar'
+import { date, QSpinnerIos } from 'quasar'
 import Appointment from '../../store/models/appointment/Appointment'
 import Utente from '../../store/models/utente/Utente'
 import Clinic from '../../store/models/clinic/Clinic'
@@ -81,9 +81,12 @@ export default {
     methods: {
   async getAppointments () {
        // Buscar as consults pelo id da clinica logada
-    await Appointment.api().get('/appointment/clinic/' + localStorage.getItem('id_clinicUser')).then(resp => {
+    await Appointment.api().get('/appointment/clinic/' + localStorage.getItem('id_clinicUser'))
+          .then(resp => {
+            this.$q.loading.hide()
           }).catch(error => {
-          console.log('Erro no code ' + error)
+            this.$q.loading.hide()
+            console.log('Erro no code ' + error)
         })
           // Utente.api().get('/utente')
        },
@@ -95,6 +98,10 @@ export default {
         }
        },
        mounted () {
+          this.$q.loading.show({
+            spinner: QSpinnerIos,
+            message: 'Por favor, aguarde...'
+          })
          this.getAppointments()
        //  this.fillUtenteOnAppointment()
     },

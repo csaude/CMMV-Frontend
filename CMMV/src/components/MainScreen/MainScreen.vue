@@ -34,13 +34,23 @@
             </q-img>
         </div>
     </div>
-    <div class="absolute-bottom flex flex-center q-my-xl">
-    <q-btn
-        size="xl"
-        unelevated round
-        @click="$emit('nextScreen')"
+    <div class="absolute-bottom flex flex-center q-my-lg">
+    <q-fab
+        v-model="fab"
+        vertical-actions-align="center"
         color="primary"
-        icon="chevron_right"/>
+        icon="keyboard_arrow_up"
+        direction="up">
+        <q-fab-action color="primary" @click="$emit('login')" icon="lock_open" label="Entrar" />
+        <q-fab-action color="secondary" @click="$emit('nextScreen')" icon="chevron_right" label="Apresentação" />
+      </q-fab>
+
+        <!--q-btn
+            size="xl"
+            unelevated round
+            @click="$emit('nextScreen')"
+            color="primary"
+            icon="chevron_right"/-->
     </div>
     <transition
         appear
@@ -53,24 +63,26 @@
 </template>
 <script>
     import { ref } from 'vue'
-
         export default {
               setup () {
                 return {
+                    fab: ref(false),
                     slide: ref(1),
                     autoplay: ref(true)
                 }
             },
-             components: {
+            components: {
                 'main-screen-instruction': require('components/UserInstructions/MainScreenInstruction.vue').default
              },
             computed: {
                 computedTitleClass () {
-                    return this.$q.platform.is.desktop ? 'text-h1-xl' : 'text-h4'
+                    return this.$q.platform.is.desktop ? 'text-h1-xl' : 'text-h5'
                 },
                 computedSubTitleClass () {
-                    return this.$q.platform.is.desktop ? 'text-h2-xl' : 'text-h4'
+                    return this.$q.platform.is.desktop ? 'text-h2-xl' : 'text-h5'
                 }
+            },
+            methods: {
             }
         }
 </script>

@@ -7,7 +7,7 @@
                 round
                 color="white"
                 icon="chevron_left"
-                @click="closeRegistration(false)"/>
+                @click="closeRegistrationVerification()"/>
         </div>
          <div class="row text-white text-weight-bolder justify-center">
             Registar Utente
@@ -63,14 +63,12 @@
                         dense
                         rounded outlined
                         v-model="utente.birthDate"
-                        mask="date"
                         ref="birthDate"
-                        :rules="['date']"
                         label="Data de Nascimento">
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                <q-date v-model="utente.birthDate" >
+                                <q-date v-model="utente.birthDate" mask="DD-MM-YYYY">
                                 <div class="row items-center justify-end">
                                     <q-btn v-close-popup label="Close" color="primary" flat />
                                 </div>
@@ -83,7 +81,7 @@
                 <br>
                 <div class="col-4 q-pl-sm">
                     <input-number-field
-                        v-model="calculateAge"
+                        v-model="utente.age"
                         label="Idade"
                         ref="age"
                         :number="calculateAge"
@@ -120,17 +118,27 @@
                     lazy-rules
                     label="Distrito/Cidade" />
             </div>
+             <div class="row q-mb-md">
+                <q-input
+                    outlined
+                    rounded
+                    dense
+                    class="col"
+                    ref="bairro"
+                    v-model="address.neighboorhood"
+                    label="Bairro" />
+            </div>
             <div class="row q-mb-md">
                 <q-input
                     class="col"
                     v-model="address.residence"
-                    :rules="[ val => (val.length > 0) || 'Por favor indique a morada']"
+                    :rules="[ val => (val.length > 0) || 'Por favor indique a residência']"
                     lazy-rules
                     outlined
                     dense
                     ref="morada"
                     type="textarea"
-                    label="Morada"
+                    label="Residência"
                     />
             </div>
             <!--div class="row q-mb-md" >
@@ -150,9 +158,6 @@
             <q-btn size="xl" fab icon="save" type="submit" color="primary" />
           </q-page-sticky>
         </div>
-      <q-inner-loading :showing="visible">
-        <q-spinner-ios size="100px" color="primary" />
-      </q-inner-loading>
     </form>
   </q-page>
 </template>
@@ -161,8 +166,12 @@
 import Utente from 'src/store/models/utente/Utente'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
+import { useQuasar, QSpinnerIos, date } from 'quasar'
+import { ref } from 'vue'
+
 export default {
   data () {
+    const $q = useQuasar()
     return {
       utente: {
             firstNames: '',
@@ -182,18 +191,20 @@ export default {
         },
         currUtente: {},
         selectedProvince: '',
+        editedIndex: '',
         address: {
             city: '',
             residence: ' ',
+            neighboorhood: '',
             latitude: '',
             longitude: '',
             district: null,
             province: null
         },
-        visible: false
+        $q
     }
   },
-    props: ['mobilizer', 'showUtenteRegistrationScreenProp'],
+    props: ['indexEdit', 'utenteUpdate', 'mobilizer', 'showUtenteRegistrationScreenProp'],
     emits: ['update:showUtenteRegistrationScreenProp'],
     components: {
         'combo-field': require('components/Shared/ComboField.vue').default,
@@ -205,25 +216,81 @@ export default {
     },
     created () {
         this.currUtente = Object.assign({}, this.utente)
-    },
-    mounted () {
+        console.log(this.utenteUpdate)
+        if (this.indexEdit === 0) {
+            this.utente = Object.assign({}, this.utenteUpdate)
+            this.utente.birthDate = new Date(this.utenteUpdate.birthDate)
+            this.utente.haspartner = ref(true)
+            console.log(this.utente)
+            if (this.utente.addresses.length > 0) {
+                this.address = this.utente.addresses[0]
+                this.address.district = District.query().with('province').find(this.address.district_id)
+                this.address.province = this.address.district.province
+                this.address.province_id = this.address.district.province.id
+            }
+        } else {
+           this.utente = {
+                firstNames: '',
+                lastNames: '',
+                birthDate: '',
+                cellNumber: '',
+                whatsappNumber: '',
+                preferedLanguage: '',
+                documentType: '',
+                documentNumber: '',
+                systemNumber: '',
+                haspartner: '',
+                age: '',
+                status: 'PENDENTE',
+                addresses: [],
+                communityMobilizer: {}
+           }
+        }
+        this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+        })
         const offset = 0
         this.getAllProvinces(offset)
+        this.getAllDistricts(offset)
+    },
+    mounted () {
     },
     computed: {
         calculateAge () {
-        const idade = Math.floor((new Date() - new Date(this.utente.birthDate)) / 31557600000)
-        return idade
+            const valDate = this.utente.birthDate !== null && this.utente.birthDate !== undefined ? this.utente.birthDate : '01-01-' + new Date().getUTCFullYear()
+            const initialDate = String(valDate).replace('-', '.').replace('-', '.')
+            const pattern = /(\d{2})\.(\d{2})\.(\d{4})/
+            const dt = new Date(initialDate.replace(pattern, '$3-$2-$1'))
+            const idade = Math.floor((new Date() - dt) / 31557600000)
+            return idade
+        },
+        calculateBirthDate () {
+            const realYear = (new Date().getUTCFullYear()) - this.utente.age
+            const birthDate = this.utente.age === 0 || this.utente.age === '' ? '' : new Date(String(realYear), '00', '01')
+        return birthDate
         },
          provinces () {
             return Province.all()
         },
         districts () {
         if (this.address.province !== null) {
-            return District.query().withAll().where('province_id', 1).get()
+            return District.query().withAll().where('province_id', this.address.province.id).get()
         } else {
             return null
         }
+        }
+    },
+    watch: {
+        calculateAge: {
+            handler: function (newVal) {
+            this.utente.age = newVal !== 0 ? Number(newVal) : ''
+            }
+        },
+        calculateBirthDate: {
+            handler: function (newVal) {
+            this.utente.birthDate = date.formatDate(newVal, 'DD-MM-YYYY')
+            }
         }
     },
     methods: {
@@ -231,11 +298,56 @@ export default {
           this.utente.age = this.calculateAge
         },
         closeRegistration (close) {
+        this.$q.loading.show({
+            spinner: QSpinnerIos,
+            message: 'Por favor, aguarde...'
+         })
             setTimeout(() => {
-          this.visible = false
-         this.$emit('update:showUtenteRegistrationScreenProp', close)
-        }, 2000)
+                this.$q.loading.hide()
+                this.$emit('update:showUtenteRegistrationScreenProp', close)
+            }, 100)
         },
+        closeRegistrationVerification () {
+            if ((this.address.province !== null && this.address.province !== undefined && this.address.province !== '') ||
+                (this.address.residence !== null && this.address.residence !== undefined && this.address.residence.trim().length > 0) ||
+                (this.utente.firstNames.length > 0) || (this.utente.lastNames.length > 0)) {
+                    this.verificationDialog()
+                } else {
+                    this.$q.loading.show({
+                    spinner: QSpinnerIos,
+                    message: 'Por favor, aguarde...'
+                    })
+                    setTimeout(() => {
+                        this.$q.loading.hide()
+                        this.$emit('update:showUtenteRegistrationScreenProp', false)
+                    }, 100)
+            }
+        },
+        verificationDialog () {
+            this.$q.dialog({
+                title: 'Confirmação',
+                message: 'Pretende voltar ao ecrã anterior?',
+                ok: {
+                label: 'OK',
+                push: true,
+                color: 'blue'
+                },
+                cancel: {
+                label: 'Cancelar',
+                push: true,
+                color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                 this.utente = {}
+                 this.$emit('update:showUtenteRegistrationScreenProp', false)
+            }).onCancel(() => {
+                // console.log('>>>> Cancel')
+            }).onDismiss(() => {
+                // console.log('I am triggered on both OK and Cancel')
+            })
+        },
+
         validateUtente () {
             this.$refs.nome.$refs.ref.validate()
             this.$refs.apelido.$refs.ref.validate()
@@ -247,40 +359,95 @@ export default {
                 !this.$refs.phone.hasError && !this.$refs.whatsapp.hasError &&
                 !this.$refs.age.hasError && !this.$refs.district.hasError &&
                 !this.$refs.morada.hasError) {
-                this.saveUtente()
+                this.saveOrUpdateUtente()
+            } else {
+                this.$q.loading.hide()
             }
         },
-        saveUtente () {
-        this.visible = true
-        this.address.city = this.address.district.description
-        this.utente.addresses.push(this.address)
-        this.utente.birthDate = new Date(this.utente.birthDate)
-        this.utente.communityMobilizer = this.mobilizer
-        this.utente.communityMobilizer_id = this.mobilizer.id
+        saveOrUpdateUtente () {
+            console.log('this.utente.birthDate')
+            console.log(this.utente.birthDate)
+            this.address.city = this.address.district.description
+            this.utente.addresses.push(this.address)
+            this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
+            console.log(this.utente.birthDate)
+            this.utente.communityMobilizer = this.mobilizer
+            this.utente.communityMobilizer_id = this.mobilizer.id
 
-        if (this.utente.communityMobilizer !== null) {
-             this.utente.status = 'ASSOCIADO'
+            if (this.utente.communityMobilizer !== null) {
+                this.utente.status = 'ASSOCIADO'
+            }
+            if (this.utente.haspartner === 'true') {
+                this.utente.haspartner = true
+            } else {
+                this.utente.haspartner = false
+            }
+            if (this.indexEdit === 1) {
+                Utente.api().post('/utente', this.utente, this.$q.loading.show({
+                                spinner: QSpinnerIos,
+                                message: 'Por favor, aguarde...'
+                                }))
+                            .then(resp => {
+                                console.log(resp.response)
+                                this.$q.notify({
+                                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi registado com sucesso.',
+                                    color: 'teal'
+                                })
+                this.closeRegistration(false)
+            }).catch(error => {
+                console.log(error)
+                this.closeRegistration(false)
+            })
+            } else {
+                Utente.api().patch('/utente/' + this.utente.id, this.utente, this.$q.loading.show({
+                                spinner: QSpinnerIos,
+                                message: 'Por favor, aguarde...'
+                                })).then(resp => {
+                                    console.log(resp.response)
+                                    Utente.update(this.utente)
+                                this.$q.notify({
+                                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
+                                    color: 'teal'
+                                })
+                this.closeRegistration(false)
+            }).catch(error => {
+                console.log(error)
+                this.closeRegistration(false)
+            })
         }
-        if (this.utente.haspartner === 'true') {
-            this.utente.haspartner = true
-        } else {
-            this.utente.haspartner = false
-        }
-        Utente.api().post('/utente', this.utente).then(resp => {
-            this.closeRegistration(false)
-        }).catch(error => {
-            console.log(error)
-        })
     },
-    getAllProvinces (offset) {
+    editaUtente (utente) {
+      this.editedIndex = 0
+      this.utente = Object.assign({}, utente)
+      console.log(utente)
+    //   this.address.city = this.address.district.description
+    //   this.utente.addresses.push(this.address)
+    //   this.utente.birthDate = new Date(this.utente.birthDate)
+    //   this.utente.communityMobilizer = this.mobilizer
+    //   this.utente.communityMobilizer_id = this.mobilizer.id
+    },
+    async getAllProvinces (offset) {
         if (this.provinces.length <= 0) {
-                Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+                await Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
                     offset = offset + 100
-                    if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
+                    this.$q.loading.hide()
                 }).catch(error => {
+                    this.$q.loading.hide()
                     console.log(error)
                 })
         }
+    },
+      async getAllDistricts (offset) {
+        await District.api().get('/district?offset=' + offset + '&max=100').then(resp => {
+            offset = offset + 100
+             this.$q.loading.hide()
+            // if (resp.response.data.length > 0) {
+            //   setTimeout(this.getAllClinics(offset), 2)
+            // }
+            }).catch(error => {
+               this.$q.loading.hide()
+                console.log(error)
+            })
     }
   }
 }

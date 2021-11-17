@@ -1,7 +1,10 @@
 <template>
     <q-page>
         <div class="  full-width full-height column" >
-            <main-screen v-if="showMainScreen" @nextScreen="showMainScreen = false, showSecondScreen = true"/>
+            <main-screen
+                v-if="showMainScreen"
+                @nextScreen="showMainScreen = false, showSecondScreen = true"
+                @login="showLoginScreen = true, showMainScreen = false"/>
             <second-screen
                 v-if="showSecondScreen"
                 @previousScreen="showSecondScreen = !showSecondScreen, showMainScreen = true"
@@ -43,7 +46,7 @@
             <Login
                 v-if="showLoginScreen"
                 @goHome="goHome"
-                @previousScreen="showLoginScreen = false, showSeventhScreen = true" />
+                @previousScreen="showLoginScreen = false, showMainScreen = true" />
             <Home
                 v-if="showHomeScreen"
                 :utente="userParent"
