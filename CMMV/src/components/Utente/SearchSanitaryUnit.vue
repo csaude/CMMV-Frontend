@@ -111,7 +111,10 @@
                             <template v-slot:prepend>
                               <q-icon name="event" class="cursor-pointer">
                                 <q-popup-proxy transition-show="scale" transition-hide="scale">
-                                  <q-date v-model="appointment.appointmentDate" :options="optionsFn" mask="YYYY-MM-DD HH:mm">
+                                  <q-date
+                                    v-model="appointment.appointmentDate"
+                                    :options="blockDataPassado"
+                                    mask="YYYY-MM-DD HH:mm">
                                     <div class="row items-center justify-end">
                                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                                     </div>
@@ -152,6 +155,7 @@ import { ref } from 'vue'
 import { date, useQuasar, QSpinnerIos } from 'quasar'
 import Clinic from '../../store/models/clinic/Clinic'
 import Appointment from 'src/store/models/appointment/Appointment'
+import moment from 'moment'
 // import Utente from '../../store/models/utente/Utente'
 // import District from '../../store/models/district/District'
 // import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
@@ -231,6 +235,11 @@ export default {
       }
     },
     methods: {
+      moment,
+        date: ref(moment(date).format('YYYY/MM/DD')),
+        blockDataPassado (date) {
+            return date >= moment(new Date()).format('YYYY/MM/DD')
+        },
      async associar () {
           const newDate = new Date(this.appointment.appointmentDate)
             this.relatedUtente.clinic = this.link

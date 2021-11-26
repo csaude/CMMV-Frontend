@@ -49,6 +49,9 @@
                <q-tab-panel name="clinics" >
                 <AddClinic  />
               </q-tab-panel>
+              <q-tab-panel name="configucaoes" >
+                <Settings  />
+              </q-tab-panel>
              <!--  <q-tab-panel name="mobilizer" >
                 <MobilizerManagement  />
               </q-tab-panel> -->
@@ -61,6 +64,7 @@
                         <!--q-tab name="reports" icon="show_chart" label="Relatórios" /-->
                         <!--q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" /-->
                         <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" />
+                        <q-tab name="configucaoes" icon="settings" label="Definições" />
                     </q-tabs>
                 </q-toolbar>
             </q-footer>
@@ -83,6 +87,7 @@ export default {
         AppointmentSchedule: require('components/Clinic/AppointmentSchedule.vue').default,
         AppointmentList: require('components/Clinic/ClinicAppointments.vue').default,
         AddClinic: require('components/Clinic/AddClinic.vue').default,
+        Settings: require('components/Clinic/Settings.vue').default,
       //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default
     },
