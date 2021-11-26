@@ -68,11 +68,10 @@
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                <q-date v-model="utente.birthDate" mask="DD-MM-YYYY">
-                                <div class="row items-center justify-end">
-                                    <q-btn v-close-popup label="Close" color="primary" flat />
-                                </div>
-                                </q-date>
+                                 <q-date
+                                        v-model="utente.birthDate"
+                                        :options="blockDataFutura"
+                                    />
                             </q-popup-proxy>
                             </q-icon>
                         </template>
@@ -141,17 +140,13 @@
                     label="Residência"
                     />
             </div>
-            <!--div class="row q-mb-md" >
-                <div class="col-2">
-                    <q-btn push  dense color="white" text-color="black" round icon="my_location" />
-                </div>
-                <div class="col-4 q-pl-md">
-                    <input-text-field v-model="address.latitude" label="Latitude" />
-                </div>
-                <div class="col-4 q-pl-md">
-                    <input-text-field v-model="address.longitude" label="Longitude" />
-                </div>
-            </div-->
+            <div class="row q-my-lg">Minha localização</div>
+            <q-separator/>
+            <div class="row q-mb-md">
+                <q-btn push flat color="white" text-color="black" round icon="my_location" @click="locateMe"/>
+                <q-input readonly v-model="address.latitude" label="Latitude" />
+                <q-input readonly v-model="address.longitude" label="Longitude" />
+            </div>
         </div>
           <div class="absolute-bottom">
           <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -168,12 +163,19 @@ import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import { useQuasar, QSpinnerIos, date } from 'quasar'
 import { ref } from 'vue'
+import moment from 'moment'
 
 export default {
+    setup () {
+        return {
+        }
+    },
   data () {
     const $q = useQuasar()
     return {
-      utente: {
+        hoje: String(this.formatDateYYYYMMDD(new Date())),
+        birthMinDate: new Date(),
+        utente: {
             firstNames: '',
             lastNames: '',
             birthDate: '',
@@ -201,7 +203,15 @@ export default {
             district: null,
             province: null
         },
-        $q
+        $q,
+        location: null,
+        gettingLocation: false,
+        errorStr: null,
+        myLocation: {
+            latitude: '',
+            longitude: '',
+            distance: ''
+        }
     }
   },
     props: ['indexEdit', 'utenteUpdate', 'mobilizer', 'showUtenteRegistrationScreenProp'],
@@ -255,6 +265,8 @@ export default {
         this.getAllDistricts(offset)
     },
     mounted () {
+        this.locateMe()
+        console.log(moment(date).format('YYYY/MM/DD'))
     },
     computed: {
         calculateAge () {
@@ -284,16 +296,24 @@ export default {
     watch: {
         calculateAge: {
             handler: function (newVal) {
-            this.utente.age = newVal !== 0 ? Number(newVal) : ''
+                this.utente.age = newVal !== 0 ? Number(newVal) : ''
             }
         },
         calculateBirthDate: {
             handler: function (newVal) {
-            this.utente.birthDate = date.formatDate(newVal, 'DD-MM-YYYY')
+                this.utente.birthDate = date.formatDate(newVal, 'DD-MM-YYYY')
             }
         }
     },
     methods: {
+        moment,
+        formatDateYYYYMMDD (value) {
+            return date.formatDate(value, 'YYYY/MM/DD')
+        },
+        date: ref(moment(date).format('YYYY/MM/DD')),
+        blockDataFutura (date) {
+            return date <= moment(new Date()).format('YYYY/MM/DD')
+        },
         calculateAge1 () {
           this.utente.age = this.calculateAge
         },
@@ -367,7 +387,9 @@ export default {
         saveOrUpdateUtente () {
             console.log('this.utente.birthDate')
             console.log(this.utente.birthDate)
-            this.address.city = this.address.district.description
+            this.address.city = this.address.district.description // Duvida
+            console.log(this.address.latitude)
+            console.log(this.address.longitude)
             this.utente.addresses.push(this.address)
             this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
             console.log(this.utente.birthDate)
@@ -448,6 +470,43 @@ export default {
                this.$q.loading.hide()
                 console.log(error)
             })
+    },
+    // Mbj
+    async getLocation () {
+          return new Promise((resolve, reject) => {
+            if (!('geolocation' in navigator)) {
+              reject(new Error('Localização Geográfica não está disponível. Por favor, ligue a Localização Geográfica no seu dispositivo.'))
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          resolve(pos)
+        }, err => {
+          reject(err)
+        })
+      })
+    },
+    async locateMe () {
+        this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Carregando a sua localização. Por favor, aguarde...'
+        })
+      this.gettingLocation = true
+      try {
+        this.gettingLocation = false
+        this.location = await this.getLocation()
+        this.address.latitude = this.location.coords.latitude
+        this.address.longitude = this.location.coords.longitude
+        this.$q.loading.hide()
+      } catch (e) {
+        this.gettingLocation = false
+         this.errorStr = e.message
+          this.$q.loading.hide()
+          this.$q.dialog({
+          title: 'Erro no carregamento da localização',
+          message: this.errorStr
+        }).onOk(() => {
+          this.$q.loading.hide()
+        })
+      }
     }
   }
 }

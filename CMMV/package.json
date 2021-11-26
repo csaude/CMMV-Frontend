@@ -10,14 +10,20 @@
     "icons": "icongenie generate -i AppIcon.png --skip-trim"
   },
   "dependencies": {
+    "@quasar/cli": "^1.2.2",
     "@quasar/extras": "^1.10.11",
+    "@vonage/server-sdk": "^2.10.10",
     "@vuex-orm/core": "^0.36.4",
     "@vuex-orm/plugin-axios": "^0.9.4",
     "animate.css": "^4.1.1",
     "core-js": "^3.6.5",
+    "moment": "^2.29.1",
+    "nexmo-client": "^8.3.0",
+    "nexmo-stitch": "^3.0.1",
     "quasar": "^2.0.4",
     "vue": "^3.1.5",
     "vue-ctk-date-time-picker": "^2.5.0",
+    "vue-tel-input": "^5.6.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

@@ -11,7 +11,9 @@
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                <q-date v-model="editedAppointment.appointmentDate">
+                                <q-date
+                                    :options="blockDataPassado"
+                                    v-model="editedAppointment.appointmentDate">
                                 <div class="row items-center justify-end">
                                     <q-btn v-close-popup label="Close" color="primary" flat />
                                 </div>
@@ -46,6 +48,8 @@
 <script>
 import { date } from 'quasar'
 import Appointment from 'src/store/models/appointment/Appointment'
+import { ref } from 'vue'
+import moment from 'moment'
 export default {
     props: ['appointment'],
     data () {
@@ -54,6 +58,11 @@ export default {
         }
     },
     methods: {
+        moment,
+        date: ref(moment(date).format('YYYY/MM/DD')),
+        blockDataPassado (date) {
+            return date >= moment(new Date()).format('YYYY/MM/DD')
+        },
         formatDateShort (value) {
             return date.formatDate(value, 'DD-MM')
         },

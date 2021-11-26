@@ -22,8 +22,8 @@ VuexORM.use(VuexORMAxios, {
     headers: {
       'X-Requested-With': 'XMLHttpRequest'
     },
-     baseURL: 'http://dev.fgh.org.mz:4110/api'
-    // baseURL: 'http://192.168.8.100:8882/api'
+     // baseURL: 'http://dev.fgh.org.mz:4110/api'
+   baseURL: 'http://localhost:8181/api'
   })
 
     const database = new VuexORM.Database()
