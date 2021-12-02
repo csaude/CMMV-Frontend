@@ -64,7 +64,8 @@
                         rounded outlined
                         v-model="utente.birthDate"
                         ref="birthDate"
-                        label="Data de Nascimento">
+                        label="Data de Nascimento"
+                        :input="idadeCalculator(utente.birthDate)">
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -79,13 +80,24 @@
                 </div>
                 <br>
                 <div class="col-4 q-pl-sm">
-                    <input-number-field
+                    <q-input
+                        dense
+                        type="number"
+                        rounded outlined
                         v-model="utente.age"
                         label="Idade"
                         ref="age"
-                        :number="calculateAge"
                         :rules="[val => (val > 14 && val < 100) || 'Digite uma idade real e maior que 14 anos de idade']"
-                        lazy-rules />
+                        lazy-rules
+                        :value="numbers"
+                        @input="(event) => $emit('update:numbers', event.target.value)">
+                        <template v-slot:append>
+                            <q-icon
+                            name="autorenew"
+                            class="cursor-pointer"
+                            @click="birthDateCalculator (utente.age)"/>
+                        </template>
+                    </q-input>
                 </div>
             </div>
             <div class="row q-my-lg">Endereco</div>
@@ -173,6 +185,7 @@ export default {
   data () {
     const $q = useQuasar()
     return {
+        ageText: '',
         hoje: String(this.formatDateYYYYMMDD(new Date())),
         birthMinDate: new Date(),
         utente: {
@@ -214,13 +227,13 @@ export default {
         }
     }
   },
-    props: ['indexEdit', 'utenteUpdate', 'mobilizer', 'showUtenteRegistrationScreenProp'],
+    props: ['indexEdit', 'utenteUpdate', 'mobilizer', 'showUtenteRegistrationScreenProp', 'numbers'],
     emits: ['update:showUtenteRegistrationScreenProp'],
     components: {
         'combo-field': require('components/Shared/ComboField.vue').default,
         'input-text-field': require('components/Shared/InputFieldText.vue').default,
-        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default,
-        'input-number-field': require('components/Shared/InputNumberField.vue').default
+        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+        // 'input-number-field': require('components/Shared/InputNumberField.vue').default
         // buttone: require('components/Shared/Button.vue').default,
         // pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
     },
@@ -266,22 +279,13 @@ export default {
     },
     mounted () {
         this.locateMe()
-        console.log(moment(date).format('YYYY/MM/DD'))
     },
     computed: {
-        calculateAge () {
-            const valDate = this.utente.birthDate !== null && this.utente.birthDate !== undefined ? this.utente.birthDate : '01-01-' + new Date().getUTCFullYear()
-            const initialDate = String(valDate).replace('-', '.').replace('-', '.')
-            const pattern = /(\d{2})\.(\d{2})\.(\d{4})/
-            const dt = new Date(initialDate.replace(pattern, '$3-$2-$1'))
-            const idade = Math.floor((new Date() - dt) / 31557600000)
-            return idade
-        },
-        calculateBirthDate () {
+        /* calculateBirthDate () {
             const realYear = (new Date().getUTCFullYear()) - this.utente.age
             const birthDate = this.utente.age === 0 || this.utente.age === '' ? '' : new Date(String(realYear), '00', '01')
-        return birthDate
-        },
+            return birthDate
+        }, */
          provinces () {
             return Province.all()
         },
@@ -294,19 +298,46 @@ export default {
         }
     },
     watch: {
-        calculateAge: {
+        /* calculateAge: {
             handler: function (newVal) {
                 this.utente.age = newVal !== 0 ? Number(newVal) : ''
+                this.ageText = this.idade
             }
-        },
-        calculateBirthDate: {
+        }, */
+        /* calculateBirthDate: {
             handler: function (newVal) {
                 this.utente.birthDate = date.formatDate(newVal, 'DD-MM-YYYY')
             }
-        }
+        } */
     },
     methods: {
         moment,
+        idadeCalculator (birthDate) {
+            if (birthDate && moment(birthDate).isValid()) {
+                const utentBirthDate = moment(birthDate)
+                const todayDate = moment(new Date())
+                const idade = todayDate.diff(utentBirthDate, 'years')
+                this.utente.age = idade
+            }
+        },
+        birthDateCalculator (idade) {
+            const today = moment(new Date())
+            const birthDate = moment(today).subtract(idade, 'years')
+            this.utente.birthDate = date.formatDate(birthDate, 'YYYY/MM/DD')
+        },
+        calculateAge () {
+            alert('Presente')
+            const valDate = this.utente.birthDate !== null && this.utente.birthDate !== undefined ? this.utente.birthDate : '01-01-' + new Date().getUTCFullYear()
+            const initialDate = String(valDate).replace('-', '.').replace('-', '.')
+            const pattern = /(\d{2})\.(\d{2})\.(\d{4})/
+            const dt = new Date(initialDate.replace(pattern, '$3-$2-$1'))
+            const birthDate1 = moment(dt)
+            const todayDate = moment(new Date())
+            // const idade = Math.floor((new Date() - dt) / 31557600000)
+            const idade = todayDate.diff(birthDate1, 'years')
+            this.ageText = idade
+            return idade
+        },
         formatDateYYYYMMDD (value) {
             return date.formatDate(value, 'YYYY/MM/DD')
         },
@@ -373,7 +404,7 @@ export default {
             this.$refs.apelido.$refs.ref.validate()
             this.$refs.phone.$refs.ref.validate()
             this.$refs.whatsapp.$refs.ref.validate()
-            this.$refs.age.$refs.ref.validate()
+           // this.$refs.age.$refs.ref.validate()
             this.$refs.morada.validate()
             if (!this.$refs.nome.hasError && !this.$refs.apelido.hasError &&
                 !this.$refs.phone.hasError && !this.$refs.whatsapp.hasError &&

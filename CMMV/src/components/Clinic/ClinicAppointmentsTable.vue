@@ -31,7 +31,7 @@
             <q-td key="hasHappened" :props="props">
              <q-checkbox v-model="props.row.hasHappened"
                         color="primary"
-                        v-if="(new Date(new Date().setHours(0,0,0,0)).getTime() < new Date(visitDatePlusTwoDays(new Date(props.row.visitDate)).setHours(0,0,0,0)).getTime())"
+                        v-if="(moment(new Date(), 'DD-MM-YYYY') < moment(visitDatePlusTwoDays(new Date(props.row.visitDate), 'DD-MM-YYYY')))"
                         @click="getSelectedString(props.row)"/>
              <q-checkbox v-model="props.row.hasHappened"
                         color="primary"
@@ -48,7 +48,7 @@
                     anchor="bottom middle"
                     self="center middle"
                   >
-                      <strong>Após {{this.diffBlockDays(new Date(visitDatePlusTwoDays(new Date(props.row.visitDate))), new Date())}}</strong> não poderá <em>editar esta consulta</em>
+                      <strong>Após {{this.diffBlockDays(visitDatePlusTwoDays(new Date(props.row.visitDate)), new Date())}}</strong> não poderá <em>editar esta consulta</em>
                   </q-tooltip>
                </q-icon>
                </span>
@@ -87,13 +87,11 @@ export default {
     diffBlockDays (visitPlus2, today) {
       var a = moment(visitPlus2)
       var b = moment(today)
-      // return moment.utc(moment(a, 'DD/MM/YYYY HH:mm').diff(moment(b, 'DD/MM/YYYY HH:mm'))).format('HH:mm')
       var diff = a.diff(b, 'days')
-      // return this.formatDateDDMMMYYYY(moment(visitPlus2).subtract(diff, 'days'))
-      return date.formatDate(moment(visitPlus2).subtract(diff, 'days'), 'DD-MM-YYYY HH:mm')
+      return date.formatDate(moment(today).add(diff, 'days'), 'DD-MM-YYYY')
     },
     visitDatePlusTwoDays (visitDate) {
-      return addToDate(visitDate, { days: 2 })
+      return addToDate(moment(visitDate).set('hour', '23').set('minute', '59').set('second', '59'), { days: 2 })
     },
     getSelectedString (appointment) {
       const newAppointment = {}
@@ -116,11 +114,12 @@ export default {
     }
   },
   mounted () {
-    console.log(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
+    /* console.log(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
     console.log(moment(date).format('YYYY-MM-DD'))
     var a = moment(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
     var b = moment(date)
-    console.log(a.diff(b, 'days'))
+    console.log(a.diff(b, 'days')) */
+     console.log(this.visitDatePlusTwoDays(moment(new Date())))
   },
     components: {
   }
