@@ -85,10 +85,10 @@ export default {
   methods: {
     moment,
     diffBlockDays (visitPlus2, today) {
-      var a = moment(visitPlus2)
-      var b = moment(today)
+      const a = moment(visitPlus2)
+      const b = moment(today)
       // return moment.utc(moment(a, 'DD/MM/YYYY HH:mm').diff(moment(b, 'DD/MM/YYYY HH:mm'))).format('HH:mm')
-      var diff = a.diff(b, 'days')
+      const diff = a.diff(b, 'days')
       // return this.formatDateDDMMMYYYY(moment(visitPlus2).subtract(diff, 'days'))
       return date.formatDate(moment(visitPlus2).subtract(diff, 'days'), 'DD-MM-YYYY HH:mm')
     },
@@ -118,8 +118,8 @@ export default {
   mounted () {
     console.log(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
     console.log(moment(date).format('YYYY-MM-DD'))
-    var a = moment(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
-    var b = moment(date)
+    const a = moment(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
+    const b = moment(date)
     console.log(a.diff(b, 'days'))
   },
     components: {

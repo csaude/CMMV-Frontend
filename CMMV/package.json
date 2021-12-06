@@ -1,9 +1,9 @@
 {
   "name": "cmmv",
   "version": "0.0.1",
-  "description": "cmmv front end (circuncisao masculina)",
+  "description": "circuncisao masculina Mobile App",
   "productName": "cmmv",
-  "author": "muhammad.chona@fgh.org.m",
+  "author": "fgh@fgh.org.m",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
@@ -18,12 +18,9 @@
     "animate.css": "^4.1.1",
     "core-js": "^3.6.5",
     "moment": "^2.29.1",
-    "nexmo-client": "^8.3.0",
-    "nexmo-stitch": "^3.0.1",
     "quasar": "^2.0.4",
     "vue": "^3.1.5",
     "vue-ctk-date-time-picker": "^2.5.0",
-    "vue-tel-input": "^5.6.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
