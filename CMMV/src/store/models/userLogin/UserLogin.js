@@ -1,22 +1,27 @@
 import { Model } from '@vuex-orm/core'
-import { MobilizerLogin, UtenteLogin } from './UserLoginHierarchy'
 
 export class UserLogin extends Model {
   static entity = 'userLogins'
 
-  static types () {
+  static state () {
     return {
-        UTENTELOGIN: UtenteLogin,
-        MOBILIZERLOGIN: MobilizerLogin
+      fetching: false
     }
-  }
+}
+  // static types () {
+  //   return {
+  //       UTENTELOGIN: UtenteLogin,
+  //       MOBILIZERLOGIN: MobilizerLogin
+  //   }
+  // }
 
   static fields () {
     return {
       id: this.attr(null),
       username: this.attr(''),
       password: this.attr(''),
-      type: this.attr('USERLOGIN')
+      access_token: this.attr(''),
+      refresh_token: this.attr('')
     }
   }
 }

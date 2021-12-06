@@ -1,5 +1,5 @@
 {
-  "name": "mz.org.fgh.cmmv",
+  "name": "org.fgh.cmmv.app",
   "displayName": "cmmv",
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
@@ -13,28 +13,15 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "devDependencies": {
-    "cordova": "^10.0.0",
     "cordova-android": "^9.1.0",
-    "cordova-plugin-geolocation": "^4.1.0",
-    "cordova-plugin-ionic-webview": "^5.0.0",
-    "cordova-plugin-splashscreen": "^6.0.0",
-    "cordova-plugin-whitelist": "^1.3.5",
-    "cordova-plugin-wkwebview-engine": "^1.2.2"
+    "cordova-plugin-whitelist": "^1.3.4"
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {},
-      "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-geolocation": {},
-      "cordova-plugin-splashscreen": {},
-      "cordova-plugin-wkwebview-engine": {},
-      "cordova-support-google-services": {}
+      "cordova-plugin-whitelist": {}
     },
     "platforms": [
       "android"
     ]
-  },
-  "dependencies": {
-    "cordova-support-google-services": "1.4.1"
   }
 }
