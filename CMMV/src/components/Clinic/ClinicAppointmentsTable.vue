@@ -116,7 +116,6 @@ export default {
     }
   },
   mounted () {
-    /* console.log(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
     console.log(moment(date).format('YYYY-MM-DD'))
     const a = moment(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
     const b = moment(date)
