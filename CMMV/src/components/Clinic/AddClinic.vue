@@ -1,7 +1,7 @@
 <template>
     <div class="q-pt-xl">
         <q-table
-        title="Unidade de Serviço"
+        title="Unidade Sanitária"
         :rows="clinicos"
         :columns="columns"
         row-key="id"
@@ -55,7 +55,7 @@
             <q-btn size="xl" fab icon="add" @click="show_dialog = true" no-cap color="primary" />
           </q-page-sticky>
         </div>
-    <!--q-table title="Unidade de Serviço" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
+    <!--q-table title="Unidade Sanitária" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
       <template v-slot:top-right>
       <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
               <template v-slot:append>
@@ -72,7 +72,7 @@
    <q-dialog v-model="show_dialog" persistent>
     <q-card  class="q-pt-lg" style="width: 1100px; max-width: 90vw;">
      <q-toolbar>
-        <q-toolbar-title class="text-subtitle1 flex-center text-width-strong">Cadastrar Unidade de Serviço</q-toolbar-title>
+        <q-toolbar-title class="text-subtitle1 flex-center text-width-strong">Cadastrar Unidade Sanitária</q-toolbar-title>
         <q-btn flat v-close-popup round dense icon="close" @click="show_dialog = false"/>
       </q-toolbar>
         <form @submit.prevent="validateClinic" >

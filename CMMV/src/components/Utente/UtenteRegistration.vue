@@ -53,8 +53,8 @@
             </div>
             <div class="column inline items-start example-container q-mr-sm">
                 <div class="example-cell" tabindex="0"> Tem Parceira(o) ?
-                    <q-radio keep-color color="orange" v-model="utente.hasPartner" val="true" label="Sim" />
-                    <q-radio keep-color color="orange" v-model="utente.hasPartner" val="false" label="Não"/>
+                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="true" label="Sim" />
+                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="false" label="Não"/>
                 </div>
             </div>
             <div class="row q-mt-md" >
@@ -65,14 +65,20 @@
                         v-model="utente.birthDate"
                         ref="birthDate"
                         label="Data de Nascimento"
-                        :input="idadeCalculator(utente.birthDate)">
+                        @update:model-value="idadeCalculator(utente.birthDate)">
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
                                  <q-date
-                                        v-model="utente.birthDate"
-                                        :options="blockDataFutura"
-                                    />
+                                    mask="DD-MM-YYYY"
+                                    v-model="utente.birthDate"
+                                    :options="blockDataFutura"
+                                    @update:model-value="idadeCalculator(utente.birthDate)"
+                                >
+                                    <div class="row items-center justify-end">
+                                      <q-btn v-close-popup label="Fechar" color="primary" flat />
+                                    </div>
+                                 </q-date>
                             </q-popup-proxy>
                             </q-icon>
                         </template>
@@ -82,15 +88,13 @@
                 <div class="col-4 q-pl-sm">
                     <q-input
                         dense
+                        label="Idade"
                         type="number"
+                        ref="age"
                         rounded outlined
                         v-model="utente.age"
-                        label="Idade"
-                        ref="age"
                         :rules="[val => (val > 14 && val < 100) || 'Digite uma idade real e maior que 14 anos de idade']"
-                        lazy-rules
-                        :value="numbers"
-                        @input="(event) => $emit('update:numbers', event.target.value)">
+                        lazy-rules>
                         <template v-slot:append>
                             <q-icon
                             name="autorenew"
@@ -186,7 +190,7 @@ export default {
     const $q = useQuasar()
     return {
         ageText: '',
-        hoje: String(this.formatDateYYYYMMDD(new Date())),
+        hoje: String(this.formatDateDDMMYYYY(new Date())),
         birthMinDate: new Date(),
         utente: {
             firstNames: '',
@@ -242,9 +246,10 @@ export default {
         console.log(this.utenteUpdate)
         if (this.indexEdit === 0) {
             this.utente = Object.assign({}, this.utenteUpdate)
-            this.utente.birthDate = new Date(this.utenteUpdate.birthDate)
-            this.utente.haspartner = ref(true)
-            console.log(this.utente)
+            this.utente.birthDate = moment(this.utenteUpdate.birthDate).format('DD-MM-YYYY')
+            this.idadeCalculator(this.utente.birthDate) // Calculo da idade do utente
+            this.utente.haspartner = this.utenteUpdate.haspartner
+            console.log(this.utenteUpdate.age)
             if (this.utente.addresses.length > 0) {
                 this.address = this.utente.addresses[0]
                 this.address.district = District.query().with('province').find(this.address.district_id)
@@ -281,11 +286,6 @@ export default {
         this.locateMe()
     },
     computed: {
-        /* calculateBirthDate () {
-            const realYear = (new Date().getUTCFullYear()) - this.utente.age
-            const birthDate = this.utente.age === 0 || this.utente.age === '' ? '' : new Date(String(realYear), '00', '01')
-            return birthDate
-        }, */
          provinces () {
             return Province.all()
         },
@@ -298,55 +298,28 @@ export default {
         }
     },
     watch: {
-        /* calculateAge: {
-            handler: function (newVal) {
-                this.utente.age = newVal !== 0 ? Number(newVal) : ''
-                this.ageText = this.idade
-            }
-        }, */
-        /* calculateBirthDate: {
-            handler: function (newVal) {
-                this.utente.birthDate = date.formatDate(newVal, 'DD-MM-YYYY')
-            }
-        } */
     },
     methods: {
         moment,
         idadeCalculator (birthDate) {
-            if (birthDate && moment(birthDate).isValid()) {
-                const utentBirthDate = moment(birthDate)
-                const todayDate = moment(new Date())
-                const idade = todayDate.diff(utentBirthDate, 'years')
-                this.utente.age = idade
+            if (moment(birthDate).isValid()) {
+               const utentBirthDate = moment(birthDate)
+               const todayDate = moment(new Date())
+               const idade = todayDate.diff(utentBirthDate, 'years')
+               this.utente.age = idade
             }
         },
-        birthDateCalculator (idade) {
+        birthDateCalculator (age) {
             const today = moment(new Date())
-            const birthDate = moment(today).subtract(idade, 'years')
-            this.utente.birthDate = date.formatDate(birthDate, 'YYYY/MM/DD')
+            const birthDate = moment(today).subtract(age, 'years')
+            this.utente.birthDate = moment(birthDate).format('DD-MM-YYYY')
         },
-        calculateAge () {
-            alert('Presente')
-            const valDate = this.utente.birthDate !== null && this.utente.birthDate !== undefined ? this.utente.birthDate : '01-01-' + new Date().getUTCFullYear()
-            const initialDate = String(valDate).replace('-', '.').replace('-', '.')
-            const pattern = /(\d{2})\.(\d{2})\.(\d{4})/
-            const dt = new Date(initialDate.replace(pattern, '$3-$2-$1'))
-            const birthDate1 = moment(dt)
-            const todayDate = moment(new Date())
-            // const idade = Math.floor((new Date() - dt) / 31557600000)
-            const idade = todayDate.diff(birthDate1, 'years')
-            this.ageText = idade
-            return idade
-        },
-        formatDateYYYYMMDD (value) {
-            return date.formatDate(value, 'YYYY/MM/DD')
+        formatDateDDMMYYYY (value) {
+            return date.formatDate(value, 'DD-MM-YYYY')
         },
         date: ref(moment(date).format('YYYY/MM/DD')),
         blockDataFutura (date) {
             return date <= moment(new Date()).format('YYYY/MM/DD')
-        },
-        calculateAge1 () {
-          this.utente.age = this.calculateAge
         },
         closeRegistration (close) {
         this.$q.loading.show({
@@ -404,7 +377,7 @@ export default {
             this.$refs.apelido.$refs.ref.validate()
             this.$refs.phone.$refs.ref.validate()
             this.$refs.whatsapp.$refs.ref.validate()
-           // this.$refs.age.$refs.ref.validate()
+            // this.$refs.age.$refs.ref.validate()
             this.$refs.morada.validate()
             if (!this.$refs.nome.hasError && !this.$refs.apelido.hasError &&
                 !this.$refs.phone.hasError && !this.$refs.whatsapp.hasError &&
@@ -418,7 +391,7 @@ export default {
         saveOrUpdateUtente () {
             console.log('this.utente.birthDate')
             console.log(this.utente.birthDate)
-            this.address.city = this.address.district.description // Duvida
+            this.address.city = this.address.district.description
             console.log(this.address.latitude)
             console.log(this.address.longitude)
             this.utente.addresses.push(this.address)
@@ -502,7 +475,6 @@ export default {
                 console.log(error)
             })
     },
-    // Mbj
     async getLocation () {
           return new Promise((resolve, reject) => {
             if (!('geolocation' in navigator)) {

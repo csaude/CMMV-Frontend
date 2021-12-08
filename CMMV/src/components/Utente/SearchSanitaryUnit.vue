@@ -114,7 +114,7 @@
                                   <q-date
                                     v-model="appointment.appointmentDate"
                                     :options="blockDataPassado"
-                                    mask="YYYY-MM-DD HH:mm">
+                                    mask="DD-MM-YYYY HH:mm">
                                     <div class="row items-center justify-end">
                                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                                     </div>

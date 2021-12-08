@@ -23,7 +23,7 @@ VuexORM.use(VuexORMAxios, {
       'X-Requested-With': 'XMLHttpRequest'
     },
      // baseURL: 'http://dev.fgh.org.mz:4110/api'
-   baseURL: 'http://10.10.2.170:8882/api'
+      baseURL: 'http://10.10.2.170:8882/api'
   })
 
 // Request interceptor for API calls

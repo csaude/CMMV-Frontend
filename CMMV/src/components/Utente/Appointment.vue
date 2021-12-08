@@ -8,6 +8,7 @@
             landscape
             v-model="appointment.appointmentDate"
             :options="optionsFn"
+            mask="DD-MM-YYYY"
             />
     </div>
     <div class="row q-pa-md">
