@@ -9,8 +9,7 @@ export class UtenteLogin extends UserLogin {
     return {
         ...super.fields(),
         utente_id: this.attr(null),
-
-      utente: this.belongsTo(Utente, 'utente_id')
+        utente: this.belongsTo(Utente, 'utente_id')
     }
   }
 }

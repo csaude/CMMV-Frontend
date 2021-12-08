@@ -9,7 +9,6 @@ export class MobilizerLogin extends UserLogin {
     return {
         ...super.fields(),
         mobilizer_id: this.attr(null),
-
         mobilizer: this.belongsTo(CommunityMobilizer, 'mobilizer_id')
     }
   }

@@ -272,7 +272,8 @@ export default {
         async getLocation () {
           return new Promise((resolve, reject) => {
             if (!('geolocation' in navigator)) {
-              reject(new Error('Localização Geográfica não está disponível. Por favor, ligue a Localização Geográfica no seu dispositivo.'))
+              reject(new Error('Localização Geográfica não está disponível.' +
+                                'Por favor, ligue a Localização Geográfica no seu dispositivo.'))
         }
         navigator.geolocation.getCurrentPosition(pos => {
           resolve(pos)
@@ -290,8 +291,8 @@ export default {
       try {
         this.gettingLocation = false
         this.location = await this.getLocation()
-        this.myLocation.latitude = this.location.coords.latitude
-        this.myLocation.longitude = this.location.coords.longitude
+         this.myLocation.latitude = this.location.coords.latitude
+         this.myLocation.longitude = this.location.coords.longitude
         this.$q.loading.hide()
       } catch (e) {
         this.gettingLocation = false
@@ -299,8 +300,10 @@ export default {
           this.$q.loading.hide()
           this.$q.dialog({
           title: 'Erro no carregamento da localização',
-          message: this.errorStr
+          message: this.errorStr + '\n' + 'O sistema vai assumir coordenadas padrão!'
         }).onOk(() => {
+          this.myLocation.latitude = -25.9678239
+          this.myLocation.longitude = 32.5864914
           this.$q.loading.hide()
         })
       }

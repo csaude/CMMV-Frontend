@@ -32,7 +32,7 @@
                 <q-input
                     class="col"
                     ref="user"
-                    v-model="user.username"
+                    v-model="username"
                     outlined
                     type="text"
                     :rules="[ val => val.length >= 4 || 'O nome do utilizador deve ter um minimo de 4 caracteres']"
@@ -46,7 +46,7 @@
             </div>
             <div class="row q-mb-md">
                 <q-input
-                    v-model="user.password"
+                    v-model="password"
                     rounded
                     outlined
                     class="col"
@@ -66,6 +66,7 @@
             </div>
             <div class="row">
                 <q-btn
+                    :loading="submitting"
                     class="full-width q-py-sm"
                     unelevated rounded
                     color="primary"
@@ -83,22 +84,20 @@
 
 <script>
 import { ref } from 'vue'
-import { UtenteLogin } from '../../store/models/userLogin/UserLoginHierarchy'
+import UsersService from '../../services/UsersService'
 import Clinic from 'src/store/models/clinic/Clinic'
 export default {
     data () {
         return {
             isPwd: ref(true),
             tab: ref('mobilizer'),
-            user: {
-                username: '',
-                password: ''
-            }
+            username: '',
+            password: '',
+            submitting: false
         }
     },
     mounted () {
         const offset = 0
-       // this.doLogin()
         this.getAllClinic(offset)
     },
     computed: {
@@ -107,13 +106,6 @@ export default {
         }
     },
     methods: {
-        doLogin () {
-          UtenteLogin.api().get('/userLogin/1').then(resp => {
-                console.log(resp.response.data)
-            }).catch(error => {
-                console.log(error)
-            })
-        },
         getAllClinic (offset) {
             if (offset >= 0) {
                 Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
@@ -128,16 +120,47 @@ export default {
             }
         },
         authUser () {
+            console.log({ username: this.username, password: this.password })
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
-                if (this.tab === 'mobilizer') {
-                    localStorage.setItem('id_mobilizer', 1)
-                    this.$router.push({ path: '/mobilizerHome/1' })
-                } else {
-                    localStorage.setItem('id_clinicUser', Clinic.query().first().id)
-                    this.$router.push({ path: '/clinicHome/' + Clinic.query().first().id })
-                }
+                this.submitting = true
+                UsersService.login({
+                    username: this.username,
+                    password: this.password
+                }).then((response) => {
+                    this.submitting = false
+                        console.log('Login >>>>>>>>', response)
+                        localStorage.setItem('id_token', response.response.data.access_token)
+                        localStorage.setItem('orgaoId', response.response.data.orgaoId)
+                        localStorage.setItem('refresh_token', response.response.data.refresh_token)
+                        localStorage.setItem('username', response.response.data.username)
+                        if (response.response.data.roles[0] === 'ROLE_ADMIN') {
+                            if (this.tab === 'mobilizer') {
+                                localStorage.setItem('id_mobilizer', 1)
+                                this.$router.push({ path: '/mobilizerHome/1' })
+                            } else {
+                                localStorage.setItem('id_clinicUser', Clinic.query().first().id)
+                                this.$router.push({ path: '/clinicHome/' + Clinic.query().first().id })
+                            }
+                        } else {
+                            this.$router.push({ path: '/login' })
+                        }
+                }).catch(error => {
+                    console.log(error)
+                    this.submitting = false
+                    if (error.request.response != null) {
+                        const arrayErrors = JSON.parse(error.request.response)
+                        if (arrayErrors.total == null) {
+                        this.listErrors.push(arrayErrors.message)
+                        } else {
+                        arrayErrors._embedded.errors.forEach(element => {
+                            this.listErrors.push(element.message)
+                        })
+                        }
+                        console.log(this.listErrors)
+                    }
+                })
             }
         }
     }

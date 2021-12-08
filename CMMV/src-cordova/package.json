@@ -1,5 +1,5 @@
 {
-  "name": "com.fgh.cmmv",
+  "name": "org.fgh.cmmv.app",
   "displayName": "cmmv",
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
