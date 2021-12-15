@@ -137,8 +137,10 @@ export default {
                         localStorage.setItem('username', response.response.data.username)
                         if (response.response.data.roles[0] === 'ROLE_ADMIN') {
                             if (this.tab === 'mobilizer') {
-                                localStorage.setItem('id_mobilizer', 1)
-                                this.$router.push({ path: '/mobilizerHome/1' })
+                                console.log(response.response.data.mainEntity)
+                                console.log(response.response.data.source)
+                                localStorage.setItem('id_mobilizer', response.response.data.mainEntity)
+                                this.$router.push({ path: '/mobilizerHome/' + response.response.data.mainEntity })
                             } else {
                                 localStorage.setItem('id_clinicUser', Clinic.query().first().id)
                                 this.$router.push({ path: '/clinicHome/' + Clinic.query().first().id })
