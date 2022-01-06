@@ -28,4 +28,8 @@ export default class Clinic extends Model {
       utentes: this.hasMany(Utente, 'clinic_id')
     }
   }
+
+  static async apiGetAll () {
+    return await this.api().get('/clinic')
+  }
 }

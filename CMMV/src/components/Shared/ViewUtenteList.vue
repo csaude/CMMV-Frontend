@@ -35,7 +35,6 @@
                       </q-item-label>
                      <div class="">
                       <q-icon name="event"/>  {{this.displayDate(utente.appointments[0].appointmentDate)}}
-                      <q-icon name="schedule"/>  {{utente.appointments[0].time}}
                      </div>
                       <div class="">
                       <q-icon name="place"/>  {{utente.appointments[0].clinic.name}}
@@ -61,10 +60,13 @@
 
 <script>
 import { ref } from 'vue'
-import { date, useQuasar, QSpinnerIos } from 'quasar'
+import { useQuasar, QSpinnerIos } from 'quasar'
 // import Appointment from 'src/store/models/appointment/Appointment'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
+ import db from 'src/store/localbase'
+import Appointment from '../../store/models/appointment/Appointment'
+import moment from 'moment'
 export default {
     props: ['indexEdit', 'utentes', 'utenteEdit', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
     emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:indexEdit', 'update:utenteEdit', 'update:showUtenteRegistrationScreen'],
@@ -116,6 +118,20 @@ export default {
         // console.log(evt)
       },
       async onRight ({ reset }, utente) {
+        if (utente.syncStatus === 'S') {
+        this.$q.dialog({
+              title: 'Informação',
+              message: 'Não Pode Editar a consulta uma vez que esta já foi sicronizada',
+              ok: {
+              label: 'OK',
+              push: true,
+              color: 'blue'
+              },
+              persistent: true
+          }).onOk(() => {
+              this.finalize(reset)
+          })
+        } else {
          this.$q.loading.show({
           spinner: QSpinnerIos,
           message: 'Por favor, aguarde...'
@@ -124,7 +140,7 @@ export default {
          utente.status = 'ASSOCIADO'
          utente.communityMobilizer = CommunityMobilizer.find(localStorage.getItem('id_mobilizer'))
          utente.communityMobilizer_id = Number(localStorage.getItem('id_mobilizer'))
-         await Utente.api().patch('/utente/' + utente.id, utente).then(resp => {
+       /*  await Utente.api().patch('/utente/' + utente.id, utente).then(resp => {
          this.$emit('update:utente', utente)
           this.$q.loading.hide()
               this.$q.notify({
@@ -140,10 +156,29 @@ export default {
           this.finalize(reset)
           this.$q.loading.hide()
           console.log('Erro no code ' + error)
-        })
+        }) */
+        const appointment = Appointment.query().where('utente_id', utente.id).get()
+       // const appointmentId = appointment.id
+      //   console.log(db.newDb().collection('appointments'))
+           db.newDb().collection('appointments').doc({ id: appointment[0].id }).delete()
+             db.newDb().collection('utentes').doc({ id: utente.id }).set(
+utente
+)
+Utente.update({
+        where: (utenteVue) => {
+    return utenteVue.id === utente.id
+  },
+        data: utente
+      })
+      Appointment.delete(appointment[0].id)
+       //   this.finalize(reset)
+          this.$q.loading.hide()
+          this.$emit('update:utente', utente)
+      }
       },
       displayDate (newDate) {
-        return date.formatDate(newDate, 'DD-MM-YYYY')
+      //  moment(date).format('YYYY/MM/DD'))
+        return moment(newDate).format('DD-MM-YYYY')
       },
       activeUSForm (open, utente) {
         Utente.update(utente)

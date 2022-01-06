@@ -1,5 +1,8 @@
 <template>
+  <!-- @detected-condition fires when the connectivity status of the device changes -->
+    <!-- Only renders when the device is offline -->
   <q-layout view="hHh lpR fFf">
+  <offline detected-condition="handleConnectivityChange">
   <div class="q-pa-sm">
   <utente-registration
                 v-if="this.showUtenteRegistrationScreen" :mobilizer="mobilizer" v-model:utenteUpdate="utente" v-model:indexEdit="indexEdit"
@@ -10,7 +13,7 @@
     <div class="column bg-primary" style="height: 190px">
         <q-toolbar>
           <div class="col-auto q-py-sm">
-              <q-btn color="black-7" round flat icon="more_vert" @click="leftDrawerOpen = !leftDrawerOpen">
+              <q-btn color="black-7" round flat icon="more_vert"  @click="leftDrawerOpen = !leftDrawerOpen">
               </q-btn>
           </div>
         </q-toolbar>
@@ -27,7 +30,7 @@
       </q-card>
 
       <q-list padding class="q-my-lg">
-      <q-item to="/" active-class="q-item-no-link-highlighting">
+      <q-item @click="editMobilizer" active-class="q-item-no-link-highlighting" clickable>
         <q-item-section avatar>
           <q-icon name="manage_accounts" class="round"/>
         </q-item-section>
@@ -35,12 +38,20 @@
           <q-item-label>Perfil</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item to="/" active-class="q-item-no-link-highlighting">
+      <q-item @click="changePassword" active-class="q-item-no-link-highlighting" clickable>
         <q-item-section avatar>
           <q-icon name="vpn_key" class="round"/>
         </q-item-section>
         <q-item-section>
           <q-item-label>Alterar Senha</q-item-label>
+        </q-item-section>
+      </q-item>
+        <q-item @click="verificationDialog" active-class="q-item-no-link-highlighting" clickable>
+        <q-item-section avatar>
+          <q-icon name="cloud_upload" class="round"/>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Sicronizar</q-item-label>
         </q-item-section>
       </q-item>
         <q-separator/>
@@ -146,7 +157,7 @@
                       <q-btn flat round color="primary" icon="west" @click="this.optionButtons = true, this.clientsManager = false, this.docsDisplay = false" />
                     </q-page-sticky>
                     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-                      <q-btn size="xl" fab icon="add" @click="showUtenteRegistrationScreen = true, this.indexEdit = 1" color="primary" />
+                      <q-btn size="xl" fab icon="add" @click="editUtente()" color="primary" />
                     </q-page-sticky>
                 </q-tab-panel>
                 <q-tab-panel name="enviados">
@@ -162,17 +173,31 @@
           <q-btn flat round color="primary" icon="west" @click="this.optionButtons = true, this.clientsManager = false, this.docsDisplay = false" />
         </q-page-sticky>
     </div>
-   </div>
+      </div>
+      <q-dialog persistent v-model="showMobilizerRegistrationScreen">
+          <addMobilizer
+            :selectedMobilizer="mobilizer"
+             :editModeMobilizer=editModeMobilizer
+            @close="showMobilizerRegistrationScreen = false" />
+      </q-dialog>
+       <q-dialog persistent v-model="showChangePasswordScreen">
+          <changePassword
+            @close="showChangePasswordScreen = false" />
+      </q-dialog>
+        </offline>
   </q-layout>
 </template>
 <script>
 import { ref } from 'vue'
-import { useQuasar, QSpinnerIos } from 'quasar'
+import { useQuasar } from 'quasar'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Clinic from 'src/store/models/clinic/Clinic'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
+import SyncronizingService from '../../services/SyncronizingService'
+import db from 'src/store/localbase'
+import isOnline from 'is-online'
 export default {
   setup () {
     const $q = useQuasar()
@@ -186,7 +211,11 @@ export default {
        clientsManager: ref(false),
        docsDisplay: ref(false),
        indexEdit: 1,
+       showMobilizerRegistrationScreen: ref(false),
+       showChangePasswordScreen: ref(false),
+      editMode: false,
        $q,
+       isOnline,
        utente: {
             firstNames: '',
             lastNames: '',
@@ -224,19 +253,20 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
-                   .with('addresses')
+                   .with('addresses.district')
                    .where('status', 'PENDENTE')
                    .orderBy('firstNames')
                    .get()
     },
      utentesAssociados () {
-      return Utente.query()
+       return Utente.query()
                    .with('clinic.province')
                    .with('clinic.district.province')
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
-                   .with('addresses')
+                  .with('addresses.district')
+                  .with('addresses.district.province')
                    .where('status', 'ASSOCIADO')
                    .orderBy('firstNames')
                    .get()
@@ -248,7 +278,8 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
-                   .with('addresses')
+                   .with('addresses.district')
+                  .with('addresses.district.province')
                    .where('status', 'ENVIADO')
                    .orderBy('firstNames')
                    .get()
@@ -271,11 +302,13 @@ export default {
      async getAllClinics (offset) {
         await Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
             offset = offset + 100
+             this.$q.loading.hide()
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllClinics(offset), 2)
             // }
             }).catch(error => {
                 console.log(error)
+                this.$q.loading.hide()
             })
     },
     async getAllProvinces (offset) {
@@ -302,34 +335,159 @@ export default {
     },
      async getMobilizer () {
        await CommunityMobilizer.api().get('/communityMobilizer/' + localStorage.getItem('id_mobilizer')).then(resp => {
+          db.newDb().collection('mobilizer').add(
+          resp.response.data
+          )
         }).catch(error => {
             console.log(error)
         })
-     }
-  },
-  created () {
-    this.$q.loading.show({
-          spinner: QSpinnerIos,
-          message: 'Por favor, aguarde...'
+     },
+   async getDataLocalBase () {
+    Utente.deleteAll()
+  /*     db.newDb().collection('utentes').get().then(utentes => {
+       Utente.insert({
+     data: utentes
+    })
+    }) */
+   await db.newDb().collection('utentes').get().then(utentes => {
+          utentes.forEach(utente => {
+             Utente.insert({
+              data: utente
+          })
+          })
      })
-    const offset = 0
-    this.getMobilizer()
-    this.getAllProvinces(offset)
-    this.getAllDistricts(offset)
+     db.newDb().collection('provinces').get().then(provinces => {
+       Province.insert({
+     data: provinces
+    })
+    })
+    db.newDb().collection('districts').get().then(districts => {
+       District.insert({
+     data: districts
+    })
+    })
+     },
+     editUtente () {
+       this.showUtenteRegistrationScreen = true
+       this.indexEdit = 1
+       console.log('11111112122')
+     },
+     editMobilizer (mobilizer) {
+        this.mobilizer = Object.assign({}, mobilizer)
+         this.showMobilizerRegistrationScreen = true
+         this.editModeMobilizer = true
+      },
+      changePassword () {
+      //  this.mobilizer = Object.assign({}, mobilizer)
+         this.showChangePasswordScreen = true
+      },
+      setMobilizerLocalBase () {
+      //   const mobilizerLocal = JSON.parse(JSON.stringify(this.mobilizer))
+          const mobilizer = this.mobilizer
+        db.newDb().collection('mobilizer').add({
+          mobilizer
+          })
+      },
+      setClinics () {
+ db.newDb().collection('clinics').get().then(clinics => {
+                Clinic.deleteAll()
+                Clinic.insert({
+     data: clinics
+    })
+             })
+      },
+      handleConnectivityChange (status) {
+      console.log(status)
+    },
+     isOnlineChecker () {
+      (async () => {
+       return await isOnline().then(console.log('111'))
+        // => true
+      })()
+    },
+   sendUtente () {
+   //  if (this.isOnline === true) {
+     SyncronizingService.sendUtentes()
+    //  } else {
+       /* Notify.create({
+                    icon: 'announcement',
+                    message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
+                    type: 'negative',
+                    progress: true,
+                    timeout: 3000,
+                    position: 'top',
+                    color: 'negative',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  }) */
+    //  }
+                    // SyncronizingService.sendMobilizerData()
+    // SyncronizingService.sendUserDataPassUpdated()
+     },
+     verificationDialog () {
+            this.$q.dialog({
+                title: 'Confirmação',
+                message: 'Tem Certeza que deseja efectuar a sincronização , Os dados Enviados ja não poderão ser editados?',
+                ok: {
+                label: 'OK',
+                push: true,
+                color: 'blue'
+                },
+                cancel: {
+                label: 'Cancelar',
+                push: true,
+                color: 'negative'
+                },
+                persistent: true
+            }).onOk(() => {
+                this.sendUtente()
+                // this.$emit('update:showUtenteRegistrationScreenProp', false)
+            }).onCancel(() => {
+                // console.log('>>>> Cancel')
+            }).onDismiss(() => {
+                // console.log('I am triggered on both OK and Cancel')
+            })
+        }
   },
   mounted () {
-    const offset = 0
-     this.$q.loading.show({
-          spinner: QSpinnerIos,
-          message: 'Por favor, aguarde...'
-     })
-    this.getAllClinics(offset)
-    this.getAllUtente(offset)
+   // this.$q.loading.show({
+   //       spinner: QSpinnerIos,
+   //       message: 'Por favor, aguarde...'
+  //   })
+   // const offset = 0
+//   this.isOnline = this.isOnlineChecker()
+       this.setClinics()
+     this.getDataLocalBase()
+    db.newDb().collection('mobilizer').get().then(mobilizers => {
+             if (mobilizers.length === 0) {
+                this.getMobilizer()
+             } else {
+                CommunityMobilizer.deleteAll()
+                CommunityMobilizer.insert({
+     data: mobilizers
+    })
+             }
+    })
+ //   this.getAllProvinces(offset)
+  //  this.getAllDistricts(offset)
+    //  this.setMobilizerLocalBase()
+  },
+  created () {
+   // const offset = 0
+  //   this.$q.loading.show({
+  //        spinner: QSpinnerIos,
+  //        message: 'Por favor, aguarde...'
+  //   })
+  //  this.getAllClinics(offset)
+   // this.getDataLocalBase()
+   // this.getAllUtente(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
      'utentes-view-list': require('components/Shared/ViewUtenteList.vue').default,
-     'view-docs': require('components/Home/MaterialEducativo.vue').default
+     'view-docs': require('components/Home/MaterialEducativo.vue').default,
+       addMobilizer: require('components/Clinic/AddMobilizer.vue').default,
+       changePassword: require('components/Shared/ChangePassword.vue').default
     }
 }
 </script>
@@ -337,5 +495,13 @@ export default {
 .scroll-area{
 display : flex;
 flex-grow: 1;
+}
+.offline {
+  background-color: #fc9842;
+  background-image: linear-gradient(315deg, #fc9842 0%, #fe5f75 74%);
+}
+.online {
+  background-color: #00b712;
+  background-image: linear-gradient(315deg, #00b712 0%, #5aff15 74%);
 }
 </style>

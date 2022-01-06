@@ -35,4 +35,20 @@ export default class CommunityMobilizer extends Model {
       // user: this.hasOne(MobilizerLogin, 'user_id')
     }
   }
+
+  static async apiGetAll () {
+    return await this.api().get('/communityMobilizer')
+  }
+
+  static async apiFetchById (id) {
+    return await this.api().get(`/communityMobilizer/${id}`)
+  }
+
+  static async apiFetchByDistrictId (districtId) {
+    return await this.api().get('/communityMobilizer/district/' + districtId)
+  }
+
+  static async apiSave (communityMobilizer) {
+    return await this.api().post('/communityMobilizer', communityMobilizer)
+  }
 }

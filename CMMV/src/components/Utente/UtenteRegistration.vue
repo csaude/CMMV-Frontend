@@ -53,8 +53,8 @@
             </div>
             <div class="column inline items-start example-container q-mr-sm">
                 <div class="example-cell" tabindex="0"> Tem Parceira(o) ?
-                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="true" label="Sim" />
-                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="false" label="Não"/>
+                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="true" label="Sim" ref="hasPartnerYes" />
+                    <q-radio keep-color color="orange" v-model="utente.haspartner" val="false" label="Não" ref="hasPartner"/>
                 </div>
             </div>
             <div class="row q-mt-md" >
@@ -175,13 +175,15 @@
 </template>
 
 <script>
-import Utente from 'src/store/models/utente/Utente'
+ import Utente from 'src/store/models/utente/Utente'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import { useQuasar, QSpinnerIos, date } from 'quasar'
 import { ref } from 'vue'
 import moment from 'moment'
-
+import { v4 as uuidv4 } from 'uuid'
+import Localbase from 'localbase'
+ const db = new Localbase('db')
 export default {
     setup () {
         return {
@@ -230,6 +232,7 @@ export default {
             longitude: '',
             distance: ''
         }
+      //  db
     }
   },
     props: ['indexEdit', 'utenteUpdate', 'mobilizer', 'showUtenteRegistrationScreenProp', 'numbers'],
@@ -248,8 +251,12 @@ export default {
         if (this.indexEdit === 0) {
             this.utente = Object.assign({}, this.utenteUpdate)
             this.utente.birthDate = moment(this.utenteUpdate.birthDate).format('DD-MM-YYYY')
-            this.idadeCalculator(this.utente.birthDate) // Calculo da idade do utente
-            this.utente.haspartner = this.utenteUpdate.haspartner
+            this.idadeCalculator(this.utente.birthDate) // Calculo da idade do utentea
+           if (this.utente.haspartner === true) {
+             this.utente.haspartner = ref('true')
+           } else {
+               this.utente.haspartner = ref('false')
+           }
             console.log(this.utenteUpdate.age)
             if (this.utente.addresses.length > 0) {
                 this.address = this.utente.addresses[0]
@@ -279,20 +286,20 @@ export default {
           spinner: QSpinnerIos,
           message: 'Por favor, aguarde...'
         })
-        const offset = 0
-        this.getAllProvinces(offset)
-        this.getAllDistricts(offset)
+     //  const offset = 0
+     //   this.getAllProvinces(offset)
+     //   this.getAllDistricts(offset)
     },
     mounted () {
         this.locateMe()
     },
     computed: {
          provinces () {
-            return Province.all()
+           return Province.query().has('code').get()
         },
         districts () {
         if (this.address.province !== null) {
-            return District.query().withAll().where('province_id', this.address.province.id).get()
+            return District.query().has('code').withAll().where('province_id', this.address.province.id).get()
         } else {
             return null
         }
@@ -394,13 +401,19 @@ export default {
             this.address.city = this.address.district.description
             console.log(this.address.latitude)
             console.log(this.address.longitude)
-            this.utente.addresses.push(this.address)
-            // this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
-            // this.utente.birthDate = moment(this.utente.birthDate).format('DD-MM-YYYY')
+            this.utente.addresses.splice(0, 1, this.address)
+            this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
             console.log(this.utente.birthDate)
             this.utente.communityMobilizer = this.mobilizer
             this.utente.communityMobilizer_id = this.mobilizer.id
-
+             this.utente.selected = ''
+             this.utente.clinic_id = ''
+             this.utente.clinic = null
+             if (this.utente.syncStatus === 'S') {
+                  this.utente.syncStatus = 'U'
+             } else {
+                  this.utente.syncStatus = 'P'
+             }
             if (this.utente.communityMobilizer !== null) {
                 this.utente.status = 'ASSOCIADO'
             }
@@ -409,39 +422,37 @@ export default {
             } else {
                 this.utente.haspartner = false
             }
+        //    const localBaseUtente = Object.assign({}, this.utente)
+         //    this.utente.addresses = null
+       //      this.utente.communityMobilizer = null
+        // const utenteLocalBase = { ...this.utente }
+       //  const addressLocalBase = { ...this.address }
+       // const utente = this.utente
+          this.utente.addresses[0].id = uuidv4()
             if (this.indexEdit === 1) {
-                console.log(this.utente)
-                Utente.api().post('/utente', this.utente, this.$q.loading.show({
-                                spinner: QSpinnerIos,
-                                message: 'Por favor, aguarde...'
-                                }))
-                            .then(resp => {
-                                console.log(resp.response)
-                                this.$q.notify({
-                                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi registado com sucesso.',
-                                    color: 'teal'
-                                })
-                this.closeRegistration(false)
-            }).catch(error => {
-                console.log('Aqui o erro: ' + error)
-                this.closeRegistration(false)
-            })
+             this.utente.id = uuidv4()
+             const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
+            //  this.utente.systemNumber = 'tj84646464'
+                    db.collection('utentes').add(
+            utenteLocalBase
+           )
+           this.closeRegistration(false)
+        Utente.insert({
+     data: utenteLocalBase
+    })
             } else {
-                Utente.api().patch('/utente/' + this.utente.id, this.utente, this.$q.loading.show({
-                                spinner: QSpinnerIos,
-                                message: 'Por favor, aguarde...'
-                                })).then(resp => {
-                                    console.log(resp.response)
-                                    Utente.update(this.utente)
-                                this.$q.notify({
-                                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
+               // const id =  this.utente.id
+               if (this.utente.syncStatus === 'S') {
+                   this.utente.syncStatus = 'U'
+               }
+              const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
+              db.collection('utentes').doc({ id: this.utente.id }).set(utenteLocalBase)
+               Utente.update(this.utente)
+                this.$q.notify({
+                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
                                     color: 'teal'
                                 })
-                this.closeRegistration(false)
-            }).catch(error => {
-                console.log(error)
-                this.closeRegistration(false)
-            })
+               this.closeRegistration(false)
         }
     },
     editaUtente (utente) {
@@ -509,6 +520,8 @@ export default {
           title: 'Erro no carregamento da localização',
           message: this.errorStr
         }).onOk(() => {
+            this.address.latitude = -25.9678239
+          this.address.longitude = 32.5864914
           this.$q.loading.hide()
         })
       }

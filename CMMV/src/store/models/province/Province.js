@@ -17,4 +17,12 @@ export default class Province extends Model {
 
     }
   }
+
+  static async apiFetchById (id) {
+    return await this.api().get(`/province/${id}`)
+  }
+
+  static async apiGetAll () {
+    return await this.api().get('/province')
+  }
 }

@@ -5,9 +5,9 @@
         leave-active-class="animated slideOutLeft absolute-top">
     <div key="main" class="row bg-light-green-2 absolute full-width full-height column">
         <div class="q-gutter-md row items-start">
-            <q-img src="~src/assets/01MainScreen.png"
+            <q-img src="~src/assets/01MainScreen.jpg"
                    fit="cover">
-                <div class="bg-transparent absolute-bottom-right">
+                <div class="bg-transparent absolute-bottom-left">
                     <div>
                         <q-carousel
                             animated

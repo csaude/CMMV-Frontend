@@ -20,8 +20,14 @@ export class UserLogin extends Model {
       id: this.attr(null),
       username: this.attr(''),
       password: this.attr(''),
+      role: this.attr(''),
+      fullName: this.attr(''),
       access_token: this.attr(''),
       refresh_token: this.attr('')
     }
+  }
+
+  static async apiGetAll () {
+    return await this.api().get('/secUser')
   }
 }
