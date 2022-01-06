@@ -5,7 +5,7 @@
             <q-item-label caption>2 days ago</q-item-label>
         </q-item-section-->
         <q-item-section>
-            <q-item-label>[&nbsp;{{appointment && this.formatDateShort(appointment.appointmentDate)}} - {{appointment && appointment.time}}&nbsp;]</q-item-label>
+            <q-item-label>[&nbsp;{{appointment && this.formatDateShort(appointment.appointmentDate)}}]</q-item-label>
             <q-item-label caption> <span >Utente: {{appointment.utente && appointment.utente.firstNames}}
             <span >  &nbsp; &nbsp; &nbsp; Codigo: {{appointment.utente && appointment.utente.systemNumber}}</span> </span></q-item-label>
         </q-item-section>
@@ -23,6 +23,7 @@
 
 <script>
 import Appointment from '../../store/models/appointment/Appointment'
+import db from 'src/store/localbase'
 import { date } from 'quasar'
 export default {
     props: ['appointment', 'utenteDb'],
@@ -43,12 +44,20 @@ export default {
             this.$q.dialog({ title: 'Confirm', message: 'Deseja Confirmar?', cancel: true, persistent: true }).onOk(() => {
             appointmentToConfirm.status = 'CONFIRMADO'
             console.log(appointmentToConfirm)
-            Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
-                console.log(resp.response.data)
-                this.$emit('appointmentConfirm', resp.response.data)
-            }).catch(error => {
-                console.log(error)
-            })
+            Appointment.update({
+        where: (appointment) => {
+    return appointment.id === appointmentToConfirm.id
+  },
+        data: appointmentToConfirm
+      })
+            const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
+             db.newDb().collection('appointments').doc({ id: appointmentToConfirm.id }).set(appointmentLocalBase)
+      //      Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
+      //          console.log(resp.response.data)
+      //          this.$emit('appointmentConfirm', resp.response.data)
+      //      }).catch(error => {
+      //          console.log(error)
+      //      })
         })
       }
     },

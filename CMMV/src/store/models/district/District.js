@@ -17,4 +17,8 @@ export default class District extends Model {
     //  addresses: this.hasMany(Address, 'district_id')
     }
   }
+
+  static async apiGetAll () {
+    return await this.api().get('/district')
+  }
 }

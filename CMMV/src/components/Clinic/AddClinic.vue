@@ -24,10 +24,10 @@
               <div class="text-pre-wrap">{{ props.row.type}}</div>
             </q-td>
             <q-td key="province" :props="props">
-              <div class="text-pre-wrap">{{ props.row.province.description }}</div>
+              <div class="text-pre-wrap">{{  props.row.district !== undefined && props.row.district !== null ? props.row.district.province.description : ''  }}</div>
             </q-td>
             <q-td key="district" :props="props">
-              <div class="text-pre-wrap">{{ props.row.district.description }}</div>
+              <div class="text-pre-wrap">{{ props.row.district !== undefined && props.row.district !== null ? props.row.district.description : ''  }}</div>
             </q-td>
             <q-td key="actions" :props="props">
              <div class="q-gutter-sm">
@@ -52,7 +52,7 @@
         </q-table>
         <div class="absolute-bottom">
           <q-page-sticky position="bottom-right" :offset="[18, 18]">
-            <q-btn size="xl" fab icon="add" @click="show_dialog = true" no-cap color="primary" />
+            <q-btn size="xl" fab icon="add" @click="show_dialog = true" no-cap color="primary"  v-if="!showAddButton" />
           </q-page-sticky>
         </div>
     <!--q-table title="Unidade Sanitária" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
@@ -174,6 +174,7 @@ export default {
             $q,
             show_dialog: false,
             show_filter: false,
+            showAddButton: true,
             submitting: false,
             editedIndex: -1,
             databaseCodes: [],
@@ -192,7 +193,7 @@ export default {
                 { name: 'type', align: 'left', label: 'Tipo', field: row => row.type, format: val => `${val}`, sortable: true },
                 { name: 'province', align: 'left', label: 'Província', field: row => row.province, format: val => `${val}`, sortable: true },
                 { name: 'district', align: 'left', label: 'Distrito', field: row => row.district, format: val => `${val}`, sortable: true },
-                { name: 'actions', label: 'Movimento', field: 'actions' }
+                { name: 'actions', label: 'Opções', field: 'actions' }
             ],
             clinico: '',
             clinicTypes: [
@@ -202,16 +203,34 @@ export default {
     },
     created () {
         this.currClinic = Object.assign({}, this.newClinic)
+         if (localStorage.getItem('role') !== 'ROLE_USER') {
+             this.showLoading()
+     }
     },
       mounted () {
         const offset = 0
-        this.getAllClinics(offset)
+        if (localStorage.getItem('role') === 'ROLE_USER') {
+          this.getClinicById()
+        } else {
+          this.getAllClinics(offset)
+        }
         this.getAllProvinces(offset)
         this.extractDatabaseCodes()
+        this.verifyRole()
     },
     computed: {
          clinicos () {
-            return Clinic.query().withAll().get()
+            if (localStorage.getItem('role') === 'ROLE_USER') {
+              const clincs = []
+             const clinic = Clinic.query().with('district')
+                   .with('district.province').find(this.$route.params.id)
+                    Clinic.update(clinic)
+                    console.log(clincs.push(clinic))
+            return clincs
+            } else {
+          return Clinic.query().with('district')
+                   .with('district.province').get()
+            }
         },
           provinces () {
             return Province.query().withAll().get()
@@ -347,6 +366,13 @@ export default {
             })
         }
     },
+    async getClinicById () {
+       await Clinic.api().get('/clinic/' + localStorage.getItem('id_clinicUser')).then(resp => {
+          console.log(resp.response.data)
+        }).catch(error => {
+            console.log(error)
+        })
+     },
     async getAllProvinces (offset) {
         if (offset >= 0) {
             await Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
@@ -357,6 +383,11 @@ export default {
             })
         }
     },
+    verifyRole () {
+      if (localStorage.getItem('role') === 'ROLE_USER') {
+        this.showAddButton = true
+      }
+     },
     editClinic (clinic) {
       this.editedIndex = 0
       this.newClinic = Object.assign({}, clinic)
@@ -377,7 +408,18 @@ export default {
     navRedirect (e, go) {
       e.preventDefault() // we cancel the default navigation
       go({ query: { tab: '2', noScroll: true } })
-    }
+    },
+     showLoading () {
+        this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Por favor, aguarde...'
+     })
+        // hiding in 2s
+        this.timer = setTimeout(() => {
+         this.$q.loading.hide()
+          this.timer = void 0
+        }, 2000)
+      }
     },
     components: {
         'input-text-field': require('components/Shared/InputFieldText.vue').default,

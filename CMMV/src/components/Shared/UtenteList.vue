@@ -3,7 +3,6 @@
         <q-item-label caption v-if="sended"> {{utente.cellphone}}
           <div>
             <q-icon name="event"/>  {{utente.appointments[0].appointmentDate}}
-            <q-icon name="schedule"/>  {{utente.appointments[0].time}}
             <q-icon name="place"/>  {{utente.appointments[0].clinic.name}}
           </div>
         </q-item-label>

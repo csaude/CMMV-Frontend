@@ -107,30 +107,18 @@
                    </div>
                     <q-separator/>
                         <div class="q-pa-sm q-gutter-md row items-start justify-center">
-                        <q-input v-model="appointment.appointmentDate" label="Data e Horta da Consulta">
+                        <q-input v-model="appointment.appointmentDate" label="Data da Consulta">
                             <template v-slot:prepend>
                               <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                <q-popup-proxy transition-show="scale" transition-hide="scale" ref="qDateProxy">
                                   <q-date
                                     v-model="appointment.appointmentDate"
                                     :options="blockDataPassado"
-                                    mask="DD-MM-YYYY HH:mm">
+                                    mask="DD-MM-YYYY">
                                     <div class="row items-center justify-end">
                                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                                     </div>
                                   </q-date>
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-
-                            <template v-slot:append>
-                              <q-icon name="access_time" class="cursor-pointer">
-                                <q-popup-proxy transition-show="scale" transition-hide="scale">
-                                  <q-time :hour-options="hourOptionsTime1" :minute-options="minuteOptionsTime1" v-model="appointment.appointmentDate" mask="YYYY-MM-DD HH:mm" format24h>
-                                    <div class="row items-center justify-end">
-                                      <q-btn v-close-popup label="Fechar" color="primary" flat />
-                                    </div>
-                                  </q-time>
                                 </q-popup-proxy>
                               </q-icon>
                             </template>
@@ -154,14 +142,17 @@
 import { ref } from 'vue'
 import { date, useQuasar, QSpinnerIos } from 'quasar'
 import Clinic from '../../store/models/clinic/Clinic'
-import Appointment from 'src/store/models/appointment/Appointment'
+// import Appointment from 'src/store/models/appointment/Appointment'
 import moment from 'moment'
-// import Utente from '../../store/models/utente/Utente'
+import Utente from '../../store/models/utente/Utente'
 // import District from '../../store/models/district/District'
 // import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
+import { v4 as uuidv4 } from 'uuid'
+ import db from 'src/store/localbase'
+import Appointment from '../../store/models/appointment/Appointment'
 export default {
     props: ['utente', 'showUtenteULinkScreen', 'activeUSForm'],
-    emits: ['update:showUtenteULinkScreen', 'update:utente'],
+    emits: ['update:showUtenteULinkScreen', 'update:utente', 'update:utente.appointments'],
     data () {
         const $q = useQuasar()
         return {
@@ -244,28 +235,46 @@ export default {
           const newDate = new Date(this.appointment.appointmentDate)
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
+             this.appointment.id = uuidv4()
             this.appointment.clinic = this.link
             this.appointment.status = 'PENDENTE'
             this.appointment.hasHappened = false
             this.appointment.orderNumber = 1
             this.appointment.visitDate = null
+           this.appointment.appointmentDate = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').toDate()
+           // this.appointment.appointmentDate = moment(this.appointment.appointmentDate).format('DD-MM-YYYY')
             this.appointment.time = newDate.getHours() + ':' + newDate.getMinutes()
             this.appointment.utente = this.relatedUtente
-
-            await Appointment.api().post('/appointment', this.appointment).then(resp => {
-                this.$emit('update:utente', this.relatedUtente)
+            const appointmentLocalBase = JSON.parse(JSON.stringify(this.appointment))
+       db.newDb().collection('appointments').add(
+             appointmentLocalBase
+           )
+           this.appointment.utente = null
+           this.relatedUtente.appointments.push(this.appointment)
+             const relatedUtenteLocalBase = JSON.parse(JSON.stringify(this.relatedUtente))
+            db.newDb().collection('utentes').doc({ id: this.relatedUtente.id }).set(
+relatedUtenteLocalBase
+)
+Utente.update({
+        where: (utente) => {
+    return utente.id === this.relatedUtente.id
+  },
+        data: this.relatedUtente,
+        appointments: this.relatedUtente.appointments
+      })
+      Appointment.insert({
+     data: this.appointment
+    })
                 this.submitting = false
                 this.closeRegistration(false)
-            }).catch(error => {
-              this.submitting = false
-                console.log(error)
-            })
+                 this.$emit('update:utente', this.relatedUtente)
         },
         closeRegistration (close) {
           this.showdialog = ref(close)
           this.step = 1
           this.appointment = {}
           this.appointment.appointmentDate = ''
+          this.submitting = false
           this.activeUSForm(close, this.utente)
           this.$emit('update:showUtenteULinkScreen', close)
         },

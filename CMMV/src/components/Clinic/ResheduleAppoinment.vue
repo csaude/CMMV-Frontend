@@ -3,7 +3,7 @@
         <form @submit.prevent="submitAppointment" >
             <q-card-section class="q-px-md">
                <div class="row">
-                    <q-input outlined disable v-model="editedAppointment.utente.codigo" label="Código" dense class="col"/>
+                    <q-input outlined disable v-model="editedAppointment.utente.systemNumber" label="Código" dense class="col"/>
                     <q-input outlined disable v-model="editedAppointment.utente.firstNames" label="Nome" dense class="col q-ml-md"/>
                </div>
                <div class="row q-pt-md">
@@ -22,7 +22,7 @@
                             </q-icon>
                         </template>
                     </q-input>
-                    <q-input dense outlined v-model="editedAppointment.time" mask="time" :rules="['time']" class="q-ml-md col">
+             <!--        <q-input dense outlined v-model="editedAppointment.time" mask="time" :rules="['time']" class="q-ml-md col">
                         <template v-slot:append>
                         <q-icon name="access_time" class="cursor-pointer">
                             <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -34,7 +34,7 @@
                             </q-popup-proxy>
                         </q-icon>
                         </template>
-                    </q-input>
+                    </q-input> -->
                </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
@@ -50,6 +50,7 @@ import { date } from 'quasar'
 import Appointment from 'src/store/models/appointment/Appointment'
 import { ref } from 'vue'
 import moment from 'moment'
+import db from 'src/store/localbase'
 export default {
     props: ['appointment'],
     data () {
@@ -72,11 +73,19 @@ export default {
             appointmentToConfirm.time = this.editedAppointment.time
             appointmentToConfirm.status = 'CONFIRMADO'
             console.log(appointmentToConfirm)
-            Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
-                this.$emit('appointmentConfirm', resp.response.data)
-            }).catch(error => {
-                console.log(error)
-            })
+                Appointment.update({
+        where: (appointment) => {
+    return appointment.id === appointmentToConfirm.id
+  },
+        data: appointmentToConfirm
+      })
+            const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
+             db.newDb().collection('appointments').doc({ id: appointmentToConfirm.id }).set(appointmentLocalBase)
+     //       Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
+       //         this.$emit('appointmentConfirm', resp.response.data)
+       //     }).catch(error => {
+         //       console.log(error)
+         //   })
         })
       }
     },

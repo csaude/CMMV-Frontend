@@ -26,6 +26,7 @@ export default class Utente extends Model {
       haspartner: this.attr(''),
       status: this.attr(''),
       selected: this.attr(''),
+      syncStatus: this.attr(''),
       communityMobilizer_id: this.attr(''),
       clinic_id: this.attr(''),
 
@@ -42,5 +43,13 @@ export default class Utente extends Model {
 
   getFullName () {
     return this.firstnames + ' ' + this.lastname
+  }
+
+  static async apiSave (utente) {
+    return await this.api().post('/utente', utente)
+  }
+
+  static async apiUpdate (utente) {
+    return await this.api().patch('/utente/' + utente.id, utente)
   }
 }

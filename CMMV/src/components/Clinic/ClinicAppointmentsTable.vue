@@ -19,9 +19,6 @@
             <q-td v-else key="appointmentDate" :props="props">
                 {{ this.formatDateDDMMMYYYY(props.row.appointmentDate) }}
             </q-td>
-            <q-td key="time" :props="props">
-                {{ props.row.time }}
-            </q-td>
             <q-td key="code" :props="props">
                 {{ props.row.utente.systemNumber }}
             </q-td>
@@ -96,13 +93,13 @@ export default {
       return addToDate(moment(visitDate).set('hour', '23').set('minute', '59').set('second', '59'), { days: 2 })
     },
     getSelectedString (appointment) {
-      const newAppointment = {}
+      const newAppointment = Object.assign({}, appointment)
         newAppointment.id = appointment.id
         newAppointment.hasHappened = appointment.hasHappened
       if (!appointment.hasHappened) {
         newAppointment.visitDate = null
       } else {
-        newAppointment.visitDate = new Date()
+        newAppointment.visitDate = moment(new Date(), 'DD-MM-YYYY').toDate()
       }
       this.updateClinicAppoitment(newAppointment)
       this.$emit('update:rows')
@@ -113,6 +110,7 @@ export default {
     },
     formatDateDDMMMYYYY (value) {
         return date.formatDate(value, 'DD MMM YYYY')
+    // return moment(value, 'DD-MM-YYYY').toDate()
     }
   },
   mounted () {

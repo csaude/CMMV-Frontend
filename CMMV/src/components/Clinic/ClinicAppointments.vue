@@ -28,20 +28,18 @@
     </div>
 </template>
 <script>
-import { date, useQuasar, QSpinnerIos } from 'quasar'
+import { date, useQuasar } from 'quasar'
 import { ref } from 'vue'
 import Appointment from '../../store/models/appointment/Appointment'
-
+ import db from 'src/store/localbase'
 const columns = [
   { name: 'appointmentDate', required: true, label: 'Data', align: 'left', field: row => row.appointmentDate, format: val => `${val}`, sortable: true },
-  { name: 'time', required: true, label: 'Hora', align: 'left', field: row => row.time, format: val => `${val}`, sortable: true },
   { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
   { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
   { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
 ]
 const columns2 = [
   { name: 'visitDate', required: true, label: 'Data da Visita', align: 'left', field: row => row.visitDate, format: val => `${val}`, sortable: true },
-  { name: 'time', required: true, label: 'Hora', align: 'left', field: row => row.time, format: val => `${val}`, sortable: true },
   { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
   { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
   { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
@@ -61,9 +59,11 @@ export default {
       getAppointmentsToday () {
           return Appointment.query()
                            .with('utente')
-                           .with('clinic.*')
-                           .with('utente.address.*')
-                           .with('utente.clinic.*')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
+                           .with('utente.addresses')
+                           .with('utente.addresses.province')
+                           .with('utente.addresses.district.province')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -78,10 +78,12 @@ export default {
       },
       appointmentsBDD () {
           return Appointment.query()
-                           .with('utente')
-                           .with('clinic.*')
-                           .with('utente.address.*')
-                           .with('utente.clinic.*')
+                          .with('utente')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
+                           .with('utente.addresses')
+                           .with('utente.addresses.province')
+                           .with('utente.addresses.district.province')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -97,10 +99,12 @@ export default {
       },
       appointmentsDone () {
           return Appointment.query()
-                           .with('utente')
-                           .with('clinic.*')
-                           .with('utente.address')
-                           .with('utente.clinic.*')
+                        .with('utente')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
+                           .with('utente.addresses')
+                           .with('utente.addresses.province')
+                           .with('utente.addresses.district.province')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.visitDate !== '' &&
@@ -122,19 +126,28 @@ export default {
         console.log('Erro no code ' + error)
         })
        },
-    async updateClinicAppoitment (appointment) {
-      await Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
-        console.log(resp.response.data)
-        Appointment.update(resp.response.data)
-        this.$q.loading.hide()
-        this.$q.notify({
-              message: 'Consulta do paciente foi actualizada.',
-              color: 'teal'
-          })
-      }).catch(error => {
-         this.$q.loading.hide()
-        console.log('Erro no code ' + error)
-        })
+ //   async updateClinicAppoitment (appointment) {
+ //     await Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
+  //      console.log(resp.response.data)
+  //      Appointment.update(resp.response.data)
+   //     this.$q.loading.hide()
+   //     this.$q.notify({
+   //           message: 'Consulta do paciente foi actualizada.',
+    //          color: 'teal'
+    //      })
+    //  }).catch(error => {
+    //     this.$q.loading.hide()
+    //    console.log('Erro no code ' + error)
+    //    })
+    updateClinicAppoitment (appointmentToUpdate) {
+        Appointment.update({
+        where: (appointment) => {
+    return appointment.id === appointmentToUpdate.id
+  },
+        data: appointmentToUpdate
+      })
+            // const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToUpdate))
+             db.newDb().collection('appointments').doc({ id: appointmentToUpdate.id }).set(appointmentToUpdate)
     },
     formatDate (value) {
         return date.formatDate(value, 'YYYY/MM/DD')
@@ -144,11 +157,11 @@ export default {
     }
   },
   mounted () {
-    this.$q.loading.show({
-      spinner: QSpinnerIos,
-      message: 'Por favor, aguarde...'
-    })
-    this.getAppointments()
+  //  this.$q.loading.show({
+   //   spinner: QSpinnerIos,
+   //   message: 'Por favor, aguarde...'
+  //  })
+  //  this.getAppointments()
   },
   components: {
     'clinic-appointments-table': require('components/Clinic/ClinicAppointmentsTable.vue').default
