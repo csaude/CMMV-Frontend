@@ -47,7 +47,7 @@ export default {
         if (error.response) {
           Notify.create({
             icon: 'announcement',
-            message: 'Utilizador ou a senha invalida',
+            message: 'Utilizador ou a senha inválida',
             type: 'negative',
             progress: true,
             timeout: 3000,
@@ -56,7 +56,7 @@ export default {
             textColor: 'white',
             classes: 'glossy'
           })
-          console.log(error.response)
+          console.log('O erro: ', error.response)
         } else if (error.request) {
           console.log(error.request)
         } else {

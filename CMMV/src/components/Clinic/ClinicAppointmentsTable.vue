@@ -48,7 +48,7 @@
                     anchor="bottom middle"
                     self="center middle"
                   >
-                      <strong>Após {{this.diffBlockDays(visitDatePlusTwoDays(new Date(props.row.visitDate)), new Date())}}</strong> não poderá <em>editar esta consulta</em>
+                      <strong>Após {{this.formatDateDDMMMYYYY(visitDatePlusTwoDays(new Date(props.row.visitDate)))}}</strong> não poderá <em>editar esta consulta</em>
                   </q-tooltip>
                </q-icon>
                </span>
@@ -90,10 +90,11 @@ export default {
       // return moment.utc(moment(a, 'DD/MM/YYYY HH:mm').diff(moment(b, 'DD/MM/YYYY HH:mm'))).format('HH:mm')
       const diff = a.diff(b, 'days')
       // return this.formatDateDDMMMYYYY(moment(visitPlus2).subtract(diff, 'days'))
-      return date.formatDate(moment(visitPlus2).subtract(diff, 'days'), 'DD-MM-YYYY HH:mm')
+      return date.formatDate(moment(visitPlus2).subtract(diff, 'days'), 'DD-MM-YYYY')
     },
     visitDatePlusTwoDays (visitDate) {
-      return addToDate(moment(visitDate).set('hour', '23').set('minute', '59').set('second', '59'), { days: 2 })
+      const result = addToDate(moment(visitDate).set('hour', '23').set('minute', '59').set('second', '59'), { days: 2 })
+      return result
     },
     getSelectedString (appointment) {
       const newAppointment = {}
@@ -112,14 +113,10 @@ export default {
       }
     },
     formatDateDDMMMYYYY (value) {
-        return date.formatDate(value, 'DD MMM YYYY')
+        return moment(value).format('DD-MM-YYYY')
     }
   },
   mounted () {
-    console.log(moment(date).format('YYYY-MM-DD'))
-    const a = moment(this.formatDateDDMMMYYYY(this.visitDatePlusTwoDays(new Date())))
-    const b = moment(date)
-    console.log(a.diff(b, 'days'))
   },
     components: {
   }

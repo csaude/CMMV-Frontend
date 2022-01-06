@@ -78,6 +78,7 @@
                                     <div class="row items-center justify-end">
                                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                                     </div>
+
                                  </q-date>
                             </q-popup-proxy>
                             </q-icon>
@@ -389,13 +390,13 @@ export default {
             }
         },
         saveOrUpdateUtente () {
-            console.log('this.utente.birthDate')
             console.log(this.utente.birthDate)
             this.address.city = this.address.district.description
             console.log(this.address.latitude)
             console.log(this.address.longitude)
             this.utente.addresses.push(this.address)
-            this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
+            // this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
+            // this.utente.birthDate = moment(this.utente.birthDate).format('DD-MM-YYYY')
             console.log(this.utente.birthDate)
             this.utente.communityMobilizer = this.mobilizer
             this.utente.communityMobilizer_id = this.mobilizer.id
@@ -409,6 +410,7 @@ export default {
                 this.utente.haspartner = false
             }
             if (this.indexEdit === 1) {
+                console.log(this.utente)
                 Utente.api().post('/utente', this.utente, this.$q.loading.show({
                                 spinner: QSpinnerIos,
                                 message: 'Por favor, aguarde...'
@@ -421,7 +423,7 @@ export default {
                                 })
                 this.closeRegistration(false)
             }).catch(error => {
-                console.log(error)
+                console.log('Aqui o erro: ' + error)
                 this.closeRegistration(false)
             })
             } else {

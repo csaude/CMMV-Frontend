@@ -137,11 +137,27 @@ export default {
                         localStorage.setItem('username', response.response.data.username)
                         if (response.response.data.roles[0] === 'ROLE_ADMIN') {
                             if (this.tab === 'mobilizer') {
-                                localStorage.setItem('id_mobilizer', 1)
-                                this.$router.push({ path: '/mobilizerHome/1' })
+                                console.log(response.response.data.mainEntity)
+                                console.log(response.response.data.source)
+                                if (response.response.data.source === 'Mobilizer') {
+                                    localStorage.setItem('id_mobilizer', response.response.data.mainEntity)
+                                    this.$router.push({ path: '/mobilizerHome/' + response.response.data.mainEntity })
+                                } else {
+                                    this.$q.notify({
+                                    message: 'Utilizador não permitido, por favor tente novamente.',
+                                    color: 'red'
+                                })
+                                }
                             } else {
-                                localStorage.setItem('id_clinicUser', Clinic.query().first().id)
-                                this.$router.push({ path: '/clinicHome/' + Clinic.query().first().id })
+                                if (response.response.data.source === 'Clinic') {
+                                    localStorage.setItem('id_clinicUser', response.response.data.mainEntity)
+                                    this.$router.push({ path: '/clinicHome/' + response.response.data.mainEntity })
+                                } else {
+                                    this.$q.notify({
+                                    message: 'Utilizador não permitido, por favor tente novamente.',
+                                    color: 'red'
+                                })
+                                }
                             }
                         } else {
                             this.$router.push({ path: '/login' })
