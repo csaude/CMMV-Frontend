@@ -78,6 +78,7 @@
                                     <div class="row items-center justify-end">
                                       <q-btn v-close-popup label="Fechar" color="primary" flat />
                                     </div>
+
                                  </q-date>
                             </q-popup-proxy>
                             </q-icon>
@@ -396,7 +397,6 @@ export default {
             }
         },
         saveOrUpdateUtente () {
-            console.log('this.utente.birthDate')
             console.log(this.utente.birthDate)
             this.address.city = this.address.district.description
             console.log(this.address.latitude)

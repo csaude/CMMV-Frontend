@@ -197,7 +197,7 @@ import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import SyncronizingService from '../../services/SyncronizingService'
 import db from 'src/store/localbase'
- // import isOnline from 'is-online'
+import isOnline from 'is-online'
 export default {
   setup () {
     const $q = useQuasar()
@@ -215,6 +215,7 @@ export default {
        showChangePasswordScreen: ref(false),
       editMode: false,
        $q,
+       isOnline,
        utente: {
             firstNames: '',
             lastNames: '',
@@ -398,17 +399,17 @@ export default {
       handleConnectivityChange (status) {
       console.log(status)
     },
-    /* isOnlineChecker () {
+     isOnlineChecker () {
       (async () => {
-       return await isOnline()
+       return await isOnline().then(console.log('111'))
         // => true
       })()
-    },  */
+    },
    sendUtente () {
-    // if (this.isOnlineChecker()) {
+   //  if (this.isOnline === true) {
      SyncronizingService.sendUtentes()
-     // } else {
-      /* Notify.create({
+    //  } else {
+       /* Notify.create({
                     icon: 'announcement',
                     message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
                     type: 'negative',
@@ -419,6 +420,7 @@ export default {
                     textColor: 'white',
                     classes: 'glossy'
                   }) */
+    //  }
                     // SyncronizingService.sendMobilizerData()
     // SyncronizingService.sendUserDataPassUpdated()
      },
@@ -453,7 +455,7 @@ export default {
    //       message: 'Por favor, aguarde...'
   //   })
    // const offset = 0
-  // this.isOnlineChecker()
+//   this.isOnline = this.isOnlineChecker()
        this.setClinics()
      this.getDataLocalBase()
     db.newDb().collection('mobilizer').get().then(mobilizers => {
