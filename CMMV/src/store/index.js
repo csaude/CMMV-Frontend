@@ -25,7 +25,7 @@ VuexORM.use(VuexORMAxios, {
      // baseURL: 'http://dev.fgh.org.mz:4110/api'
      // baseURL: 'http://10.10.2.170:8882/api'
      //  baseURL: 'http://10.10.2.183:8882/api'
-     baseURL: 'http://localhost:8882/api'
+      baseURL: 'http://localhost:8882/api'
   })
 
 // Request interceptor for API calls

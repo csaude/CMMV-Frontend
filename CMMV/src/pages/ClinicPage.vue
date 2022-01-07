@@ -18,7 +18,7 @@
                                     <q-item-section @click="showChangePasswordScreen = true" clickable>Alterar Senha</q-item-section>
                                 </q-item>
                                 <q-item clickable>
-                                    <q-item-section clickable @click="verificationDialog">Sicronizar</q-item-section>
+                                    <q-item-section clickable @click="isOnlineChecker(true)">Sicronizar</q-item-section>
                                 </q-item>
                                 <q-item clickable>
                                     <q-item-section>Conteúdos</q-item-section>
@@ -77,13 +77,16 @@
 import { ref } from 'vue'
 import Clinic from 'src/store/models/clinic/Clinic'
 import SyncronizingService from '../services/SyncronizingService'
+import { Notify } from 'quasar'
+import isOnline from 'is-online'
 export default {
     data () {
         return {
             tab: ref('dashboard'),
             backToDashBoard: ref(true),
             showChangePasswordScreen: ref(false),
-            username: {}
+            username: {},
+             isOnline
         }
     },
     components: {
@@ -103,7 +106,53 @@ export default {
         getUserName () {
             this.username = localStorage.getItem('username')
         },
-         verificationDialog () {
+     async isOnlineChecker (sync) {
+          await isOnline().then(resp => {
+        if (resp === true && sync === true) {
+          this.verificationDialog()
+        } else if (resp === false && sync === true) {
+           Notify.create({
+                    icon: 'announcement',
+                    message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
+                    type: 'negative',
+                    progress: true,
+                    timeout: 3000,
+                    position: 'top',
+                    color: 'negative',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+        } else if (resp === true && sync === false) {
+           Notify.create({
+                    icon: 'announcement',
+                    message: 'Aplicativo Online',
+                    type: 'positive',
+                    progress: true,
+                    timeout: 5000,
+                    position: 'top',
+                    color: 'positive',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+        } else if (resp === false && sync === false) {
+           Notify.create({
+                    icon: 'announcement',
+                    message: 'Aplicativo offline',
+                    type: 'negative',
+                    progress: true,
+                    timeout: 5000,
+                    position: 'top',
+                    color: 'negative',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+        }
+      }).catch(error => {
+        this.$q.loading.hide()
+        console.log(error)
+      })
+      },
+      verificationDialog () {
             this.$q.dialog({
                 title: 'Confirmação',
                 message: 'Tem Certeza que deseja efectuar a sincronização , Os dados Enviados ja não poderão ser editados?',
@@ -133,6 +182,7 @@ export default {
     },
     mounted () {
         this.getUserName()
+        this.isOnlineChecker(false)
     }
 }
 </script>
