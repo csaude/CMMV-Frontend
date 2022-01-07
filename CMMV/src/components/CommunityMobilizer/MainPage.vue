@@ -46,7 +46,7 @@
           <q-item-label>Alterar Senha</q-item-label>
         </q-item-section>
       </q-item>
-        <q-item @click="verificationDialog" active-class="q-item-no-link-highlighting" clickable>
+        <q-item @click="isOnlineChecker(true)" active-class="q-item-no-link-highlighting" clickable>
         <q-item-section avatar>
           <q-icon name="cloud_upload" class="round"/>
         </q-item-section>
@@ -189,7 +189,7 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, Notify } from 'quasar'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Clinic from 'src/store/models/clinic/Clinic'
@@ -399,17 +399,12 @@ export default {
       handleConnectivityChange (status) {
       console.log(status)
     },
-     isOnlineChecker () {
-      (async () => {
-       return await isOnline().then(console.log('111'))
-        // => true
-      })()
-    },
-   sendUtente () {
-   //  if (this.isOnline === true) {
-     SyncronizingService.sendUtentes()
-    //  } else {
-       /* Notify.create({
+    async isOnlineChecker (sync) {
+      await isOnline().then(resp => {
+        if (resp === true && sync === true) {
+          this.verificationDialog()
+        } else if (resp === false && sync === true) {
+           Notify.create({
                     icon: 'announcement',
                     message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
                     type: 'negative',
@@ -419,8 +414,39 @@ export default {
                     color: 'negative',
                     textColor: 'white',
                     classes: 'glossy'
-                  }) */
-    //  }
+                  })
+        } else if (resp === true && sync === false) {
+           Notify.create({
+                    icon: 'announcement',
+                    message: 'Aplicativo Online',
+                    type: 'positive',
+                    progress: true,
+                    timeout: 5000,
+                    position: 'top',
+                    color: 'positive',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+        } else if (resp === false && sync === false) {
+           Notify.create({
+                    icon: 'announcement',
+                    message: 'Aplicativo offline',
+                    type: 'negative',
+                    progress: true,
+                    timeout: 5000,
+                    position: 'top',
+                    color: 'negative',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+        }
+      }).catch(error => {
+        this.$q.loading.hide()
+        console.log(error)
+      })
+    },
+   sendUtente () {
+     SyncronizingService.sendUtentes()
                     // SyncronizingService.sendMobilizerData()
     // SyncronizingService.sendUserDataPassUpdated()
      },
@@ -455,7 +481,7 @@ export default {
    //       message: 'Por favor, aguarde...'
   //   })
    // const offset = 0
-//   this.isOnline = this.isOnlineChecker()
+  this.isOnlineChecker(false)
        this.setClinics()
      this.getDataLocalBase()
     db.newDb().collection('mobilizer').get().then(mobilizers => {
