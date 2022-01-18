@@ -1,6 +1,7 @@
 import { Model } from '@vuex-orm/core'
 import Clinic from '../clinic/Clinic'
 import Utente from '../utente/Utente'
+import db from 'src/store/localbase'
 
 export default class Appointment extends Model {
   static entity = 'appointments'
@@ -21,5 +22,33 @@ export default class Appointment extends Model {
       utente: this.belongsTo(Utente, 'utente_id'),
       clinic: this.belongsTo(Clinic, 'clinic_id')
     }
+  }
+
+  static localDbAdd (appointment) {
+    return db.newDb().collection('appointments').add(appointment)
+  }
+
+  static localDbGetById (id) {
+    return db.newDb().collection('appointments').doc({ id: id }).get()
+  }
+
+  static localDbGetAll () {
+    return db.newDb().collection('appointments').get()
+  }
+
+  static localDbUpdate (appointment) {
+    return db.newDb().collection('appointments').doc({ id: appointment.id }).set(appointment)
+  }
+
+  static localDbUpdateAll (appointments) {
+    return db.newDb().collection('appointments').set(appointments)
+  }
+
+  static localDbDelete (appointment) {
+    return db.newDb().collection('appointments').doc({ id: appointment.id }).delete()
+  }
+
+  static localDbDeleteAll () {
+    return db.newDb().collection('appointments').delete()
   }
 }

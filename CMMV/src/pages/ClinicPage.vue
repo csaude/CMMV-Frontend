@@ -97,7 +97,7 @@ export default {
         Settings: require('components/Clinic/Settings.vue').default,
       //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default,
-          changePassword: require('components/Shared/ChangePassword.vue').default
+        changePassword: require('components/Shared/ChangePassword.vue').default
     },
     methods: {
         displayClinic () {

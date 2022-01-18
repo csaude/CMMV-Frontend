@@ -92,6 +92,7 @@ import District from 'src/store/models/district/District'
  import db from 'src/store/localbase'
 import bcrypt from 'bcryptjs'
 import { Notify } from 'quasar'
+import { UserLogin } from 'src/store/models/userLogin/UserLogin'
 // import Localbase from 'localbase'
 // const db = new Localbase('db')
 export default {
@@ -110,8 +111,8 @@ export default {
     mounted () {
       //  const offset = 0
         Province.apiGetAll()
-         District.apiGetAll()
-         Clinic.apiGetAll()
+        District.apiGetAll()
+        Clinic.apiGetAll()
       //  this.getAllClinic(offset)
     },
     computed: {
@@ -150,123 +151,127 @@ export default {
                 })
             }
         },
+        addLocalDbClinics (districtId) {
+            Clinic.localDbGetAll().then(clinics => {
+                if (clinics.length === 0) {
+                    Clinic.query()
+                          .has('code')
+                          .where('district_id', districtId)
+                          .get()
+                          .forEach(clinic => {
+                            Clinic.localDbAdd(clinic)
+                })
+                }
+            })
+        },
+        addLocalDbDistricts (districtId) {
+            District.query()
+                    .has('code')
+                    .with('province')
+                    .where('id', districtId)
+                    .get()
+                    .forEach(district => {
+                        console.log(district)
+                        District.localDbAdd(district)
+                        Province.localDbAdd(district.province)
+                    })
+        },
+        addLocalDbDatas (districtId) {
+            this.addLocalDbClinics(districtId)
+            this.addLocalDbDistricts(districtId)
+        },
+        buildUserToAdd (responseUser) {
+            UserLogin.localDbAdd({
+                id_token: responseUser.access_token,
+                orgaoId: responseUser.orgaoId,
+                refresh_token: responseUser.refresh_token,
+                username: responseUser.username,
+                password: responseUser.password,
+                idLogin: responseUser.mainEntity,
+                idUser: responseUser.id,
+                role: responseUser.roles,
+                clinicId: responseUser.clinicId,
+                districtId: responseUser.districtId,
+                source: responseUser.source
+            })
+        },
         authUser () {
             console.log({ username: this.username, password: this.password })
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
                 this.submitting = true
-     db.newDb().collection('users').get().then(users => {
-             if (users.length > 0) {
-       const username = users[0].username
-       const passwordLocal = users[0].password
-      // const role = users[0].role
-       console.log(passwordLocal.substring(8))
-    const match = bcrypt.compareSync(this.password, passwordLocal.substring(8))
-          if (username === this.username && match) {
-             // if(password === bcrypt.hash)
-          //   var salt = bcrypt.genSaltSync(12)
-     // var hash = bcrypt.hashSync(this.password, salt)
-           this.verifiyRoleAndUser(users)
-               } else {
-                    Notify.create({
-            icon: 'announcement',
-            message: 'Utilizador ou a senha invalida',
-            type: 'negative',
-            progress: true,
-            timeout: 3000,
-            position: 'top',
-            color: 'negative',
-            textColor: 'white',
-            classes: 'glossy'
-          })
-             this.submitting = false
-          }
-             } else {
+                db.newDb().collection('users').get().then(users => {
+                if (users.length > 0) {
+                    const username = users[0].username
+                    const passwordLocal = users[0].password
+                    // const role = users[0].role
+                    console.log(passwordLocal.substring(8))
+                    const match = bcrypt.compareSync(this.password, passwordLocal.substring(8))
+                    if (username === this.username && match) {
+                        this.verifiyRoleAndUser(users)
+                    } else {
+                        Notify.create({
+                        icon: 'announcement',
+                        message: 'Utilizador ou a senha invalida',
+                        type: 'negative',
+                        progress: true,
+                        timeout: 3000,
+                        position: 'top',
+                        color: 'negative',
+                        textColor: 'white',
+                        classes: 'glossy'
+                })
+                this.submitting = false
+                }
+            } else {
                 UsersService.login({
                     username: this.username,
                     password: this.password
                 }).then((response) => {
                     this.submitting = false
-                        console.log('Login >>>>>>>>', response)
-                        localStorage.setItem('id_token', response.response.data.access_token)
-                         localStorage.setItem('idLogin', response.response.data.mainEntity)
-                         localStorage.setItem('idUser', response.response.data.id)
-                        localStorage.setItem('orgaoId', response.response.data.orgaoId)
-                        localStorage.setItem('refresh_token', response.response.data.refresh_token)
-                        localStorage.setItem('username', response.response.data.username)
-                         localStorage.setItem('password', response.response.data.password)
-                          localStorage.setItem('role', response.response.data.roles[0])
-                            if (this.tab === 'mobilizer' && response.response.data.roles[0] === 'ROLE_MOBILIZER') {
-                                  db.newDb().collection('users').add({
-                                 id_token: response.response.data.access_token,
-                          orgaoId: response.response.data.orgaoId,
-                          refresh_token: response.response.data.refresh_token,
-                           username: response.response.data.username,
-                            password: response.response.data.password,
-                            idLogin: response.response.data.mainEntity,
-                            idUser: response.response.data.id,
-                            role: response.response.data.roles[0]
-                                  })
-                                 const clinics = Clinic.query().has('code').get()
-              clinics.forEach(clinic => {
-                  db.newDb().collection('clinics').add(
-                       clinic)
-                    })
-                      const provinces = Province.query().has('code').get()
-              provinces.forEach(province => {
-                  db.newDb().collection('provinces').add(
-                       province)
-                    })
-                    const districts = District.query().has('code').get()
-              districts.forEach(district => {
-                  db.newDb().collection('districts').add(
-                       district)
-                    })
-                     // CommunityMobilizer.apiFetchById(localStorage.getItem('idLogin'))
-                            localStorage.setItem('id_mobilizer', localStorage.getItem('idLogin'))
-                                this.$router.push({ path: '/mobilizerHome/' + localStorage.getItem('idLogin') })
-                            } else if (this.tab === 'clinic' && response.response.data.roles[0] === 'ROLE_USER') {
-                              localStorage.setItem('id_clinicUser', localStorage.getItem('idLogin'))
-                  db.newDb().collection('users').add({
-                                 id_token: response.response.data.access_token,
-                          orgaoId: response.response.data.orgaoId,
-                          refresh_token: response.response.data.refresh_token,
-                           username: response.response.data.username,
-                            password: response.response.data.password,
-                            idLogin: response.response.data.mainEntity,
-                             idUser: response.response.data.id,
-                             role: response.response.data.roles[0]
-                                  })
-                                 const clinic = Clinic.query().has('code').where('id', this.clinic.id).get()
-                                // const clinicLocalBase = JSON.parse(JSON.stringify(clinic))
-                  db.newDb().collection('clinics').add(
-                      clinic[0])
-                      const province = Province.query().has('code').where('id', this.province.id).get()
-                  db.newDb().collection('provinces').add(
-                       province[0]
-                       )
-                    const district = District.query().has('code').where('id', this.district.id).get()
-                  db.newDb().collection('districts').add(
-                       district[0])
-                                this.$router.push({ path: '/clinicHome/' + localStorage.getItem('idLogin') })
-                            } else if (this.tab === 'clinic' && response.response.data.roles[0] === 'ROLE_ADMIN') {
-                                localStorage.setItem('id_clinicUser', 1)
-                                this.$router.push({ path: '/clinicHome/' + 1 })
-                            } else {
+                    console.log('Login >>>>>>>>', response)
+                    localStorage.setItem('id_token', response.response.data.access_token)
+                    localStorage.setItem('idLogin', response.response.data.mainEntity)
+                    localStorage.setItem('idUser', response.response.data.id)
+                    localStorage.setItem('orgaoId', response.response.data.orgaoId)
+                    localStorage.setItem('refresh_token', response.response.data.refresh_token)
+                    localStorage.setItem('username', response.response.data.username)
+                    localStorage.setItem('password', response.response.data.password)
+                    localStorage.setItem('role', response.response.data.roles)
+                    localStorage.setItem('clinicId', response.response.data.clinicId)
+                    localStorage.setItem('districtId', response.response.data.districtId)
+                    localStorage.setItem('source', response.response.data.source)
+                    if (this.tab === 'mobilizer' && response.response.data.roles.includes('ROLE_MOBILIZER')) {
+                        this.addLocalDbDatas(response.response.data.districtId)
+                        this.buildUserToAdd(response.response.data)
+                        localStorage.setItem('id_mobilizer', localStorage.getItem('idLogin'))
+                        this.$router.push({ path: '/mobilizerHome/' + localStorage.getItem('idLogin') })
+                    } else if (this.tab === 'clinic' && response.response.data.roles.includes('ROLE_USER')) {
+                        localStorage.setItem('id_clinicUser', localStorage.getItem('idLogin'))
+                        const clinic = Clinic.query().has('code').where('id', response.response.data.clinicId).first()
+                        Clinic.localDbAdd(clinic)
+                        this.buildUserToAdd(response.response.data)
+                        this.addLocalDbDatas(clinic.district_id)
+                        this.$router.push({ path: '/clinicHome/' + localStorage.getItem('idLogin') })
+                        } else if (this.tab === 'clinic' && response.response.data.roles[0] === 'ROLE_ADMIN') {
+                            this.buildUserToAdd(response.response.data)
+                            localStorage.setItem('id_clinicUser', 1)
+                            this.$router.push({ path: '/clinicHome/' + 1 })
+                        } else {
                                 Notify.create({
-            icon: 'announcement',
-            message: 'Perfil do utilizador nao condiz com a aba selecionada',
-            type: 'negative',
-            progress: true,
-            timeout: 3000,
-            position: 'top',
-            color: 'negative',
-            textColor: 'white',
-            classes: 'glossy'
-          })
-           this.submitting = false
-                            }
+                                    icon: 'announcement',
+                                    message: 'Utilizador sem acesso',
+                                    type: 'negative',
+                                    progress: true,
+                                    timeout: 3000,
+                                    position: 'top',
+                                    color: 'negative',
+                                    textColor: 'white',
+                                    classes: 'glossy'
+                                })
+                this.submitting = false
+                }
                 }).catch(error => {
                     console.log(error)
                     this.submitting = false
@@ -287,23 +292,23 @@ export default {
             }
         },
         verifiyRoleAndUser (users) {
-       if (users[0].role === 'ROLE_MOBILIZER' && this.tab === 'mobilizer') {
+       if (users[0].role.includes('ROLE_MOBILIZER') && this.tab === 'mobilizer') {
              localStorage.setItem('id_mobilizer', users[0].idLogin)
               this.$router.push({ path: '/mobilizerHome/' + users[0].idLogin })
-               } else if (users[0].role === 'ROLE_USER' && this.tab === 'clinic') {
+               } else if (users[0].role.includes('ROLE_USER') && this.tab === 'clinic') {
                      this.$router.push({ path: '/clinicHome/' + localStorage.getItem('idLogin') })
                } else {
                    Notify.create({
-            icon: 'announcement',
-            message: 'Perfil do utilizador nao condiz com a aba selecionada',
-            type: 'negative',
-            progress: true,
-            timeout: 3000,
-            position: 'top',
-            color: 'negative',
-            textColor: 'white',
-            classes: 'glossy'
-          })
+                        icon: 'announcement',
+                        message: 'Utilizador sem acesso',
+                        type: 'negative',
+                        progress: true,
+                        timeout: 3000,
+                        position: 'top',
+                        color: 'negative',
+                        textColor: 'white',
+                        classes: 'glossy'
+                    })
            this.submitting = false
           }
         }

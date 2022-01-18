@@ -5,7 +5,8 @@ import Message from '../messages/Message'
 import CommunityMobilizer from '../mobilizer/CommunityMobilizer'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
 import Clinic from '../clinic/Clinic'
-// import { UtenteLogin } from '../userLogin/UserLoginHierarchy'
+import db from 'src/store/localbase'
+// import { UtenteLogin } from '../utente/utenteHierarchy'
 
 export default class Utente extends Model {
   static entity = 'utentes'
@@ -51,5 +52,33 @@ export default class Utente extends Model {
 
   static async apiUpdate (utente) {
     return await this.api().patch('/utente/' + utente.id, utente)
+  }
+
+  static localDbAdd (utente) {
+    return db.newDb().collection('utentes').add(utente)
+  }
+
+  static localDbGetById (id) {
+    return db.newDb().collection('utentes').doc({ id: id }).get()
+  }
+
+  static localDbGetAll () {
+    return db.newDb().collection('utentes').get()
+  }
+
+  static localDbUpdate (utente) {
+    return db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
+  }
+
+  static localDbUpdateAll (utentes) {
+    return db.newDb().collection('utentes').set(utentes)
+  }
+
+  static localDbDelete (utente) {
+    return db.newDb().collection('utentes').doc({ id: utente.id }).delete()
+  }
+
+  static localDbDeleteAll () {
+    return db.newDb().collection('utentes').delete()
   }
 }

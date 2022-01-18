@@ -9,6 +9,13 @@ export default {
         sendUtentes () {
           this.doSend(0)
         },
+        downloadUtentes () {
+            Utente.localDbGetAll().then(utentes => {
+                if (utentes === 0) {
+                        console.log('Zero')
+                }
+            })
+        },
         doSend (i) {
            // const utentesToSend = []
            // const utentesToSend = this.getUtentesToSend()

@@ -189,7 +189,7 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { useQuasar, Notify } from 'quasar'
+import { useQuasar, Notify, QSpinnerIos } from 'quasar'
 import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Clinic from 'src/store/models/clinic/Clinic'
@@ -279,7 +279,7 @@ export default {
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
                    .with('addresses.district')
-                  .with('addresses.district.province')
+                   .with('addresses.district.province')
                    .where('status', 'ENVIADO')
                    .orderBy('firstNames')
                    .get()
@@ -287,9 +287,18 @@ export default {
   },
   methods: {
      async getAllUtente (offset) {
+      let utentesApiList = []
       await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
              offset = offset + 100
-             console.log(resp.response.data)
+             utentesApiList = resp.response.data
+             Utente.localDbGetAll().then(utentes => {
+               if (utentes.length === 0) {
+                  utentesApiList.forEach(utente => {
+                  console.log(utente)
+                  Utente.localDbAdd(utente)
+                 })
+               }
+             })
               this.$q.loading.hide()
             // if (resp.response.data.length > 0) {
             //   setTimeout(this.getAllUtente(offset), 2)
@@ -335,9 +344,7 @@ export default {
     },
      async getMobilizer () {
        await CommunityMobilizer.api().get('/communityMobilizer/' + localStorage.getItem('id_mobilizer')).then(resp => {
-          db.newDb().collection('mobilizer').add(
-          resp.response.data
-          )
+          CommunityMobilizer.localDbAdd(resp.response.data)
         }).catch(error => {
             console.log(error)
         })
@@ -389,12 +396,12 @@ export default {
           })
       },
       setClinics () {
- db.newDb().collection('clinics').get().then(clinics => {
-                Clinic.deleteAll()
-                Clinic.insert({
-     data: clinics
-    })
-             })
+        db.newDb().collection('clinics').get().then(clinics => {
+          Clinic.deleteAll()
+          Clinic.insert({
+            data: clinics
+          })
+        })
       },
       handleConnectivityChange (status) {
       console.log(status)
@@ -414,7 +421,7 @@ export default {
                     color: 'negative',
                     textColor: 'white',
                     classes: 'glossy'
-                  })
+          })
         } else if (resp === true && sync === false) {
            Notify.create({
                     icon: 'announcement',
@@ -447,8 +454,8 @@ export default {
     },
    sendUtente () {
      SyncronizingService.sendUtentes()
-                    // SyncronizingService.sendMobilizerData()
-    // SyncronizingService.sendUserDataPassUpdated()
+      // SyncronizingService.sendMobilizerData()
+      // SyncronizingService.sendUserDataPassUpdated()
      },
      verificationDialog () {
             this.$q.dialog({
@@ -476,37 +483,29 @@ export default {
         }
   },
   mounted () {
-   // this.$q.loading.show({
-   //       spinner: QSpinnerIos,
-   //       message: 'Por favor, aguarde...'
-  //   })
-   // const offset = 0
-  this.isOnlineChecker(false)
-       this.setClinics()
-     this.getDataLocalBase()
+   this.$q.loading.show({
+         spinner: QSpinnerIos,
+         message: 'Por favor, aguarde...'
+    })
+    const offset = 0
+    this.isOnlineChecker(false)
+    this.setClinics()
+    this.getDataLocalBase()
     db.newDb().collection('mobilizer').get().then(mobilizers => {
-             if (mobilizers.length === 0) {
-                this.getMobilizer()
-             } else {
-                CommunityMobilizer.deleteAll()
-                CommunityMobilizer.insert({
-     data: mobilizers
+      if (mobilizers.length === 0) {
+        this.getMobilizer()
+        this.getAllUtente(offset)
+      } else {
+        CommunityMobilizer.deleteAll()
+        CommunityMobilizer.insert({
+          data: mobilizers
+        })
+      }
+      this.$q.loading.hide()
     })
-             }
-    })
- //   this.getAllProvinces(offset)
-  //  this.getAllDistricts(offset)
     //  this.setMobilizerLocalBase()
   },
   created () {
-   // const offset = 0
-  //   this.$q.loading.show({
-  //        spinner: QSpinnerIos,
-  //        message: 'Por favor, aguarde...'
-  //   })
-  //  this.getAllClinics(offset)
-   // this.getDataLocalBase()
-   // this.getAllUtente(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
