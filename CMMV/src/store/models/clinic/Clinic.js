@@ -3,6 +3,7 @@ import { Model } from '@vuex-orm/core'
 import Utente from '../utente/Utente'
 import District from '../district/District'
 import Province from '../province/Province'
+import db from 'src/store/localbase'
 
 
 export default class Clinic extends Model {
@@ -31,5 +32,33 @@ export default class Clinic extends Model {
 
   static async apiGetAll () {
     return await this.api().get('/clinic')
+  }
+
+  static localDbAdd (clinic) {
+    return db.newDb().collection('clinics').add(clinic)
+  }
+
+  static localDbGetById (id) {
+    return db.newDb().collection('clinics').doc({ id: id }).get()
+  }
+
+  static localDbGetAll () {
+    return db.newDb().collection('clinics').get()
+  }
+
+  static localDbUpdate (clinic) {
+    return db.newDb().collection('clinics').doc({ id: clinic.id }).set(clinic)
+  }
+
+  static localDbUpdateAll (clinics) {
+    return db.newDb().collection('clinics').set(clinics)
+  }
+
+  static localDbDelete (clinic) {
+    return db.newDb().collection('clinics').doc({ id: clinic.id }).delete()
+  }
+
+  static localDbDeleteAll () {
+    return db.newDb().collection('clinics').delete()
   }
 }

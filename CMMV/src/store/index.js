@@ -22,10 +22,7 @@ VuexORM.use(VuexORMAxios, {
     headers: {
       'X-Requested-With': 'XMLHttpRequest'
     },
-     // baseURL: 'http://dev.fgh.org.mz:4110/api'
-     // baseURL: 'http://10.10.2.170:8882/api'
-     //  baseURL: 'http://10.10.2.183:8882/api'
-      baseURL: 'http://localhost:8882/api'
+     baseURL: 'http://dev.fgh.org.mz:4110/api'
   })
 
 // Request interceptor for API calls
@@ -60,8 +57,8 @@ if (rToken.length > 10) {
   if ((error.response.status === 403 || error.response.status === 401) && !originalRequest._retry) {
         originalRequest._retry = true
 
-    console.log('attempt to refresh token here -' + 'http://localhost:8882/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
-    return axios.post('http://localhost:8882/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
+    console.log('attempt to refresh token here -' + 'http://dev.fgh.org.mz:4110/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
+    return axios.post('http://dev.fgh.org.mz:4110/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
       .then(({ data }) => {
         console.log('==got the following token back: ' + data.access_token + '___________________________________________')
         axios.defaults.headers.common['X-Auth-Token'] = data.access_token

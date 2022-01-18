@@ -2,6 +2,7 @@ import { Model } from '@vuex-orm/core'
 import Utente from '../utente/Utente'
 import InfoDocsOrImages from '../dorcOrImages/InfoDocsOrImages'
 import District from '../district/District'
+import db from 'src/store/localbase'
 // import { MobilizerLogin } from '../userLogin/UserLoginHierarchy'
 
 export default class CommunityMobilizer extends Model {
@@ -50,5 +51,33 @@ export default class CommunityMobilizer extends Model {
 
   static async apiSave (communityMobilizer) {
     return await this.api().post('/communityMobilizer', communityMobilizer)
+  }
+
+  static localDbAdd (communityMobilizer) {
+    return db.newDb().collection('communityMobilizers').add(communityMobilizer)
+  }
+
+  static localDbGetById (id) {
+    return db.newDb().collection('communityMobilizers').doc({ id: id }).get()
+  }
+
+  static localDbGetAll () {
+    return db.newDb().collection('communityMobilizers').get()
+  }
+
+  static localDbUpdate (communityMobilizer) {
+    return db.newDb().collection('communityMobilizers').doc({ id: communityMobilizer.id }).set(communityMobilizer)
+  }
+
+  static localDbUpdateAll (communityMobilizers) {
+    return db.newDb().collection('communityMobilizers').set(communityMobilizers)
+  }
+
+  static localDbDelete (communityMobilizer) {
+    return db.newDb().collection('communityMobilizers').doc({ id: communityMobilizer.id }).delete()
+  }
+
+  static localDbDeleteAll () {
+    return db.newDb().collection('communityMobilizers').delete()
   }
 }

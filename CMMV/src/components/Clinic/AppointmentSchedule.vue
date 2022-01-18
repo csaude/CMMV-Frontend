@@ -46,9 +46,9 @@ import db from 'src/store/localbase'
 export default {
   data () {
     return {
-         appointmentsBD: [],
+      appointmentsBD: [],
       showEdit: false
-      }
+    }
   },
  computed: {
         appointmentsPending () {
@@ -85,19 +85,19 @@ export default {
       }
   },
     methods: {
-  async getAppointments () {
+    async getAppointments () {
        // Buscar as consults pelo id da clinica logada
-    await Appointment.api().get('/appointment/clinic/' + localStorage.getItem('id_clinicUser'))
-          .then(resp => {
-             db.newDb().collection('appointments').set(
-          resp.response.data
-          )
-            this.$q.loading.hide()
+    await Appointment.api().get('/appointment/clinic/' + localStorage.getItem('id_clinicUser')).then(resp => {
+      console.log(resp)
+            let appointmentApiList = []
+             appointmentApiList = resp.response.data
+             appointmentApiList.forEach(appointment => {
+                Appointment.localDbAdd(appointment)
+             })
           }).catch(error => {
-            this.$q.loading.hide()
             console.log('Erro no code ' + error)
         })
-          // Utente.api().get('/utente')
+        this.$q.loading.hide()
        },
       handlerEdit () {
         this.showEdit = true
@@ -105,29 +105,25 @@ export default {
        formatDate (value) {
             return date.formatDate(value, 'YYYY/MM/DD')
         }
-     //   setAppointmentsDataLocal(){
-      //    this.appointments.forEa
-       // }
        },
        mounted () {
-      //   this.getAppointments()
-       //  this.fillUtenteOnAppointment()
-    },
-    created () {
         db.newDb().collection('appointments').get().then(appointments => {
-             if (appointments.length === 0) {
-                this.$q.loading.show({
+          if (appointments.length === 0) {
+            this.$q.loading.show({
             spinner: QSpinnerIos,
             message: 'Por favor, aguarde...'
           })
-                this.getAppointments()
-             } else {
-                Appointment.deleteAll()
-                Appointment.insert({
-     data: appointments
+          this.getAppointments()
+          } else {
+              Appointment.deleteAll()
+              Appointment.insert({
+              data: appointments
+              })
+            }
     })
-             }
-    })
+       //  this.fillUtenteOnAppointment()
+    },
+    created () {
     },
     components: {
       // reschedule: require('pages/Reschedule.vue').default,
