@@ -399,6 +399,7 @@ export default {
         saveOrUpdateUtente () {
             console.log(this.utente.birthDate)
             this.address.city = this.address.district.description
+            this.address.district_id = this.address.district.id
             console.log(this.address.latitude)
             console.log(this.address.longitude)
             this.utente.addresses.splice(0, 1, this.address)

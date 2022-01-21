@@ -244,7 +244,8 @@ export default {
         },
         displayClinics () {
      if (this.district !== null) {
-            return Clinic.query().has('code').withAll().where('district_id', this.district.id).get()
+            return Clinic.query().with('province')
+                   .with('district.province').has('code').where('district_id', this.district.id).get()
         } else {
             return null
         }
@@ -274,7 +275,10 @@ export default {
         submitUser () {
        //   this.user.username = this.user.firstNames.substring(0, 1) + this.user.lastNames.trim()
            this.user.fullName = this.user.firstNames + ' ' + this.user.lastNames
-             UserLogin.api().post('/secUser', this.user).then(resp => {
+       //    const newUserLogin = new UserLogin()
+       //    newUserLogin.firstNames = this.user.firstNames
+       //     newUserLogin.firstNames = this.user.firstNames
+             UserLogin.api().post('/userLogin', this.user).then(resp => {
                  console.log(resp.response.data)
                 this.show_dialog = false
                 this.submitting = false

@@ -22,7 +22,7 @@ VuexORM.use(VuexORMAxios, {
     headers: {
       'X-Requested-With': 'XMLHttpRequest'
     },
-     baseURL: 'http://dev.fgh.org.mz:4110/api'
+     baseURL: 'http://localhost:8882/api'
   })
 
 // Request interceptor for API calls
@@ -56,14 +56,6 @@ axios.interceptors.response.use((response) => {
 if (rToken.length > 10) {
   if ((error.response.status === 403 || error.response.status === 401) && !originalRequest._retry) {
         originalRequest._retry = true
-
-    console.log('attempt to refresh token here -' + 'http://dev.fgh.org.mz:4110/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
-    return axios.post('http://dev.fgh.org.mz:4110/api/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
-      .then(({ data }) => {
-        console.log('==got the following token back: ' + data.access_token + '___________________________________________')
-        axios.defaults.headers.common['X-Auth-Token'] = data.access_token
-    return axios(originalRequest)
-      })
   }
 }
   return Promise.reject(error)

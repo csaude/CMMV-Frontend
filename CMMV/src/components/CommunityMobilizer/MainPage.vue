@@ -357,6 +357,7 @@ export default {
     })
     }) */
    await db.newDb().collection('utentes').get().then(utentes => {
+     console.log(utentes)
           utentes.forEach(utente => {
              Utente.insert({
               data: utente
@@ -491,7 +492,7 @@ export default {
     this.isOnlineChecker(false)
     this.setClinics()
     this.getDataLocalBase()
-    db.newDb().collection('mobilizer').get().then(mobilizers => {
+    db.newDb().collection('communityMobilizers').get().then(mobilizers => {
       if (mobilizers.length === 0) {
         this.getMobilizer()
         this.getAllUtente(offset)
