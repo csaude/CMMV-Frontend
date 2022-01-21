@@ -391,6 +391,9 @@ export default {
         },
         saveOrUpdateUtente () {
             this.address.city = this.address.district.description
+            this.address.district_id = this.address.district.id
+            console.log(this.address.latitude)
+            console.log(this.address.longitude)
             this.utente.addresses.splice(0, 1, this.address)
             this.utente.birthDate = moment(this.utente.birthDate, "DD-MM-YYYY").toDate()
             this.utente.communityMobilizer = this.mobilizer

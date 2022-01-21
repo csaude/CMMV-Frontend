@@ -9,7 +9,6 @@
                   <q-tab name="Clinicas" label="Unidade Sanitária" />
                   <q-tab name="Utilizadores" label="Utilizadores" />
                     <q-tab name="Mobilizadores" label="Mobilizadores" />
-                   <!--     <q-tab name="Relatorios" label="Relatorios" /> -->
                 </q-tabs>
             </q-toolbar>
             <q-tab-panels
@@ -27,9 +26,6 @@
               <q-tab-panel name="Utilizadores">
                <users> </users>
               </q-tab-panel>
-             <!--   <q-tab-panel name="Relatorios">
-              <relatorio> </relatorio>
-              </q-tab-panel> -->
                </q-tab-panels>
             <q-separator class="q-mx-md"/>
         </div>
@@ -53,14 +49,8 @@ export default {
   },
    components: {
      addClinic: require('components/Clinic/AddClinic.vue').default,
-      mobilizers: require('components/Clinic/Mobilizers.vue').default,
+      mobilizers: require('components/Clinic/Mobilizers.vue').defaut,
        users: require('components/Clinic/Users.vue').default
-     //   relatorio: require('components/apexCharts/ApexExemplo3.vue').default
-     //  ApexExemplo: require('components/apexCharts/ApexExemplo.vue').default,
-      //   ApexExemplo2: require('components/apexCharts/ApexExemplo2.vue').default,
-   //    cardbase: require('components/apexCharts/Cardbase.vue').default
-    //  Dialog: require('components/Shared/Dialog/Dialog.vue').default
-    // clinicsTable: require('components/Settings/Clinic/ClinicsTable.vue').default
   }
 }
 </script>

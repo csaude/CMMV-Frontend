@@ -257,7 +257,8 @@ export default {
         },
         displayClinics () {
      if (this.district !== null) {
-            return Clinic.query().has('code').withAll().where('district_id', this.district.id).get()
+            return Clinic.query().with('province')
+                   .with('district.province').has('code').where('district_id', this.district.id).get()
         } else {
             return null
         }
