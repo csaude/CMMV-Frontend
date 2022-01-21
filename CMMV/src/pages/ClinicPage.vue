@@ -49,6 +49,9 @@
               <q-tab-panel name="configuracoes" >
                 <Settings  />
               </q-tab-panel>
+              <q-tab-panel name="relatorios" >
+                <Charts  />
+              </q-tab-panel>
              <!--  <q-tab-panel name="mobilizer" >
                 <MobilizerManagement  />
               </q-tab-panel> -->
@@ -62,6 +65,7 @@
                         <!--q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" /-->
                         <!-- <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" /> -->
                         <q-tab name="configuracoes" icon="settings" label="Definições" />
+                         <q-tab name="relatorios" icon="insights" label="Relatorios" />
                     </q-tabs>
                 </q-toolbar>
             </q-footer>
@@ -97,7 +101,8 @@ export default {
         Settings: require('components/Clinic/Settings.vue').default,
       //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default,
-        changePassword: require('components/Shared/ChangePassword.vue').default
+        changePassword: require('components/Shared/ChangePassword.vue').default,
+         Charts: require('components/ApexCharts/Charts.vue').default
     },
     methods: {
         displayClinic () {
