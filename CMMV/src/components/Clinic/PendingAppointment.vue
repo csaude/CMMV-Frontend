@@ -6,7 +6,7 @@
         </q-item-section-->
         <q-item-section>
             <q-item-label>[&nbsp;{{appointment && this.formatDateShort(appointment.appointmentDate)}}]</q-item-label>
-            <q-item-label caption> <span >Utente: {{appointment.utente && appointment.utente.firstNames}}
+            <q-item-label caption> <span >Utente: {{appointment.utente && appointment.utente.firstNames}}  {{appointment.utente && appointment.utente.lastNames}}
             <span >  &nbsp; &nbsp; &nbsp; Codigo: {{appointment.utente && appointment.utente.systemNumber}}</span> </span></q-item-label>
         </q-item-section>
         <q-item-section side>
@@ -35,7 +35,7 @@ export default {
     },
     methods: {
         formatDateShort (value) {
-            return date.formatDate(value, 'DD/MM/YYYY')
+            return date.formatDate(value, 'DD-MM-YYYY')
         },
         getDaysPassed () {
             return ''
@@ -45,19 +45,13 @@ export default {
             appointmentToConfirm.status = 'CONFIRMADO'
             console.log(appointmentToConfirm)
             Appointment.update({
-        where: (appointment) => {
-    return appointment.id === appointmentToConfirm.id
-  },
-        data: appointmentToConfirm
-      })
+                where: (appointment) => {
+                    return appointment.id === appointmentToConfirm.id
+                },
+                data: appointmentToConfirm
+            })
             const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
              db.newDb().collection('appointments').doc({ id: appointmentToConfirm.id }).set(appointmentLocalBase)
-      //      Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
-      //          console.log(resp.response.data)
-      //          this.$emit('appointmentConfirm', resp.response.data)
-      //      }).catch(error => {
-      //          console.log(error)
-      //      })
         })
       }
     },

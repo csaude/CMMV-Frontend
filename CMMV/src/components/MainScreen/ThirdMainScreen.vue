@@ -21,7 +21,7 @@
                             <div class="row">
                                 <ul>
                                     <li>Facilita a higiene do pénis;</li>
-                                    <li>Previne infecções urinárias</li>
+                                    <li>Previne infecções urinárias;</li>
                                     <li>Diminui o risco de contrair doenças de transmissão sexual, in­cluindo a infecção pelo HIV/SIDA;</li>
                                     <li>Resolve problemas ligados ao prepúcio (dificuldade ou impossi­bilidade de puxar o prepúcio para trás, de forma a expor a cabeça do pénis);</li>
                                     <li>Diminui o risco de desenvolvimento do cancro do pénis;</li>

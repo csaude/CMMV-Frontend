@@ -3,13 +3,17 @@
       :rows="this.rows"
       :columns="columns"
       :filter="filter"
-      virtual-scroll>
+      virtual-scroll
+      row-key="name">
         <template v-slot:top-right>
-            <q-input outlined dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input outlined dense debounce="300" v-model="filter" placeholder="Pesquisa">
             <template v-slot:append>
                 <q-icon name="search" />
             </template>
-                </q-input>
+            </q-input>
+            <div class="q-pa-md q-gutter-sm">
+              <q-btn color="primary" icon="download_for_offline" no-caps @click="exportTable"/>
+          </div>
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
@@ -19,7 +23,7 @@
             <q-td v-else key="appointmentDate" :props="props">
                 {{ this.formatDateDDMMMYYYY(props.row.appointmentDate) }}
             </q-td>
-            <q-td key="code" :props="props">
+            <q-td key="systemNumber" :props="props">
                 {{ props.row.utente.systemNumber }}
             </q-td>
             <q-td key="nameUser" :props="props">
@@ -57,7 +61,7 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { date } from 'quasar'
+import { date, exportFile } from 'quasar'
 import moment from 'moment'
 const { addToDate } = date
 
@@ -68,12 +72,13 @@ export default {
     const selected = ref([])
     const lastIndex = ref(null)
     const tableRef = ref(null)
+    const filter = ref('')
     return {
         valOption: ref(true),
         lastIndex,
         tableRef,
         selected,
-        filter: '',
+        filter,
         unit: 'days'
     }
   },
@@ -111,7 +116,39 @@ export default {
     },
     formatDateDDMMMYYYY (value) {
         return moment(value).format('DD-MM-YYYY')
-    }
+    },
+    exportTable() {
+      // naive encoding to csv format
+      const content = [this.columns.map(col => this.wrapCsvValue(col.label))]
+        .concat(
+          this.rows.map(row =>
+            this.columns
+              .map(col =>
+                this.wrapCsvValue(
+                  typeof col.field === 'function'
+                    ? col.field(row)
+                    : row[col.field === undefined ? col.name : col.field],
+                  col.format
+                )
+              )
+              .join(',')
+          )
+        ).join('\r\n')
+      const status = exportFile('consultas_list.csv', content, 'text/csv')
+      if (status !== true) {
+        this.$q.notify({
+          message: 'O navegador recusou o download...',
+          color: 'negative',
+          icon: 'warning'
+        })
+      }
+    },
+   wrapCsvValue(val, formatFn) {
+    let formatted = formatFn !== undefined ? formatFn(val) : val
+    formatted = formatted === undefined || formatted === null ? '' : String(formatted)
+    formatted = formatted.split('"').join('""')
+    return `"${formatted}"`
+  }
   },
   mounted () {
   },

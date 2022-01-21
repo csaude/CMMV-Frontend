@@ -6,7 +6,7 @@
         <div class="">
             <q-toolbar >
                 <q-tabs v-model="selectedTab" shrink stretch>
-                  <q-tab name="Clinicas" label="Clinicas" />
+                  <q-tab name="Clinicas" label="Unidade Sanitária" />
                   <q-tab name="Utilizadores" label="Utilizadores" />
                     <q-tab name="Mobilizadores" label="Mobilizadores" />
                 </q-tabs>
@@ -18,12 +18,12 @@
         inline-label
       >
               <q-tab-panel name="Clinicas">
-              <addClinic> </addClinic>
+                <addClinic> </addClinic>
               </q-tab-panel>
-               <q-tab-panel name="Mobilizadores">
-     <mobilizers> </mobilizers>
+              <q-tab-panel name="Mobilizadores">
+                <mobilizers> </mobilizers>
               </q-tab-panel>
-               <q-tab-panel name="Utilizadores">
+              <q-tab-panel name="Utilizadores">
                <users> </users>
               </q-tab-panel>
                </q-tab-panels>

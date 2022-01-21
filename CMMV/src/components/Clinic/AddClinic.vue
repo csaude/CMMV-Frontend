@@ -9,7 +9,7 @@
         binary-state-sort
         >
         <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+            <q-input outlined dense debounce="300" v-model="filter" placeholder="Pesquisa">
             <template v-slot:append>
                 <q-icon name="search" />
             </template>
@@ -273,8 +273,8 @@ export default {
          this.errorStr = e.message
           this.$q.loading.hide()
           this.$q.dialog({
-          title: 'Erro no carregamento da localização',
-          message: this.errorStr
+          title: 'Problema no carregamento da localização',
+          message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização'//this.errorStr
         }).onOk(() => {
           this.$q.loading.hide()
         })

@@ -80,7 +80,7 @@
                         <q-item-label caption>{{clinic.type}}</q-item-label>
                       </q-item-section>
                       <q-item-section side top>
-                        <q-item-label>{{clinic.distance}}m</q-item-label>
+                        <q-item-label>{{clinic.distance}}Km</q-item-label>
                       </q-item-section>
                     </q-item>
                   </q-list>
@@ -308,8 +308,8 @@ Utente.update({
          this.errorStr = e.message
           this.$q.loading.hide()
           this.$q.dialog({
-          title: 'Erro no carregamento da localização',
-          message: this.errorStr + '\n' + 'O sistema vai assumir coordenadas padrão!'
+          title: 'Problema no carregamento da localização',
+          message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização \n O sistema vai assumir coordenadas padrão!'
         }).onOk(() => {
           this.myLocation.latitude = -25.9678239
           this.myLocation.longitude = 32.5864914
@@ -351,14 +351,14 @@ Utente.update({
         if (this.myLocation.distance.includes('<1km')) {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
           if (calcDist <= 1000) {
-            clinic.distance = this.round(calcDist, -1)
+            clinic.distance = this.round(calcDist/1000)
             this.clinics.push(clinic)
           }
         } else {
               if (this.myLocation.distance.includes('1km - 5km')) {
                  calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                   if (calcDist > 1000 && calcDist <= 5000) {
-                    clinic.distance = this.round(calcDist, -1)
+                    clinic.distance = this.round(calcDist/1000)
                     this.clinics.push(clinic)
                   }
               } else {
@@ -366,13 +366,13 @@ Utente.update({
                     calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                      console.log(calcDist)
                     if (calcDist > 5000 && calcDist <= 10000) {
-                      clinic.distance = this.round(calcDist, -1)
+                      clinic.distance = this.round(calcDist/1000)
                       this.clinics.push(clinic)
                     }
                   } else {
                       calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                       if (calcDist > 10000) {
-                          clinic.distance = this.round(calcDist, -1)
+                          clinic.distance = this.round(calcDist/1000)
                           this.clinics.push(clinic)
                     }
                   }

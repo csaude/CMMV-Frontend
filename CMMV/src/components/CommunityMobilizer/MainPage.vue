@@ -378,7 +378,6 @@ export default {
      editUtente () {
        this.showUtenteRegistrationScreen = true
        this.indexEdit = 1
-       console.log('11111112122')
      },
      editMobilizer (mobilizer) {
         this.mobilizer = Object.assign({}, mobilizer)
@@ -461,7 +460,7 @@ export default {
      verificationDialog () {
             this.$q.dialog({
                 title: 'Confirmação',
-                message: 'Tem Certeza que deseja efectuar a sincronização , Os dados Enviados ja não poderão ser editados?',
+                message: 'Tem a certeza que deseja efectuar a sincronização? Os dados enviados já não poderão ser editados após a sincronização',
                 ok: {
                 label: 'OK',
                 push: true,
@@ -507,6 +506,9 @@ export default {
     //  this.setMobilizerLocalBase()
   },
   created () {
+    const offset = 0
+       this.getAllProvinces(offset)
+       this.getAllDistricts(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,

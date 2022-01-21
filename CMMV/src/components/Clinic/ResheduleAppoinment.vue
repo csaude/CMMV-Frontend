@@ -4,16 +4,20 @@
             <q-card-section class="q-px-md">
                <div class="row">
                     <q-input outlined disable v-model="editedAppointment.utente.systemNumber" label="Código" dense class="col"/>
-                    <q-input outlined disable v-model="editedAppointment.utente.firstNames" label="Nome" dense class="col q-ml-md"/>
                </div>
                <div class="row q-pt-md">
-                    <q-input dense outlined v-model="editedAppointment.appointmentDate" mask="date" :rules="['date']" class="col">
+                    <q-input outlined disable v-model="editedAppointment.utente.firstNames" label="Nome" dense class="col"/>
+                    <q-input outlined disable v-model="editedAppointment.utente.lastNames" label="Apelido" dense class="col q-ml-md"/>
+               </div>
+               <div class="row q-pt-md">
+                    <q-input dense outlined v-model="editedAppointment.appointmentDate" class="col">
                         <template v-slot:append>
                             <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
                                 <q-date
-                                    :options="blockDataPassado"
-                                    v-model="editedAppointment.appointmentDate">
+                                    mask="DD-MM-YYYY"
+                                    v-model="editedAppointment.appointmentDate"
+                                    :options="blockDataPassado">
                                 <div class="row items-center justify-end">
                                     <q-btn v-close-popup label="Close" color="primary" flat />
                                 </div>
@@ -60,39 +64,35 @@ export default {
     },
     methods: {
         moment,
-        date: ref(moment(date).format('YYYY/MM/DD')),
+        date: ref(moment(date).format('YYYY-MM-DD')),
         blockDataPassado (date) {
             return date >= moment(new Date()).format('YYYY/MM/DD')
         },
         formatDateShort (value) {
-            return date.formatDate(value, 'DD-MM')
+            return date.formatDate(value, 'DD-MM-YYYY')
         },
         promptToConfirm (appointmentToConfirm) {
             this.$q.dialog({ title: 'Confirm', message: 'Deseja Confirmar?', cancel: true, persistent: true }).onOk(() => {
-            appointmentToConfirm.appointmentDate = new Date(this.editedAppointment.appointmentDate)
+            appointmentToConfirm.appointmentDate = moment(this.editedAppointment.appointmentDate, "DD-MM-YYYY").toDate()
             appointmentToConfirm.time = this.editedAppointment.time
             appointmentToConfirm.status = 'CONFIRMADO'
             console.log(appointmentToConfirm)
-                Appointment.update({
-        where: (appointment) => {
-    return appointment.id === appointmentToConfirm.id
-  },
-        data: appointmentToConfirm
-      })
+                
             const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
-             db.newDb().collection('appointments').doc({ id: appointmentToConfirm.id }).set(appointmentLocalBase)
-     //       Appointment.api().patch('/appointment/' + appointmentToConfirm.id, appointmentToConfirm).then(resp => {
-       //         this.$emit('appointmentConfirm', resp.response.data)
-       //     }).catch(error => {
-         //       console.log(error)
-         //   })
+            Appointment.update({
+                    // where: (appointment) => {
+                    //     return appointment.id === appointmentToConfirm.id
+                    // },
+                    data: appointmentLocalBase
+                })
+            db.newDb().collection('appointments').doc({ id: appointmentToConfirm.id }).set(appointmentLocalBase)
         })
       }
     },
     created () {
         this.editedAppointment = Object.assign({}, this.appointment)
+        this.editedAppointment.appointmentDate = moment(this.appointment.appointmentDate).format('DD-MM-YYYY')
     }
-
 }
 </script>
 

@@ -9,7 +9,7 @@
         binary-state-sort
         >
         <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+            <q-input outlined dense debounce="300" v-model="filter" placeholder="Pesquisa">
             <template v-slot:append>
                 <q-icon name="search" />
             </template>
@@ -92,10 +92,10 @@
                     ref="username"
                     square
                     v-model="user.username"
-                    :rules="[ val => val.length >= 3 || 'O nome indicado é inválido']"
+                    :rules="[ val => val.length >= 3 || 'O nome do utilizador indicado é inválido']"
                     lazy-rules
                     class="col fild-radius"
-                    label="Nome" />
+                    label="Utilizador" />
             </div>
             <div class="row">
                 <q-input
@@ -119,7 +119,7 @@
                     </template>
                 </q-input>
             </div>
-             <div class="row q-mb-md">
+             <!--div class="row q-mb-md">
                       <q-select
                     dense outlined
                     class="col"
@@ -177,15 +177,25 @@
                     :rules="[ val => ( val != null ) || ' Por favor indique a Clinica']"
                     lazy-rules
                     label="Clinica" />
-            </div>
+            </div-->
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
                 <q-btn label="Cancelar" color="primary" @click="show_dialog = false"/>
-                <q-btn type="submit" label="Submeter" color="primary" />
+                <q-btn type="submit" :loading="this.submitting" label="Submeter" color="primary" />
             </q-card-actions>
         </form>
     </q-card>
        </q-dialog>
+     <q-dialog v-model="show_error_dialog">
+        <div v-if="listErrors.length > 0" class="q-pa-sm q-gutter-sm" style="max-width: 550px; max-height: 150px;border-radius: 10px; border: 1px solid #cb4646; margin: 5px; background-color: #ead8da">
+          <ul class="list-group alert alert-danger">
+            <li class="list-group-item text-negative q-pl-xs text-weight-regular text-caption"
+                v-for="item in listErrors" :key="item">
+              {{ item }}
+            </li>
+          </ul>
+        </div>
+     </q-dialog>
 </template>
 <script>
 // import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
@@ -209,10 +219,13 @@ export default {
                 role: '',
                 clinic: null
             },
-              isPwd: ref(true),
+            isPwd: ref(true),
             province: null,
             show_dialog: false,
+            show_error_dialog: false,
             editMode: false,
+            submitting: false,
+            listErrors: [],
             district: '',
             // clinic: '',
             columns: [
@@ -261,34 +274,31 @@ export default {
     methods: {
      validateUser () {
         this.$refs.nome.$refs.ref.validate()
-         this.$refs.apelido.$refs.ref.validate()
-         this.$refs.password.$refs.ref.validate()
-         this.$refs.province.validate()
-              this.$refs.district.validate()
-                this.$refs.clinic.validate()
-            if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
-              !this.$refs.password.$refs.ref.hasError &&
-             !this.$refs.province.hasError && !this.$refs.district.hasError && !this.$refs.clinic.hasError) {
-                this.submitUser()
-            }
+        this.$refs.apelido.$refs.ref.validate()
+        this.$refs.password.$refs.ref.validate()
+        if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
+            !this.$refs.password.$refs.ref.hasError) {
+            this.submitUser()
+        }
      },
         submitUser () {
+           this.submitting = true
+           this.listErrors = []
        //   this.user.username = this.user.firstNames.substring(0, 1) + this.user.lastNames.trim()
            this.user.fullName = this.user.firstNames + ' ' + this.user.lastNames
-       //    const newUserLogin = new UserLogin()
-       //    newUserLogin.firstNames = this.user.firstNames
-       //     newUserLogin.firstNames = this.user.firstNames
-             UserLogin.api().post('/userLogin', this.user).then(resp => {
-                 console.log(resp.response.data)
-                this.show_dialog = false
-                this.submitting = false
-                this.$emit('update:show_dialog', false)
+           this.user.clinic = Clinic.query().with('province').with('district.province').first()
+             UserLogin.api().post('/secUser', this.user).then(resp => {
+              console.log(resp.response.data)
+              this.show_dialog = false
+              this.submitting = false
+              this.$emit('update:show_dialog', false)
               this.$q.notify({
               message: 'Utilizador registrado com sucesso.',
               color: 'teal'
           })
             }).catch(error => {
             this.submitting = false
+            this.show_error_dialog = true
             console.log(error)
             if (error.request.status !== 0) {
             const arrayErrors = JSON.parse(error.request.response)
@@ -299,11 +309,11 @@ export default {
                 this.listErrors.push(element.message)
               })
             }
-              this.$emit('update:show_dialog', true)
-              this.$q.notify({
-              message: 'Error: ' + this.listErrors,
-              color: 'red'
-              })
+              // this.$emit('update:show_dialog', true)
+              // this.$q.notify({
+              // message: 'Error: ' + this.listErrors,
+              // color: 'red'
+              // })
             console.log(this.listErrors)
             }
             })
