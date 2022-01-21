@@ -30,7 +30,7 @@
                     mask="#########"
                     fill-mask
                     v-model="mobilizer.cellNumber"
-                    label="Numero de Telefone" />
+                    label="Número de Telefone" />
 
                 <input-number-phone-field
                     class="col q-ml-md"
@@ -39,7 +39,7 @@
                     square
                     fill-mask
                     v-model="mobilizer.cellNumber2"
-                    label="Numero de Telefone 2" />
+                    label="Número de Telefone 2" />
             </div>
             <div class="row q-mb-md">
                 <q-select
@@ -76,10 +76,20 @@
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
                <q-btn label="Cancelar" color="primary" @click="$emit('close')"/>
-                <q-btn type="submit" label="Submeter" color="primary" />
+                <q-btn type="submit" :loading="this.submitting" label="Submeter" color="primary" />
             </q-card-actions>
         </form>
     </q-card>
+     <q-dialog v-model="show_error_dialog">
+        <div v-if="listErrors.length > 0" class="q-pa-sm q-gutter-sm" style="max-width: 550px; max-height: 150px;border-radius: 10px; border: 1px solid #cb4646; margin: 5px; background-color: #ead8da">
+          <ul class="list-group alert alert-danger">
+            <li class="list-group-item text-negative q-pl-xs text-weight-regular text-caption"
+                v-for="item in listErrors" :key="item">
+              {{ item }}
+            </li>
+          </ul>
+        </div>
+     </q-dialog>
 </template>
 <script>
 import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
@@ -100,12 +110,14 @@ export default {
             mobilizer: new CommunityMobilizer(),
             mobilizerLogin: {},
             province: null,
-             show_dialog: false,
-               submitting: false,
+            show_dialog: false,
+            submitting: false,
+            show_error_dialog: false,
+            listErrors: [],
             columns: [
                 { name: 'firstNames', align: 'left', label: 'Nome', field: row => row.firstNames, format: val => `${val}`, sortable: true },
                 { name: 'lastNames', align: 'left', label: 'Apelido', field: row => row.lastNames, format: val => `${val}`, sortable: true },
-                { name: 'cellNumber', align: 'left', label: 'Numero de Telefone', field: row => row.cellNumber, format: val => `${val}`, sortable: true },
+                { name: 'cellNumber', align: 'left', label: 'Número de Telefone', field: row => row.cellNumber, format: val => `${val}`, sortable: true },
                 { name: 'actions', label: 'Opções', align: 'left', field: 'actions' }
             ]
         }
@@ -159,6 +171,8 @@ export default {
         },
         submitMobilizer () {
             this.mobilizer.uuid = uuidv4()
+            this.submitting = false
+            this.listErrors = []
             console.log(this.mobilizer)
        //    this.mobilizerLogin = new MobilizerLogin()
        //     this.mobilizerLogin.username = this.mobilizer.firstNames
@@ -167,6 +181,7 @@ export default {
        if (this.mobilizer.id === null) {
             CommunityMobilizer.api().post('/communityMobilizer', this.mobilizer).then(resp => {
                  console.log(resp.response.data)
+                this.submitting = false
                 this.$emit('close')
                 this.$emit('update:show_dialog', false)
               this.$q.notify({
@@ -175,6 +190,7 @@ export default {
           })
             }).catch(error => {
             this.submitting = false
+            this.show_error_dialog = true
             console.log(error)
             if (error.request.status !== 0) {
             const arrayErrors = JSON.parse(error.request.response)
@@ -185,12 +201,12 @@ export default {
                 this.listErrors.push(element.message)
               })
             }
-              this.$emit('update:show_dialog', true)
-              this.$q.notify({
-              message: 'Error: ' + this.listErrors,
-              color: 'red'
-              })
-            console.log(this.listErrors)
+            //   this.$emit('update:show_dialog', true)
+            //   this.$q.notify({
+            //   message: 'Error: ' + this.listErrors,
+            //   color: 'red'
+            //   })
+            // console.log(this.listErrors)
             }
             })
        } else if (this.editModeMobilizer) {

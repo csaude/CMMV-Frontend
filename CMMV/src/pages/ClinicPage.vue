@@ -155,7 +155,7 @@ export default {
       verificationDialog () {
             this.$q.dialog({
                 title: 'Confirmação',
-                message: 'Tem Certeza que deseja efectuar a sincronização , Os dados Enviados ja não poderão ser editados?',
+                message: 'Tem a certeza que deseja efectuar a sincronização? Os dados enviados já não poderão ser editados após a sincronização',
                 ok: {
                 label: 'OK',
                 push: true,

@@ -7,7 +7,7 @@
           <div class="row">
             <div class="column justify-center">
               <p>Detalhes da Marcacao</p>
-              <p>Confirmacao Pendente na US</p>
+              <p>Confirmação Pendente na US</p>
               <br />
             </div>
             <div class="column absolute-right">

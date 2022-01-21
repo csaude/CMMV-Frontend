@@ -4,7 +4,7 @@
             <q-card-section class="q-px-md">
              <h5 center> Alterar Senha</h5>
                <div class="row q-mt-md">
-               <q-input v-model="password" filled :type="isPwd ? 'password' : 'text'" hint="Senha Actual"  ref="password"  class="col"   :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
+               <q-input v-model="password" filled :type="isPwd ? 'password' : 'text'" label="Senha Actual" ref="password"  class="col"   :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
         <template v-slot:append>
           <q-icon
             :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -15,7 +15,7 @@
       </q-input>
             </div>
             <div class="row">
-               <q-input v-model="newPassword" filled :type="isPwd ? 'password' : 'text'" hint="Nova Senha"  class="col" ref="newPassword" :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
+               <q-input v-model="newPassword" filled :type="isPwd ? 'password' : 'text'" label="Nova Senha" class="col" ref="newPassword" :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
         <template v-slot:append>
           <q-icon
             :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -26,7 +26,7 @@
       </q-input>
             </div>
             <div class="row">
-               <q-input v-model="confirmNewPassword" filled :type="isPwd ? 'password' : 'text'" hint="Confirmacao da Nova Senha"  class="col" ref="confirmNewPassword" :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
+               <q-input v-model="confirmNewPassword" filled :type="isPwd ? 'password' : 'text'" label="Confirmação da Nova Senha"  class="col" ref="confirmNewPassword" :rules="[ val => ( val != null ) || ' Por favor preencha a senha']">
         <template v-slot:append>
           <q-icon
             :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -39,7 +39,7 @@
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
                <q-btn label="Cancelar" color="primary" @click="$emit('close')"/>
-                <q-btn type="submit" label="Submeter" color="primary" />
+                <q-btn type="submit" :loading="this.submitting" label="Submeter" color="primary" />
             </q-card-actions>
         </form>
     </q-card>
@@ -53,8 +53,9 @@ export default {
     return {
       password: ref(''),
       newPassword: ref(''),
-       confirmNewPassword: ref(''),
+      confirmNewPassword: ref(''),
       isPwd: ref(true),
+      submitting: false,
       dataBaseUser: {},
        user: {
         password: '',
@@ -65,6 +66,7 @@ export default {
   },
       methods: {
          validateUser () {
+            this.submitting = true
             this.$refs.password.validate()
              this.$refs.newPassword.validate()
                this.$refs.confirmNewPassword.validate()
@@ -86,6 +88,7 @@ export default {
                   //     db.newDb().collection('users').doc({ id: this.dataBaseUser.id }).set(this.dataBaseUser)
                 }
               }
+               this.submitting = false
             }
         },
         getLocalBaseUser () {

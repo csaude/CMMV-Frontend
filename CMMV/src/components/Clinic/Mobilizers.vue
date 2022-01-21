@@ -9,7 +9,7 @@
         binary-state-sort
         >
         <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+            <q-input outlined dense debounce="300" v-model="filter" placeholder="Pesquisa">
             <template v-slot:append>
                 <q-icon name="search" />
             </template>
@@ -88,7 +88,7 @@ export default {
             columns: [
                 { name: 'firstNames', align: 'left', label: 'Nome', field: row => row.firstNames, format: val => `${val}`, sortable: true },
                 { name: 'lastNames', align: 'left', label: 'Apelido', field: row => row.lastNames, format: val => `${val}`, sortable: true },
-                { name: 'cellNumber', align: 'left', label: 'Numero de Telefone', field: row => row.cellNumber, format: val => `${val}`, sortable: true },
+                { name: 'cellNumber', align: 'left', label: 'Número de Telefone', field: row => row.cellNumber, format: val => `${val}`, sortable: true },
                 { name: 'actions', label: 'Opções', align: 'left', field: 'actions' }
             ]
         }

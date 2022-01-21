@@ -89,6 +89,7 @@ export default {
         }, 100)
       },
       onLeft ({ reset }, utenteOld) {
+        utenteOld.age = this.idadeCalculator(utenteOld.birthDate)
         this.$q.dialog({
               title: 'Confirmação',
               message: 'Pretende editar os dados do Utente?',
@@ -186,7 +187,15 @@ Utente.update({
         this.utente = utente
         this.$emit('update:showUtenteULinkScreenProp', open)
         this.$emit('update:utente', utente)
-      }
+      },
+      idadeCalculator (birthDate) {
+            if (moment(birthDate).isValid()) {
+               const utentBirthDate = moment(birthDate)
+               const todayDate = moment(new Date())
+               const idade = todayDate.diff(utentBirthDate, 'years')
+               return idade
+            }
+        },
     },
      components: {
       'utente-us-link': require('components/Utente/SearchSanitaryUnit.vue').default

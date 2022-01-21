@@ -31,16 +31,16 @@
 import { date, useQuasar } from 'quasar'
 import { ref } from 'vue'
 import Appointment from '../../store/models/appointment/Appointment'
- import db from 'src/store/localbase'
+import db from 'src/store/localbase'
 const columns = [
   { name: 'appointmentDate', required: true, label: 'Data', align: 'left', field: row => row.appointmentDate, format: val => `${val}`, sortable: true },
-  { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
+  { name: 'systemNumber', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.systemNumber : 'Não Definido', format: val => `${val}`, sortable: true },
   { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
   { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
 ]
 const columns2 = [
   { name: 'visitDate', required: true, label: 'Data da Visita', align: 'left', field: row => row.visitDate, format: val => `${val}`, sortable: true },
-  { name: 'code', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.code : 'Não Definido', format: val => `${val}`, sortable: true },
+  { name: 'systemNumber', required: true, label: 'Codigo', align: 'left', field: row => row.utente !== undefined && row.utente !== null ? row.utente.systemNumber : 'Não Definido', format: val => `${val}`, sortable: true },
   { name: 'nameUser', required: true, label: 'Nome do Utente', align: 'left', field: row => row.utente !== null ? row.utente.firstNames + ' ' + row.utente.lastNames : ' ', format: val => `${val}`, sortable: true },
   { name: 'hasHappened', required: true, label: 'Chegou?', align: 'left', field: row => row.hasHappened ? ' Sim' : 'Não', format: val => `${val}`, sortable: true }
 ]
@@ -126,19 +126,6 @@ export default {
         console.log('Erro no code ' + error)
         })
        },
- //   async updateClinicAppoitment (appointment) {
- //     await Appointment.api().patch('/appointment/' + appointment.id, appointment).then(resp => {
-  //      console.log(resp.response.data)
-  //      Appointment.update(resp.response.data)
-   //     this.$q.loading.hide()
-   //     this.$q.notify({
-   //           message: 'Consulta do paciente foi actualizada.',
-    //          color: 'teal'
-    //      })
-    //  }).catch(error => {
-    //     this.$q.loading.hide()
-    //    console.log('Erro no code ' + error)
-    //    })
     updateClinicAppoitment (appointmentToUpdate) {
         Appointment.update({
         where: (appointment) => {

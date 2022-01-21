@@ -105,7 +105,7 @@
                     </q-input>
                 </div>
             </div>
-            <div class="row q-my-lg">Endereco</div>
+            <div class="row q-my-lg">Endereço</div>
             <div class="row q-mb-md">
                 <combo-field
                     class="col"
@@ -251,13 +251,12 @@ export default {
         if (this.indexEdit === 0) {
             this.utente = Object.assign({}, this.utenteUpdate)
             this.utente.birthDate = moment(this.utenteUpdate.birthDate).format('DD-MM-YYYY')
-            this.idadeCalculator(this.utente.birthDate) // Calculo da idade do utentea
+            this.idadeCalculator(this.utente.birthDate) // Calculo da idade do utente
            if (this.utente.haspartner === true) {
              this.utente.haspartner = ref('true')
            } else {
                this.utente.haspartner = ref('false')
            }
-            console.log(this.utenteUpdate.age)
             if (this.utente.addresses.length > 0) {
                 this.address = this.utente.addresses[0]
                 this.address.district = District.query().with('province').find(this.address.district_id)
@@ -282,16 +281,12 @@ export default {
                 communityMobilizer: {}
            }
         }
-        this.$q.loading.show({
-          spinner: QSpinnerIos,
-          message: 'Por favor, aguarde...'
-        })
-     //  const offset = 0
-     //   this.getAllProvinces(offset)
-     //   this.getAllDistricts(offset)
     },
     mounted () {
-        this.locateMe()
+        console.log()
+        if(this.address.latitude === null & this.address.longitude === null) {
+            this.locateMe()
+        }
     },
     computed: {
          provinces () {
@@ -384,26 +379,20 @@ export default {
             this.$refs.nome.$refs.ref.validate()
             this.$refs.apelido.$refs.ref.validate()
             this.$refs.phone.$refs.ref.validate()
-            this.$refs.whatsapp.$refs.ref.validate()
-            // this.$refs.age.$refs.ref.validate()
+            this.$refs.age.validate()
             this.$refs.morada.validate()
-            if (!this.$refs.nome.hasError && !this.$refs.apelido.hasError &&
-                !this.$refs.phone.hasError && !this.$refs.whatsapp.hasError &&
-                !this.$refs.age.hasError && !this.$refs.district.hasError &&
-                !this.$refs.morada.hasError) {
+            if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
+                !this.$refs.phone.$refs.ref.hasError && !this.$refs.age.hasError && 
+                !this.$refs.district.hasError && !this.$refs.morada.hasError) {
                 this.saveOrUpdateUtente()
             } else {
                 this.$q.loading.hide()
             }
         },
         saveOrUpdateUtente () {
-            console.log(this.utente.birthDate)
             this.address.city = this.address.district.description
-            console.log(this.address.latitude)
-            console.log(this.address.longitude)
             this.utente.addresses.splice(0, 1, this.address)
-            this.utente.birthDate = new Date(date.formatDate(this.utente.birthDate, 'MM-DD-YYYY'))
-            console.log(this.utente.birthDate)
+            this.utente.birthDate = moment(this.utente.birthDate, "DD-MM-YYYY").toDate()
             this.utente.communityMobilizer = this.mobilizer
             this.utente.communityMobilizer_id = this.mobilizer.id
              this.utente.selected = ''
@@ -422,37 +411,29 @@ export default {
             } else {
                 this.utente.haspartner = false
             }
-        //    const localBaseUtente = Object.assign({}, this.utente)
-         //    this.utente.addresses = null
-       //      this.utente.communityMobilizer = null
-        // const utenteLocalBase = { ...this.utente }
-       //  const addressLocalBase = { ...this.address }
-       // const utente = this.utente
-          this.utente.addresses[0].id = uuidv4()
+            this.utente.addresses[0].id = uuidv4()
             if (this.indexEdit === 1) {
-             this.utente.id = uuidv4()
-             const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
-            //  this.utente.systemNumber = 'tj84646464'
-                    db.collection('utentes').add(
-            utenteLocalBase
-           )
-           this.closeRegistration(false)
-        Utente.insert({
-     data: utenteLocalBase
-    })
+                this.utente.id = uuidv4()
+                const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
+                db.collection('utentes').add(utenteLocalBase)
+                this.closeRegistration(false)
+                Utente.insert({
+                    data: utenteLocalBase
+                })
             } else {
-               // const id =  this.utente.id
                if (this.utente.syncStatus === 'S') {
                    this.utente.syncStatus = 'U'
-               }
-              const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
-              db.collection('utentes').doc({ id: this.utente.id }).set(utenteLocalBase)
-               Utente.update(this.utente)
-                this.$q.notify({
-                    message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
-                                    color: 'teal'
-                                })
-               this.closeRegistration(false)
+            }
+            const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
+            db.collection('utentes').doc({ id: this.utente.id }).set(utenteLocalBase)
+            Utente.update({
+                data: utenteLocalBase
+            })
+            this.$q.notify({
+                message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
+                color: 'teal'
+            })
+            this.closeRegistration(false)
         }
     },
     editaUtente (utente) {
@@ -464,29 +445,6 @@ export default {
     //   this.utente.birthDate = new Date(this.utente.birthDate)
     //   this.utente.communityMobilizer = this.mobilizer
     //   this.utente.communityMobilizer_id = this.mobilizer.id
-    },
-    async getAllProvinces (offset) {
-        if (this.provinces.length <= 0) {
-                await Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
-                    offset = offset + 100
-                    this.$q.loading.hide()
-                }).catch(error => {
-                    this.$q.loading.hide()
-                    console.log(error)
-                })
-        }
-    },
-      async getAllDistricts (offset) {
-        await District.api().get('/district?offset=' + offset + '&max=100').then(resp => {
-            offset = offset + 100
-             this.$q.loading.hide()
-            // if (resp.response.data.length > 0) {
-            //   setTimeout(this.getAllClinics(offset), 2)
-            // }
-            }).catch(error => {
-               this.$q.loading.hide()
-                console.log(error)
-            })
     },
     async getLocation () {
           return new Promise((resolve, reject) => {
@@ -517,8 +475,8 @@ export default {
          this.errorStr = e.message
           this.$q.loading.hide()
           this.$q.dialog({
-          title: 'Erro no carregamento da localização',
-          message: this.errorStr
+          title: 'Problema no carregamento da localização',
+          message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização'
         }).onOk(() => {
             this.address.latitude = -25.9678239
           this.address.longitude = 32.5864914

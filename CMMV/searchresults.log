@@ -7,9 +7,9 @@
    <br>
    <input-text-field v-model="utente.surname"  label="Apelido" />
    <br>
-     <input-number-phone-field v-model="utente.phoneNumber" label="Numero de Telefone" />
+     <input-number-phone-field v-model="utente.phoneNumber" label="Número de Telefone" />
    <br>
-   <input-number-phone-field v-model="utente.whatsappNumber" label="Numero de Telemovel com Whatsapp" />
+   <input-number-phone-field v-model="utente.whatsappNumber" label="Número de Telemovel com Whatsapp" />
     <br>
      <q-input rounded outlined v-model="text" label="Documento de Identidade" />
      <br>
