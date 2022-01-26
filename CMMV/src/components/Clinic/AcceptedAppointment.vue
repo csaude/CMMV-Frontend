@@ -49,7 +49,6 @@ export default {
             this.$q.dialog({ title: 'Confirm', message: 'Deseja remover a confirmação?', cancel: true, persistent: true }).onOk(() => {
               appointmentToConfirm.status = 'PENDENTE'
               console.log(appointmentToConfirm)
-             
               const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
                Appointment.update({
               //   where: (appointment) => {

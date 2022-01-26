@@ -195,7 +195,7 @@ Utente.update({
                const idade = todayDate.diff(utentBirthDate, 'years')
                return idade
             }
-        },
+      }
     },
      components: {
       'utente-us-link': require('components/Utente/SearchSanitaryUnit.vue').default

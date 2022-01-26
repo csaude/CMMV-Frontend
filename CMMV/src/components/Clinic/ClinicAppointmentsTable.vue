@@ -117,7 +117,7 @@ export default {
     formatDateDDMMMYYYY (value) {
         return moment(value).format('DD-MM-YYYY')
     },
-    exportTable() {
+    exportTable () {
       // naive encoding to csv format
       const content = [this.columns.map(col => this.wrapCsvValue(col.label))]
         .concat(
@@ -143,7 +143,7 @@ export default {
         })
       }
     },
-   wrapCsvValue(val, formatFn) {
+   wrapCsvValue (val, formatFn) {
     let formatted = formatFn !== undefined ? formatFn(val) : val
     formatted = formatted === undefined || formatted === null ? '' : String(formatted)
     formatted = formatted.split('"').join('""')
