@@ -283,8 +283,7 @@ export default {
         }
     },
     mounted () {
-        console.log()
-        if(this.address.latitude === null & this.address.longitude === null) {
+        if (this.address.latitude === null && this.address.longitude === null) {
             this.locateMe()
         }
     },
@@ -382,7 +381,7 @@ export default {
             this.$refs.age.validate()
             this.$refs.morada.validate()
             if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
-                !this.$refs.phone.$refs.ref.hasError && !this.$refs.age.hasError && 
+                !this.$refs.phone.$refs.ref.hasError && !this.$refs.age.hasError &&
                 !this.$refs.district.hasError && !this.$refs.morada.hasError) {
                 this.saveOrUpdateUtente()
             } else {
@@ -395,7 +394,7 @@ export default {
             console.log(this.address.latitude)
             console.log(this.address.longitude)
             this.utente.addresses.splice(0, 1, this.address)
-            this.utente.birthDate = moment(this.utente.birthDate, "DD-MM-YYYY").toDate()
+            this.utente.birthDate = moment(this.utente.birthDate, 'DD-MM-YYYY').toDate()
             this.utente.communityMobilizer = this.mobilizer
             this.utente.communityMobilizer_id = this.mobilizer.id
              this.utente.selected = ''

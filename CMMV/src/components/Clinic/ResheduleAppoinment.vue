@@ -73,11 +73,10 @@ export default {
         },
         promptToConfirm (appointmentToConfirm) {
             this.$q.dialog({ title: 'Confirm', message: 'Deseja Confirmar?', cancel: true, persistent: true }).onOk(() => {
-            appointmentToConfirm.appointmentDate = moment(this.editedAppointment.appointmentDate, "DD-MM-YYYY").toDate()
+            appointmentToConfirm.appointmentDate = moment(this.editedAppointment.appointmentDate, 'DD-MM-YYYY').toDate()
             appointmentToConfirm.time = this.editedAppointment.time
             appointmentToConfirm.status = 'CONFIRMADO'
             console.log(appointmentToConfirm)
-                
             const appointmentLocalBase = JSON.parse(JSON.stringify(appointmentToConfirm))
             Appointment.update({
                     // where: (appointment) => {

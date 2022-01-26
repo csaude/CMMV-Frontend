@@ -22,7 +22,7 @@ VuexORM.use(VuexORMAxios, {
     headers: {
       'X-Requested-With': 'XMLHttpRequest'
     },
-     baseURL: 'http://localhost:8882/api'
+     baseURL: 'http://dev.fgh.org.mz:4110/api'
   })
 
 // Request interceptor for API calls
