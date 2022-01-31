@@ -148,12 +148,6 @@ export default {
       },
        formatDate (value) {
             return date.formatDate(value, 'YYYY/MM/DD')
-        },
-        filterItems (query) {
-      this.appointmentsPending = this.appointmentsPending.filter(function (el) {
-       //  console.log(el.utente.systemNumber.toLowerCase().indexOf(query.toLowerCase()))
-      return el.utente.systemNumber.toLowerCase().indexOf(query.toLowerCase()) > -1
-         })
         }
        },
        mounted () {

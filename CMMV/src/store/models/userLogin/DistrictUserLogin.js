@@ -3,7 +3,7 @@ import Province from '../province/Province'
 import { UserLogin } from './UserLoginHierarchy'
 
 export class DistrictLogin extends UserLogin {
-  static entity = 'mobilizerLogins'
+  static entity = 'districtLogins'
   static baseEntity = 'userLogins'
 
   static fields () {

@@ -201,7 +201,7 @@
 <script>
 // import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
 import Province from 'src/store/models/province/Province'
-import { UserLogin, DistrictLogin } from 'src/store/models/userLogin/UserLoginHierarchy'
+import { UserLogin, DistrictUserLogin } from 'src/store/models/userLogin/UserLoginHierarchy'
 import District from 'src/store/models/district/District'
 import Clinic from 'src/store/models/clinic/Clinic'
 // import UsersService from '../../services/UsersService'
@@ -212,7 +212,7 @@ export default {
         // const $q = useQuasar()
         return {
             user: new UserLogin(),
-            userDistrict: new DistrictLogin(),
+            userDistrict: new DistrictUserLogin(),
         /*    user: {
                 firstNames: '',
                 lastNames: '',
