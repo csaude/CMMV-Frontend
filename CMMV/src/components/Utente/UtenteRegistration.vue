@@ -40,7 +40,9 @@
                     class="col"
                     ref="phone"
                     mask="#########"
+                    :rules="[ val => phoneRules (val)]"
                     v-model="utente.cellNumber"
+                      lazy-rules
                     label="Número de Telefone" />
             </div>
             <div class="row">
@@ -48,6 +50,7 @@
                     class="col"
                     ref="whatsapp"
                     mask="#########"
+                      :rules="[ val => whatsapNumberRules(val)]"
                     v-model="utente.whatsappNumber"
                     label="Número de Telemovel com Whatsapp" />
             </div>
@@ -176,6 +179,7 @@
 
 <script>
  import Utente from 'src/store/models/utente/Utente'
+// import Address from 'src/store/models/address/Address'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import { useQuasar, QSpinnerIos, date } from 'quasar'
@@ -283,13 +287,14 @@ export default {
         }
     },
     mounted () {
-        if (this.address.latitude === null && this.address.longitude === null) {
+        console.log()
+        if (this.address.latitude === null & this.address.longitude === null) {
             this.locateMe()
         }
     },
     computed: {
          provinces () {
-           return Province.query().has('code').get()
+           return Province.query().orderBy('code').has('code').get()
         },
         districts () {
         if (this.address.province !== null) {
@@ -379,10 +384,12 @@ export default {
             this.$refs.apelido.$refs.ref.validate()
             this.$refs.phone.$refs.ref.validate()
             this.$refs.age.validate()
+            this.$refs.province.$refs.ref.validate()
+            this.$refs.district.$refs.ref.validate()
             this.$refs.morada.validate()
             if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
                 !this.$refs.phone.$refs.ref.hasError && !this.$refs.age.hasError &&
-                !this.$refs.district.hasError && !this.$refs.morada.hasError) {
+                !this.$refs.province.hasError && !this.$refs.district.hasError && !this.$refs.morada.hasError) {
                 this.saveOrUpdateUtente()
             } else {
                 this.$q.loading.hide()
@@ -390,6 +397,7 @@ export default {
         },
         saveOrUpdateUtente () {
             this.address.city = this.address.district.description
+            this.address.province_id = this.address.province.id
             this.address.district_id = this.address.district.id
             console.log(this.address.latitude)
             console.log(this.address.longitude)
@@ -413,8 +421,8 @@ export default {
             } else {
                 this.utente.haspartner = false
             }
-            this.utente.addresses[0].id = uuidv4()
             if (this.indexEdit === 1) {
+            this.utente.addresses[0].id = uuidv4()
                 this.utente.id = uuidv4()
                 const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
                 db.collection('utentes').add(utenteLocalBase)
@@ -437,6 +445,21 @@ export default {
             })
             this.closeRegistration(false)
         }
+    },
+     phoneRules (val) {
+       if (val.length === 0 || val.length < 9 || this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
+      return 'o Numero é invalido'
+    }
+    },
+    whatsapNumberRules (val) {
+       if ((val.length !== 0 && val.length < 9) || (val.length !== 0 && this.validatePhonePrefix(parseInt(val.substring(0, 2))))) {
+      return 'o Numero é invalido'
+    }
+    },
+    validatePhonePrefix (val) {
+         if ((val !== 82) && (val !== 83) && (val !== 84) && (val !== 85) && (val !== 86) && (val !== 87)) {
+             return true
+         }
     },
     editaUtente (utente) {
       this.editedIndex = 0

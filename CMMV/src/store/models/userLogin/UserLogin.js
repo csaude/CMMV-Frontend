@@ -24,7 +24,12 @@ export class UserLogin extends Model {
       role: this.attr(''),
       fullName: this.attr(''),
       access_token: this.attr(''),
-      refresh_token: this.attr('')
+      refresh_token: this.attr(''),
+      firstNames: this.attr(''),
+      lastNames: this.attr(''),
+      province_id: this.attr(''),
+      district_id: this.attr(''),
+      clinic_id: this.attr('')
     }
   }
 

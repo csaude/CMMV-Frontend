@@ -4,6 +4,9 @@
         style="background: radial-gradient(circle at left, #E9BFB1 10%, #EE764E 100%); border-bottom-left-radius: 100em; border-bottom-right-radius: 100em">
     <div class="row q-py-lg q-ml-lg">
         <q-btn flat round color="white" icon="chevron_left" @click="$emit('previousScreen')"/>
+        <div class="row q-py-lg q-mr-sm fixed-top-right">
+        <q-btn flat  unelevated rounded push dense color="primary" @click="setAdministrationScreen" :label=labelAdmin text-color="white"/>
+        </div>
     </div>
     <div class="row q-pa-xl texte-center q-mt-lg column">
         <div style="font-family: 'Arial';font-size: 40px; font-weight: bold" class="row text-center column text-white q-mb-md">BEM VINDO</div>
@@ -11,10 +14,11 @@
     </div>
    </q-card>
 
-    <div class="row q-mt-md text-center q-px-xl">
+    <div class="row q-mt-md text-center q-px-xl" v-if="!administration">
         <q-tabs
             v-model="tab"
             dense
+            visible=false
             class=" text-grey userTab col"
             active-color="white"
             indicator-color="primary"
@@ -22,7 +26,7 @@
             narrow-indicator
             style="border-radius: 2em; border-style: solid;border-color: #EE764E;"
             align="justify">
-            <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
+            <q-tab  style="border-radius: 2em; border-style: solid; border-color: white;" name="mobilizer" icon="manage_accounts" label="Mobilizador" />
             <q-tab style="border-radius: 2em; border-style: solid; border-color: white;" name="clinic" icon="local_hospital" label="Unidade Sanitária" />
         </q-tabs>
     </div>
@@ -105,7 +109,9 @@ export default {
             submitting: false,
             province: '',
             district: '',
-            clinic: ''
+            clinic: '',
+            administration: ref(false),
+            labelAdmin: ref('Administração')
         }
     },
     mounted () {
@@ -179,6 +185,17 @@ export default {
         addLocalDbDatas (districtId) {
             this.addLocalDbClinics(districtId)
             this.addLocalDbDistricts(districtId)
+        },
+        setAdministrationScreen () {
+           if (this.administration === false) {
+               this.administration = true
+             this.labelAdmin = 'Utilização Normal'
+             this.tab = null
+           } else {
+                this.administration = false
+               this.labelAdmin = 'Administração'
+                this.tab = 'mobilizer'
+           }
         },
         buildUserToAdd (responseUser) {
             UserLogin.localDbAdd({
@@ -254,9 +271,13 @@ export default {
                         this.buildUserToAdd(response.response.data)
                         this.addLocalDbDatas(clinic.district_id)
                         this.$router.push({ path: '/clinicHome/' + localStorage.getItem('idLogin') })
-                        } else if (this.tab === 'clinic' && response.response.data.roles[0] === 'ROLE_ADMIN') {
-                            this.buildUserToAdd(response.response.data)
+                        } else if (this.tab === null && response.response.data.roles[0] === 'ROLE_ADMIN') {
+                          //  this.buildUserToAdd(response.response.data)
                             localStorage.setItem('id_clinicUser', 1)
+                            this.$router.push({ path: '/clinicHome/' + 1 })
+                        } else if (this.tab === null && response.response.data.roles[0] === 'ROLE_DISTRICT') {
+                          //  this.buildUserToAdd(response.response.data)
+                           // localStorage.setItem('id_districtUser', response.response.data.idLogin)
                             this.$router.push({ path: '/clinicHome/' + 1 })
                         } else {
                                 Notify.create({

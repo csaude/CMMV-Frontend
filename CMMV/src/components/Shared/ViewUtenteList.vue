@@ -4,12 +4,15 @@
           <q-card-section>
             <q-list v-if="utentes.length > 0" separator>
              <q-scroll-area :visible="false" style="height: 280px; width: 100%; max-width:100vw;">
-             <q-slide-item v-for="utente in utentes" :key="utente.id" left-color="orange" right-color="red" @left="opt => onLeft(opt, utente)" @right="opt => onRight(opt,utente)">
+             <q-slide-item v-for="utente in utentes" :key="utente.id" left-color="orange" right-color="red" bottom-color="red" @left="opt => onLeft(opt, utente)" @right="opt => onRight(opt,utente)" @bottom="opt => onBottom(opt, utente)">
                 <template v-slot:right v-if="utente.status === 'ENVIADO'">
                   <q-icon name="highlight_off" color="white" />
                 </template>
                 <template v-slot:left v-if="utente.status === 'ASSOCIADO'">
                   <q-icon name="edit" color="white" />
+                </template>
+                 <template v-slot:bottom v-if="utente.status !== 'ENVIADO' && utente.syncStatus === 'P'">
+                  <q-icon name="delete" color="white" />
                 </template>
                 <q-item>
                     <q-item-section side avatar>
@@ -108,6 +111,36 @@ export default {
                 this.$emit('update:utenteEdit', utenteOld)
                 this.$emit('update:indexEdit', 0)
                 this.$emit('update:showUtenteRegistrationScreen', true)
+          }).onCancel(() => {
+              // console.log('>>>> Cancel')
+               this.finalize(reset)
+          }).onDismiss(() => {
+            // this.finalize(reset)
+              // console.log('I am triggered on both OK and Cancel')
+          })
+        // native Javascript event
+        // console.log(evt)
+      },
+      onBottom ({ reset }, utenteOld) {
+        this.$q.dialog({
+              title: 'Confirmação',
+              message: 'Pretende apagar os dados do Utente?',
+              ok: {
+              label: 'OK',
+              push: true,
+              color: 'blue'
+              },
+              cancel: {
+              label: 'Cancelar',
+              push: true,
+              color: 'negative'
+              },
+              persistent: true
+          }).onOk(() => {
+               db.newDb().collection('utentes').doc({ id: utenteOld.id }).delete()
+               Utente.delete(utenteOld.id)
+                this.$emit('update:utente', utenteOld)
+            //   this.finalize(reset)
           }).onCancel(() => {
               // console.log('>>>> Cancel')
                this.finalize(reset)

@@ -5,13 +5,15 @@
          <q-btn flat color="primary"
           icon="file_download"
           no-caps
-          @click.stop="forceFileDownload(file, file.title + '.pdf')"/>
+          v-if="showDownload"
+          @click.stop="getInfoDocsOrImagesById(file.id)"/>
        </q-item-section>
       </q-item>
 </template>
 <script>
+import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
 export default {
-    props: ['file', 'id'],
+    props: ['file', 'id', 'showDownload'],
     methods: {
       forceFileDownload (materialEducativo, title) {
         const bytes = btoa(new Uint8Array(materialEducativo.blop).reduce((data, byte) => data + String.fromCharCode(byte), ''))
@@ -21,7 +23,18 @@ export default {
         link.setAttribute('download', title)
         document.body.appendChild(link)
         link.click()
-    }
+    },
+     getInfoDocsOrImagesById (id) {
+            InfoDocsOrImages.api().get('/infoDocsOrImages/' + id).then(resp => {
+              //  offset = offset + 100
+                console.log(resp.response.data)
+                this.forceFileDownload(resp.response.data, resp.response.data.title + '.pdf')
+                 this.$q.loading.hide()
+            }).catch(error => {
+                 this.$q.loading.hide()
+                console.log(error)
+            })
+        }
   }
 }
 </script>

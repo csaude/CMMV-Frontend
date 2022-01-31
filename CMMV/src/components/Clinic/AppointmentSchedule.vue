@@ -9,6 +9,7 @@
             <div class="row q-mt-md text-bold">
                 Marcação de Consultas ({{appointmentsPending.length}})
             </div>
+                <q-input filled v-model="searchText" label="Pesquisar"/>
              <q-scroll-area style="height: 300px; max-width: auto;">
             <q-list
                 bordered
@@ -22,6 +23,7 @@
             <div class="row q-mt-lg text-bold">
                 Consultas Marcadas ({{appointmentsConfirmed.length}})
             </div>
+              <q-input filled v-model="searchTextConfirmed" label="Pesquisar"  />
             <q-scroll-area style="height: 350px; max-width: auto;">
             <q-list
                 bordered
@@ -43,15 +45,20 @@ import Appointment from '../../store/models/appointment/Appointment'
 import Utente from '../../store/models/utente/Utente'
 import Clinic from '../../store/models/clinic/Clinic'
 import db from 'src/store/localbase'
+import { ref } from 'vue'
 export default {
   data () {
     return {
+      searchText: ref(''),
+      searchTextConfirmed: ref(''),
       appointmentsBD: [],
-      showEdit: false
+      showEdit: false,
+      appointmentsPendingToFilter: []
     }
   },
  computed: {
         appointmentsPending () {
+          if (this.searchText.length === 0) {
          return Appointment.query()
                            .with('utente')
                            .with('clinic.province')
@@ -64,8 +71,28 @@ export default {
                                   })
                           .orderBy('appointmentDate', 'desc')
                           .get()
+          } else {
+            // this.appointmentsPendingToFilter = this.appointmentsPending
+           return Appointment.query()
+                           .with('utente')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
+                           .with('utente.address')
+                           .with('utente.province')
+                           .with('utente.district.province')
+                           .where((appointment) => {
+                                  return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                            }).whereHas('utente', (query) => {
+                              query.where((utente) => {
+                               return utente.systemNumber.toLowerCase().includes(this.searchText.toLowerCase()) || utente.firstNames.toLowerCase().includes(this.searchText.toLowerCase()) || utente.lastNames.toLowerCase().includes(this.searchText.toLowerCase())
+                              })
+                              })
+                          .orderBy('appointmentDate', 'desc')
+                          .get()
+          }
       },
       appointmentsConfirmed () {
+          if (this.searchTextConfirmed.length === 0) {
          return Appointment.query()
                            .with('utente')
                            .with('clinic.province')
@@ -73,9 +100,26 @@ export default {
                            .with('utente.address')
                            .with('utente.province')
                            .with('utente.district.province')
-                           .where((appointment) => { return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser')) })
+                           .where((appointment) => { return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser')) }).orderBy('appointmentDate', 'desc')
+                           .get()
+          } else {
+           return Appointment.query()
+                           .with('utente')
+                           .with('clinic.province')
+                           .with('clinic.district.province')
+                           .with('utente.address')
+                           .with('utente.province')
+                           .with('utente.district.province')
+                           .where((appointment) => {
+                             return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
+                           }).whereHas('utente', (query) => {
+                              query.where((utente) => {
+                                return utente.systemNumber.toLowerCase().includes(this.searchText.toLowerCase()) || utente.firstNames.toLowerCase().includes(this.searchText.toLowerCase()) || utente.lastNames.toLowerCase().includes(this.searchText.toLowerCase())
+                              })
+                              })
                            .orderBy('appointmentDate', 'desc')
                            .get()
+          }
       },
         UtenteBD () {
          return Utente.all()

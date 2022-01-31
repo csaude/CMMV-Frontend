@@ -15,12 +15,12 @@
                             <q-menu transition-show="scale" transition-hide="scale">
                             <q-list style="min-width: 120px">
                                 <q-item clickable>
-                                    <q-item-section @click="showChangePasswordScreen = true" clickable>Alterar Senha</q-item-section>
+                                    <q-item-section @click="showChangePasswordScreen = true" clickable >Alterar Senha</q-item-section>
                                 </q-item>
-                                <q-item clickable>
+                                <q-item clickable v-if=isAdmin>
                                     <q-item-section clickable @click="isOnlineChecker(true)">Sicronizar</q-item-section>
                                 </q-item>
-                                <q-item clickable>
+                                <q-item clickable v-if=isAdmin>
                                     <q-item-section>Conteúdos</q-item-section>
                                 </q-item>
                                 <q-separator/>
@@ -40,7 +40,7 @@
               <q-tab-panel name="dashboard">
                 <AppointmentSchedule />
               </q-tab-panel>
-              <q-tab-panel name="consulta">
+              <q-tab-panel name="consulta" >
                 <AppointmentList />
               </q-tab-panel>
               <!--    <q-tab-panel name="clinics" >
@@ -59,13 +59,16 @@
             <q-footer>
                 <q-toolbar>
                     <q-tabs v-model="tab" class="absolute-center">
+                     <div v-if=isAdmin >
                         <q-tab name="dashboard" icon="pie_chart" label="Dashboard" />
+                     </div>
+                      <div v-if= isAdmin >
                         <q-tab name="consulta" icon="date_range" label="Consulta" />
-                        <!--q-tab name="reports" icon="show_chart" label="Relatórios" /-->
-                        <!--q-tab name="mobilizer" icon="people_outline" label="Mobilizadores" /-->
-                        <!-- <q-tab name="clinics" icon="local_hospital" label="Adicionar Clinica" /> -->
+                      </div>
                         <q-tab name="configuracoes" icon="settings" label="Definições" />
+                         <div v-if="isAdmin || isAdminDistrict" >
                          <q-tab name="relatorios" icon="insights" label="Relatorios" />
+                         </div>
                     </q-tabs>
                 </q-toolbar>
             </q-footer>
@@ -90,7 +93,9 @@ export default {
             backToDashBoard: ref(true),
             showChangePasswordScreen: ref(false),
             username: {},
-             isOnline
+             isOnline,
+            isAdmin: ref(true),
+            isAdminDistrict: ref(true)
         }
     },
     components: {
@@ -188,6 +193,15 @@ export default {
     mounted () {
         this.getUserName()
         this.isOnlineChecker(false)
+         if (localStorage.getItem('role') === 'ROLE_ADMIN') {
+          this.tab = 'configuracoes'
+          this.isAdmin = false
+            this.isAdminDistrict = false
+         } else if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+           this.tab = 'configuracoes'
+          this.isAdmin = false
+           this.isAdminDistrict = true
+         }
     }
 }
 </script>

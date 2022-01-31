@@ -168,7 +168,7 @@
      </div>
     <div class="q-pa-md" style="max-width: 100%" v-if="this.docsDisplay">
       <q-separator />
-        <view-docs/>
+        <view-docs :showDownload=true />
         <q-page-sticky position="bottom-left" :offset="[18, 18]">
           <q-btn flat round color="primary" icon="west" @click="this.optionButtons = true, this.clientsManager = false, this.docsDisplay = false" />
         </q-page-sticky>

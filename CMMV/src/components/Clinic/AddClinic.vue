@@ -23,9 +23,6 @@
             <q-td key="type" :props="props">
               <div class="text-pre-wrap">{{ props.row.type}}</div>
             </q-td>
-            <q-td key="province" :props="props">
-              <div class="text-pre-wrap">{{  props.row.district !== undefined && props.row.district !== null ? props.row.district.province.description : ''  }}</div>
-            </q-td>
             <q-td key="district" :props="props">
               <div class="text-pre-wrap">{{ props.row.district !== undefined && props.row.district !== null ? props.row.district.description : ''  }}</div>
             </q-td>
@@ -52,7 +49,7 @@
         </q-table>
         <div class="absolute-bottom">
           <q-page-sticky position="bottom-right" :offset="[18, 18]">
-            <q-btn size="xl" fab icon="add" @click="show_dialog = true" no-cap color="primary"  v-if="!showAddButton" />
+            <q-btn size="xl" fab icon="add" @click="addClinic()" no-cap color="primary"  v-if="showAddButton" />
           </q-page-sticky>
         </div>
     <!--q-table title="Unidade Sanitária" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
@@ -107,7 +104,7 @@
                     ref="clinicType"
                     :rules="[ val => ( val.length > 0  ) || ' Por favor indique o tipo']"
                     lazy-rules
-                    label="Tipo de Clinica" />
+                    label="Tipo de Unidade Sanitaria" />
             </div>
              <div class="row q-mb-md">
                 <combo-field
@@ -117,6 +114,7 @@
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="province"
+                     :disable=true
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null ) || ' Por favor indique a província']"
@@ -131,6 +129,7 @@
                     v-model="newClinic.district"
                     :options="districts"
                     ref="district"
+                     :disable=true
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
@@ -174,7 +173,7 @@ export default {
             $q,
             show_dialog: false,
             show_filter: false,
-            showAddButton: true,
+            showAddButton: false,
             submitting: false,
             editedIndex: -1,
             databaseCodes: [],
@@ -183,6 +182,7 @@ export default {
             newClinic: {
                 name: '',
                 type: '',
+                code: '',
                 latitude: '',
                 longitude: '',
                 province: null,
@@ -191,7 +191,6 @@ export default {
             columns: [
                 { name: 'name', align: 'left', label: 'Nome', field: row => row.name, format: val => `${val}`, sortable: true },
                 { name: 'type', align: 'left', label: 'Tipo', field: row => row.type, format: val => `${val}`, sortable: true },
-                { name: 'province', align: 'left', label: 'Província', field: row => row.province, format: val => `${val}`, sortable: true },
                 { name: 'district', align: 'left', label: 'Distrito', field: row => row.district, format: val => `${val}`, sortable: true },
                 { name: 'actions', label: 'Opções', field: 'actions' }
             ],
@@ -203,34 +202,24 @@ export default {
     },
     created () {
         this.currClinic = Object.assign({}, this.newClinic)
-         if (localStorage.getItem('role') !== 'ROLE_USER') {
-             this.showLoading()
-     }
+           this.showLoading()
     },
       mounted () {
         const offset = 0
         if (localStorage.getItem('role') === 'ROLE_USER') {
           this.getClinicById()
         } else {
-          this.getAllClinics(offset)
+          this.getAllClinicsByDistrictId(localStorage.getItem('idLogin'))
         }
         this.getAllProvinces(offset)
         this.extractDatabaseCodes()
         this.verifyRole()
+       // console.log(11 + this.provinces)
     },
     computed: {
          clinicos () {
-            if (localStorage.getItem('role') === 'ROLE_USER') {
-              const clincs = []
-             const clinic = Clinic.query().with('district')
-                   .with('district.province').find(this.$route.params.id)
-                    Clinic.update(clinic)
-                    console.log(clincs.push(clinic))
-            return clincs
-            } else {
-          return Clinic.query().with('district')
-                   .with('district.province').get()
-            }
+          return Clinic.query().with('province').with('district')
+                   .with('district.province').where('district_id', parseInt(localStorage.getItem('idLogin'))).get()
         },
           provinces () {
             return Province.query().withAll().get()
@@ -276,6 +265,8 @@ export default {
           title: 'Problema no carregamento da localização',
           message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização'
         }).onOk(() => {
+            this.address.latitude = -25.9678239
+          this.address.longitude = 32.5864914
           this.$q.loading.hide()
         })
       }
@@ -357,15 +348,22 @@ export default {
             this.listErrors = []
           }
         },
-       async getAllClinics (offset) {
-        if (offset >= 0) {
-           await Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+       async getAllClinicsByDistrictId (districtId) {
+           await Clinic.api().get('/clinic/district/' + districtId).then(resp => {
                 console.log(resp.response.data)
             }).catch(error => {
                 console.log(error)
             })
-        }
     },
+      addClinic () {
+           if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+       // this.showLoading()
+      this.newClinic.district = District.query().with('province').find(localStorage.getItem('idLogin'))
+       this.newClinic.province = this.newClinic.district.province
+     }
+         this.show_dialog = true
+         //  this.editMode = false
+      },
     async getClinicById () {
        await Clinic.api().get('/clinic/' + localStorage.getItem('id_clinicUser')).then(resp => {
           console.log(resp.response.data)
@@ -384,14 +382,14 @@ export default {
         }
     },
     verifyRole () {
-      if (localStorage.getItem('role') === 'ROLE_USER') {
+      if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
         this.showAddButton = true
       }
      },
     editClinic (clinic) {
       this.editedIndex = 0
       this.newClinic = Object.assign({}, clinic)
-      this.newClinic.province = Province.query().withAll().find(clinic.province_id)
+      this.newClinic.province = Province.query().withAll().find(clinic.district.province_id)
       this.newClinic.district = District.query().withAll().find(clinic.district_id)
       this.show_dialog = true
     },

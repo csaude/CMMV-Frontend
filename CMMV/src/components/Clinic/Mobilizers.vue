@@ -94,23 +94,22 @@ export default {
         }
     },
      mounted () {
-        const provinceOffset = 0
-        this.getAllProvinces(provinceOffset)
-        CommunityMobilizer.apiGetAll()
+        this.getAllProvinces()
+      CommunityMobilizer.apiFetchByDistrictId(localStorage.getItem('idLogin'))
     },
     computed: {
-          provinces () {
-            return Province.query().has('code').get()
+        provinces () {
+           return Province.query().orderBy('code').has('code').get()
         },
         districts () {
-        if (this.province !== null) {
-            return District.query().has('code').withAll().where('province_id', 1).get()
+        if (this.address.province !== null) {
+            return District.query().has('code').withAll().where('province_id', this.address.province.id).get()
         } else {
             return null
         }
         },
         mobilizers () {
-            return CommunityMobilizer.all()
+            return CommunityMobilizer.query().has('firstNames').get()
         }
     },
     created () {
@@ -130,7 +129,7 @@ export default {
       },
         getAllProvinces (offset) {
         if (this.provinces.length <= 0) {
-                Province.api().get('/province?offset=' + offset + '&max=100').then(resp => {
+                Province.api().get('/province').then(resp => {
                     offset = offset + 100
                     if (resp.response.data.length > 0) { setTimeout(this.getAllProvinces(offset), 2) }
                 }).catch(error => {

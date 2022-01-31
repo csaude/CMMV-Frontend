@@ -110,9 +110,9 @@ export default {
       this.updateClinicAppoitment(newAppointment)
       this.$emit('update:rows')
 
-      if (!appointment.hasHappened) {
-          this.$router.go(0)
-      }
+      // if (!appointment.hasHappened) {
+      //    this.$router.go(0)
+     // }
     },
     formatDateDDMMMYYYY (value) {
         return moment(value).format('DD-MM-YYYY')
