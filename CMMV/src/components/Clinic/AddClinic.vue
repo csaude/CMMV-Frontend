@@ -263,7 +263,7 @@ export default {
           this.$q.loading.hide()
           this.$q.dialog({
           title: 'Problema no carregamento da localização',
-          message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização' // this.errorStr
+          message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização'
         }).onOk(() => {
             this.address.latitude = -25.9678239
           this.address.longitude = 32.5864914
