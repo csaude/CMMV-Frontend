@@ -351,14 +351,14 @@ Utente.update({
         if (this.myLocation.distance.includes('<1km')) {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
           if (calcDist <= 1000) {
-            clinic.distance = this.round(calcDist / 1000)
+            clinic.distance = this.round(calcDist / 1000, 2)
             this.clinics.push(clinic)
           }
         } else {
               if (this.myLocation.distance.includes('1km - 5km')) {
                  calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                   if (calcDist > 1000 && calcDist <= 5000) {
-                    clinic.distance = this.round(calcDist / 1000)
+                    clinic.distance = this.round(calcDist / 1000, 2)
                     this.clinics.push(clinic)
                   }
               } else {
@@ -366,13 +366,13 @@ Utente.update({
                     calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                      console.log(calcDist)
                     if (calcDist > 5000 && calcDist <= 10000) {
-                      clinic.distance = this.round(calcDist / 1000)
+                      clinic.distance = this.round(calcDist / 1000, 2)
                       this.clinics.push(clinic)
                     }
                   } else {
                       calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
                       if (calcDist > 10000) {
-                          clinic.distance = this.round(calcDist / 1000)
+                          clinic.distance = this.round(calcDist / 100, 2)
                           this.clinics.push(clinic)
                     }
                   }

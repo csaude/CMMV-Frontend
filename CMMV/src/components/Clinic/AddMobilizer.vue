@@ -29,6 +29,7 @@
                     square
                     mask="#########"
                     fill-mask
+                     :rules="[ val => phoneRules (val)]"
                     v-model="mobilizer.cellNumber"
                     label="Número de Telefone" />
 
@@ -38,6 +39,7 @@
                     mask="#########"
                     square
                     fill-mask
+                     :rules="[ val => phoneRules (val)]"
                     v-model="mobilizer.cellNumber2"
                     label="Número de Telefone 2" />
             </div>
@@ -47,7 +49,7 @@
                     class="col"
                     v-model="province"
                     :options="provinces"
-                     :disable="editModeMobilizer"
+                     :disable=true
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="province"
@@ -64,7 +66,7 @@
                      transition-show="flip-up"
                     transition-hide="flip-down"
                     v-model="mobilizer.district"
-                     :disable="editModeMobilizer"
+                      :disable=true
                     :options="districts"
                     ref="district"
                     option-value="id"
@@ -97,7 +99,6 @@ import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
  import db from 'src/store/localbase'
-import Clinic from '../../store/models/clinic/Clinic'
 import { QSpinnerIos } from 'quasar'
 import { v4 as uuidv4 } from 'uuid'
 // import Localbase from 'localbase'
@@ -113,13 +114,7 @@ export default {
             show_dialog: false,
             submitting: false,
             show_error_dialog: false,
-            listErrors: [],
-            columns: [
-                { name: 'firstNames', align: 'left', label: 'Nome', field: row => row.firstNames, format: val => `${val}`, sortable: true },
-                { name: 'lastNames', align: 'left', label: 'Apelido', field: row => row.lastNames, format: val => `${val}`, sortable: true },
-                { name: 'cellNumber', align: 'left', label: 'Número de Telefone', field: row => row.cellNumber, format: val => `${val}`, sortable: true },
-                { name: 'actions', label: 'Opções', align: 'left', field: 'actions' }
-            ]
+            listErrors: []
         }
     },
      mounted () {
@@ -135,21 +130,13 @@ export default {
         } else {
             return null
         }
-        },
-         clinic: {
-      get () {
-        return Clinic.query().with('district').with('district.province').find(this.$route.params.id)
-      },
-      set (clinic) {
-        Clinic.update(clinic)
-      }
-    }
+        }
     },
     created () {
         this.mobilizer = Object.assign({}, this.selectedMobilizer)
-     if (localStorage.getItem('role') === 'ROLE_USER') {
-      this.mobilizer.district = this.clinic.district
-       this.province = this.clinic.district.province
+     if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+      this.mobilizer.district = District.query().with('province').find(localStorage.getItem('idLogin'))
+       this.province = this.mobilizer.district.province
      } else {
         this.mobilizer.district = District.query().with('province').find(this.mobilizer.district_id)
         if (this.mobilizer.district != null) this.province = this.mobilizer.district.province
@@ -169,6 +156,16 @@ export default {
                 this.submitMobilizer()
             }
         },
+         phoneRules (val) {
+       if (val.length === 0 || val.length < 9 || this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
+      return 'o Numero é invalido'
+    }
+    },
+    validatePhonePrefix (val) {
+         if ((val !== 82) && (val !== 83) && (val !== 84) && (val !== 85) && (val !== 86) && (val !== 87)) {
+             return true
+         }
+    },
         submitMobilizer () {
             this.mobilizer.uuid = uuidv4()
             this.submitting = false

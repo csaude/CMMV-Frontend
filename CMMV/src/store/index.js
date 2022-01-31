@@ -48,7 +48,7 @@ axios.interceptors.request.use(
   })
 
   // Response interceptor for API calls
-  axios.interceptors.response.use((response) => {
+   axios.interceptors.response.use((response) => {
     return response
   }, async function (error) {
     const originalRequest = error.config

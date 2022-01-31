@@ -95,7 +95,7 @@
                     :rules="[ val => val.length >= 3 || 'O nome do utilizador indicado é inválido']"
                     lazy-rules
                     class="col fild-radius"
-                    label="Utilizador" />
+                    label="Nome de Utilizador" />
             </div>
             <div class="row">
                 <q-input
@@ -119,13 +119,12 @@
                     </template>
                 </q-input>
             </div>
-             <!--div class="row q-mb-md">
+             <div class="row q-mb-md" v-if="!hideFields">
                       <q-select
                     dense outlined
                     class="col"
                     v-model="user.role"
                     :options="userRoles"
-                    :disable = true
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="role"
@@ -133,7 +132,7 @@
                     lazy-rules
                     label="Role *" />
             </div>
-             <div class="row q-mb-md">
+             <div class="row q-mb-md" v-if="!hideFields">
                    <q-select
                     dense outlined
                     class="col"
@@ -142,13 +141,14 @@
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="province"
+                    :disable="disableFields"
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null ) || ' Por favor indique a província']"
                     lazy-rules
                     label="Província" />
             </div>
-            <div class="row q-mb-md">
+            <div class="row q-mb-md" v-if="!hideFields">
                   <q-select
                     dense outlined
                     class="col"
@@ -157,13 +157,14 @@
                     v-model="district"
                     :options="districts"
                     ref="district"
+                    :disable="disableFields"
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
                     lazy-rules
                     label="Distrito/Cidade" />
             </div>
-             <div class="row q-mb-md">
+         <div class="row q-mb-md" v-if="this.isRoleAdm === true">
                    <q-select
                     dense outlined
                     class="col"
@@ -177,7 +178,7 @@
                     :rules="[ val => ( val != null ) || ' Por favor indique a Clinica']"
                     lazy-rules
                     label="Clinica" />
-            </div-->
+            </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
                 <q-btn label="Cancelar" color="primary" @click="show_dialog = false"/>
@@ -200,7 +201,7 @@
 <script>
 // import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
 import Province from 'src/store/models/province/Province'
-import { UserLogin } from 'src/store/models/userLogin/UserLoginHierarchy'
+import { UserLogin, DistrictLogin } from 'src/store/models/userLogin/UserLoginHierarchy'
 import District from 'src/store/models/district/District'
 import Clinic from 'src/store/models/clinic/Clinic'
 // import UsersService from '../../services/UsersService'
@@ -210,15 +211,16 @@ export default {
     data () {
         // const $q = useQuasar()
         return {
-            // user: new UserLogin(),
-            user: {
+            user: new UserLogin(),
+            userDistrict: new DistrictLogin(),
+        /*    user: {
                 firstNames: '',
                 lastNames: '',
                 fullName: '',
                 password: '',
                 role: '',
-                clinic: null
-            },
+                clinic: null,
+            }, */
             isPwd: ref(true),
             province: null,
             show_dialog: false,
@@ -227,6 +229,9 @@ export default {
             submitting: false,
             listErrors: [],
             district: '',
+            disableFields: ref(false),
+            hideFields: ref(false),
+           // isRole: ref(false),
             // clinic: '',
             columns: [
                 { name: 'fullName', align: 'left', label: 'Nome Completo', field: row => row.fullName, format: val => `${val}`, sortable: true },
@@ -234,7 +239,7 @@ export default {
           //      { name: 'actions', label: 'Opções', field: 'actions' }
             ],
             userRoles: [
-              '', 'Utilizador Clinica', 'Mobilizador', 'Administrador'
+             'Utilizador Clinica', 'Administrador Districto'
             ]
         }
     },
@@ -242,11 +247,17 @@ export default {
       //  const provinceOffset = 0
       //  this.getAllProvinces(provinceOffset)
       // this.showLoading()
+     if (localStorage.getItem('role') === 'ROLE_ADMIN') {
        UserLogin.apiGetAll()
+     } else if (localStorage.getItem('role') === 'ROLE_USER') {
+       this.getAllUsersByClinicId(localStorage.getItem('id_clinicUser'))
+     } else if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+       this.getAllUsersByDistrictId(localStorage.getItem('idLogin'))
+     }
     },
     computed: {
           provinces () {
-            return Province.query().has('code').get()
+            return Province.query().orderBy('code').has('code').get()
         },
         districts () {
         if (this.province !== null) {
@@ -265,6 +276,12 @@ export default {
         },
         users () {
             return UserLogin.all()
+        },
+        isRoleAdm () {
+          if (this.user.role === 'Utilizador Clinica' && localStorage.getItem('role') !== 'ROLE_USER') {
+            return true
+          }
+          return false
         }
     },
     created () {
@@ -272,6 +289,20 @@ export default {
       this.showLoading()
     },
     methods: {
+        async getAllUsersByClinicId (clinicId) {
+           await UserLogin.api().get('/userLogin/clinic/' + clinicId).then(resp => {
+                console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+         async getAllUsersByDistrictId (districtId) {
+           await UserLogin.api().get('/districtUserLogin/district/' + districtId).then(resp => {
+                console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+        },
      validateUser () {
         this.$refs.nome.$refs.ref.validate()
         this.$refs.apelido.$refs.ref.validate()
@@ -286,8 +317,13 @@ export default {
            this.listErrors = []
        //   this.user.username = this.user.firstNames.substring(0, 1) + this.user.lastNames.trim()
            this.user.fullName = this.user.firstNames + ' ' + this.user.lastNames
-           this.user.clinic = Clinic.query().with('province').with('district.province').first()
-             UserLogin.api().post('/secUser', this.user).then(resp => {
+            if (this.user.role === 'Administrador Districto') {
+            //  this.user = DistrictLogin()
+               this.userDistrict = Object.assign({}, this.user)
+             this.userDistrict.province = this.province
+              this.userDistrict.district = this.district
+            }
+             UserLogin.api().post(this.getStringUserType(), this.getObjectToSend()).then(resp => {
               console.log(resp.response.data)
               this.show_dialog = false
               this.submitting = false
@@ -309,11 +345,6 @@ export default {
                 this.listErrors.push(element.message)
               })
             }
-              // this.$emit('update:show_dialog', true)
-              // this.$q.notify({
-              // message: 'Error: ' + this.listErrors,
-              // color: 'red'
-              // })
             console.log(this.listErrors)
             }
             })
@@ -322,9 +353,22 @@ export default {
             this.user = new UserLogin()
             this.province = null
             this.district = null
-          this.user.role = 'Utilizador Clinica'
+         if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+      this.user.role = 'Utilizador Clinica'
+      this.district = District.query().with('province').find(localStorage.getItem('idLogin'))
+        this.province = this.district.province
+        this.disableFields = true
+          this.hideFields = true
+     } else if (localStorage.getItem('role') === 'ROLE_USER') {
+       this.user.role = 'Utilizador Clinica'
+         this.user.clinic = Clinic.query().with('province').with('district.province').find(localStorage.getItem('id_clinicUser'))
+          this.province = this.user.clinic.district.province
+       this.district = this.user.clinic.district
+        this.disableFields = true
+        this.hideFields = true
+     }
+         // this.user.role = 'Utilizador Clinica'
          this.show_dialog = true
-           this.editMode = false
       },
        editUser (user) {
       this.editedIndex = 0
@@ -332,6 +376,24 @@ export default {
     //  this.newClinic.province = Province.query().withAll().find(clinic.province_id)
     //  this.newClinic.district = District.query().withAll().find(clinic.district_id)
       this.show_dialog = true
+    },
+    getStringUserType () {
+     if (this.user.role === 'Utilizador Clinica') {
+       return '/userLogin'
+     } else if (this.user.role === 'Administrador Districto') {
+        return '/districtUserLogin'
+     } else if (this.user.role === 'Mobilizador') {
+        return '/mobilizerLogin'
+     }
+    },
+     getObjectToSend () {
+       if (this.user.role === 'Utilizador Clinica') {
+       return this.user
+     } else if (this.user.role === 'Administrador Districto') {
+        return this.userDistrict
+     } else if (this.user.role === 'Mobilizador') {
+        return '/mobilizerLogin'
+     }
     },
        showLoading () {
         this.$q.loading.show({
