@@ -28,6 +28,7 @@ export default class Utente extends Model {
       status: this.attr(''),
       selected: this.attr(''),
       syncStatus: this.attr(''),
+      registerDate: this.attr(''),
       communityMobilizer_id: this.attr(''),
       clinic_id: this.attr(''),
 
