@@ -2,8 +2,8 @@ import District from '../district/District'
 import Province from '../province/Province'
 import { UserLogin } from './UserLoginHierarchy'
 
-export class DistrictLogin extends UserLogin {
-  static entity = 'districtLogins'
+export class DistrictUserLogin extends UserLogin {
+  static entity = 'districtUserLogins'
   static baseEntity = 'userLogins'
 
   static fields () {
