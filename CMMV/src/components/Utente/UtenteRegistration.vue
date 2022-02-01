@@ -212,6 +212,7 @@ export default {
             haspartner: '',
             age: '',
             status: 'PENDENTE',
+            registerDate: '',
             addresses: [],
             communityMobilizer: {}
         },
@@ -424,6 +425,7 @@ export default {
             if (this.indexEdit === 1) {
             this.utente.addresses[0].id = uuidv4()
                 this.utente.id = uuidv4()
+                this.utente.registerDate = new Date()
                 const utenteLocalBase = JSON.parse(JSON.stringify(this.utente))
                 db.collection('utentes').add(utenteLocalBase)
                 this.closeRegistration(false)
