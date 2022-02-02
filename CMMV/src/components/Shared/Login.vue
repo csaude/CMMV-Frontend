@@ -275,7 +275,7 @@ export default {
                           //  this.buildUserToAdd(response.response.data)
                             localStorage.setItem('id_clinicUser', 1)
                             this.$router.push({ path: '/clinicHome/' + 1 })
-                        } else if (this.tab === null && response.response.data.roles[0] === 'ROLE_DISTRICT') {
+                        } else if (this.tab === null && response.response.data.roles[0] === 'ROLE_USER_DISTRICT') {
                           //  this.buildUserToAdd(response.response.data)
                            // localStorage.setItem('id_districtUser', response.response.data.idLogin)
                             this.$router.push({ path: '/clinicHome/' + 1 })
