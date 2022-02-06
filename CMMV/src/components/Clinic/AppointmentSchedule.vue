@@ -151,6 +151,7 @@ export default {
         }
        },
        mounted () {
+         if (localStorage.getItem('role') === 'ROLE_USER') {
         db.newDb().collection('appointments').get().then(appointments => {
           if (appointments.length === 0) {
             this.$q.loading.show({
@@ -165,7 +166,7 @@ export default {
               })
             }
     })
-       //  this.fillUtenteOnAppointment()
+      } //  this.fillUtenteOnAppointment()
     },
     created () {
     },

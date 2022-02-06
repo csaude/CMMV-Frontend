@@ -449,14 +449,18 @@ export default {
         }
     },
      phoneRules (val) {
-       if (val.length === 0 || val.length < 9 || this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
-      return 'o Numero é invalido'
-    }
+       if (val.length === 0 || val.length < 9) {
+      return 'O Numero é invalido. Deve conter 9 dígitos.'
+       } else if (this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
+           return 'O Numero é invalido. O codigo da operadora não existe'
+       }
     },
     whatsapNumberRules (val) {
-       if ((val.length !== 0 && val.length < 9) || (val.length !== 0 && this.validatePhonePrefix(parseInt(val.substring(0, 2))))) {
-      return 'o Numero é invalido'
-    }
+       if (val.length !== 0 && val.length < 9) {
+      return 'O Numero é invalido. Deve conter 9 dígitos.'
+      } else if (val.length !== 0 && this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
+           return 'O Numero é invalido. O codigo da operadora não existe'
+      }
     },
     validatePhonePrefix (val) {
          if ((val !== 82) && (val !== 83) && (val !== 84) && (val !== 85) && (val !== 86) && (val !== 87)) {
