@@ -1,7 +1,7 @@
 <template>
 <div key="app-to-accept">
             <UserMessage />
-          <reportBar> </reportBar>
+           <reportBar> </reportBar>
 <br>
  <div
       class="row q-col-gutter-md q-px-md q-py-md"
@@ -17,6 +17,7 @@
  </div>
 </template>
 <script>
+
 export default {
   name: 'Charts',
   setup () {
@@ -34,6 +35,8 @@ export default {
         reportPie: require('components/ApexCharts/PieAppointmentsChart.vue').default,
         reportLine: require('components/ApexCharts/LineChart.vue').default,
          UserMessage: require('components/Clinic/UserMessage.vue').default
+    //     reportBarDistrict: require('components/ApexCharts/BarChartAppointmentsDistrict.vue').default
+   //      reportBarLinkDistrict: require('components/ApexCharts/BarChartAppointmentsLinkDistrict.vue').default
        //  relatorio: require('components/apexCharts/PivotTable.vue').default
      //  ApexExemplo: require('components/apexCharts/ApexExemplo.vue').default,
       //   ApexExemplo2: require('components/apexCharts/ApexExemplo2.vue').default,

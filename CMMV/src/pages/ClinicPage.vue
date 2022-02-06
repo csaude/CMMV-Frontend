@@ -50,7 +50,12 @@
                 <Settings  />
               </q-tab-panel>
               <q-tab-panel name="relatorios" >
-                <Charts  />
+              <div v-if=isAdminDistrict >
+                <ChartsByDistrict  />
+              </div>
+                <div  >
+                <Charts v-if=!isAdminDistrict />
+              </div>
               </q-tab-panel>
              <!--  <q-tab-panel name="mobilizer" >
                 <MobilizerManagement  />
@@ -86,6 +91,8 @@ import Clinic from 'src/store/models/clinic/Clinic'
 import SyncronizingService from '../services/SyncronizingService'
 import { Notify } from 'quasar'
 import isOnline from 'is-online'
+import Appointment from 'src/store/models/appointment/Appointment'
+import Utente from 'src/store/models/utente/Utente'
 export default {
     data () {
         return {
@@ -95,7 +102,7 @@ export default {
             username: {},
              isOnline,
             isAdmin: ref(true),
-            isAdminDistrict: ref(true)
+            isAdminDistrict: ref(false)
         }
     },
     components: {
@@ -107,11 +114,26 @@ export default {
       //      MobilizerManagement: require('components/Clinic/MobilizerManagement.vue').default,
         UserMessage: require('components/Clinic/UserMessage.vue').default,
         changePassword: require('components/Shared/ChangePassword.vue').default,
-         Charts: require('components/ApexCharts/Charts.vue').default
+         Charts: require('components/ApexCharts/Charts.vue').default,
+          ChartsByDistrict: require('components/ApexCharts/ChartsDistrict.vue').default
     },
     methods: {
         displayClinic () {
             return Clinic.query().find(localStorage.getItem('id_clinicUser'))
+        },
+         async getAllUtentesByDistrictId (districtId) {
+           await Utente.api().get('/utente/address/' + districtId).then(resp => {
+                console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+ async getAllAppointmentsByDistrictId (districtId) {
+           await Appointment.api().get('/appointment/district/' + districtId).then(resp => {
+                console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
         },
         getUserName () {
             this.username = localStorage.getItem('username')
@@ -201,6 +223,8 @@ export default {
            this.tab = 'configuracoes'
           this.isAdmin = false
            this.isAdminDistrict = true
+          this.getAllUtentesByDistrictId(localStorage.getItem('idLogin'))
+       this.getAllAppointmentsByDistrictId(localStorage.getItem('idLogin'))
          }
     }
 }
