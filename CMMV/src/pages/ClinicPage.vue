@@ -4,12 +4,14 @@
             <q-header class="q-py-sm">
                 <q-toolbar>
                  <q-toolbar-title>
-                    <div class="text-weight- q-mt-md qmr-sr text-weight-bold"> Unidade Sanitária CMMV </div>
-                    <div class="text-weight-thin " v-if=" this.displayClinic() !== null"> {{ this.displayClinic().name }}</div>
+                    <div class="text-weight- q-mt-md qmr-sr text-weight-bold" v-if="isUser"> Unidade Sanitária CMMV </div>
+                    <div class="text-weight-thin " v-if="isUser && this.displayClinic() !== null"> {{ this.displayClinic().name }}</div>
+                     <div class="text-weight- q-mt-md qmr-sr text-weight-bold absolute-center" v-if="isAdmin || isAdminDistrict"> Administração </div>
+                      <div class="text-weight-thin " v-if="isAdminDistrict"> {{ this.displayDistrict().description }}</div>
                 </q-toolbar-title>
                     <div class="absolute-right items-center q-mt-sm">
                         <q-avatar size="lg">
-                        <img src="~assets/userLogedIn.jpg" />
+                          <img src="~assets/userLogedIn.jpg" />
                         </q-avatar>
                         <q-btn flat icon="expand_more">
                             <q-menu transition-show="scale" transition-hide="scale">
@@ -17,11 +19,8 @@
                                 <q-item clickable>
                                     <q-item-section @click="showChangePasswordScreen = true" clickable >Alterar Senha</q-item-section>
                                 </q-item>
-                                <q-item clickable v-if=isAdmin>
+                                <q-item clickable v-if=isUser>
                                     <q-item-section clickable @click="isOnlineChecker(true)">Sicronizar</q-item-section>
-                                </q-item>
-                                <q-item clickable v-if=isAdmin>
-                                    <q-item-section>Conteúdos</q-item-section>
                                 </q-item>
                                 <q-separator/>
                                 <q-item to="/" clickable>
@@ -64,14 +63,14 @@
             <q-footer>
                 <q-toolbar>
                     <q-tabs v-model="tab" class="absolute-center">
-                     <div v-if=isAdmin >
+                     <div v-if=isUser >
                         <q-tab name="dashboard" icon="pie_chart" label="Dashboard" />
                      </div>
-                      <div v-if= isAdmin >
+                      <div v-if=isUser >
                         <q-tab name="consulta" icon="date_range" label="Consulta" />
                       </div>
                         <q-tab name="configuracoes" icon="settings" label="Definições" />
-                         <div v-if="isAdmin || isAdminDistrict" >
+                         <div v-if="!isAdmin || isAdminDistrict" >
                          <q-tab name="relatorios" icon="insights" label="Relatorios" />
                          </div>
                     </q-tabs>
@@ -88,21 +87,25 @@
 <script>
 import { ref } from 'vue'
 import Clinic from 'src/store/models/clinic/Clinic'
+import District from 'src/store/models/district/District'
 import SyncronizingService from '../services/SyncronizingService'
-import { Notify } from 'quasar'
+import { Notify, useQuasar } from 'quasar'
 import isOnline from 'is-online'
 import Appointment from 'src/store/models/appointment/Appointment'
 import Utente from 'src/store/models/utente/Utente'
 export default {
     data () {
+      const $q = useQuasar()
         return {
             tab: ref('dashboard'),
             backToDashBoard: ref(true),
             showChangePasswordScreen: ref(false),
             username: {},
              isOnline,
-            isAdmin: ref(true),
-            isAdminDistrict: ref(false)
+            isAdmin: ref(false),
+            isAdminDistrict: ref(false),
+            isUser: ref(false),
+             $q
         }
     },
     components: {
@@ -120,6 +123,9 @@ export default {
     methods: {
         displayClinic () {
             return Clinic.query().find(localStorage.getItem('id_clinicUser'))
+        },
+         displayDistrict () {
+            return District.query().find(localStorage.getItem('idLogin'))
         },
          async getAllUtentesByDistrictId (districtId) {
            await Utente.api().get('/utente/address/' + districtId).then(resp => {
@@ -145,7 +151,7 @@ export default {
         } else if (resp === false && sync === true) {
            Notify.create({
                     icon: 'announcement',
-                    message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
+                    message: 'Nao Possui conectividade com a internet , sincronização nao efectuda',
                     type: 'negative',
                     progress: true,
                     timeout: 3000,
@@ -217,7 +223,7 @@ export default {
         this.isOnlineChecker(false)
          if (localStorage.getItem('role') === 'ROLE_ADMIN') {
           this.tab = 'configuracoes'
-          this.isAdmin = false
+          this.isAdmin = true
             this.isAdminDistrict = false
          } else if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
            this.tab = 'configuracoes'
@@ -225,6 +231,10 @@ export default {
            this.isAdminDistrict = true
           this.getAllUtentesByDistrictId(localStorage.getItem('idLogin'))
        this.getAllAppointmentsByDistrictId(localStorage.getItem('idLogin'))
+         } else if (localStorage.getItem('role') === 'ROLE_USER') {
+          this.isUser = true
+         this.isAdmin = false
+           this.isAdminDistrict = false
          }
     }
 }
