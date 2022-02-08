@@ -18,14 +18,14 @@ export default {
     methods: {
       forceFileDownload (materialEducativo, title) {
  if (typeof cordova !== 'undefined') {
-     Notify.create({
+    Notify.create({
                     icon: 'announcement',
-                    message: 'tentando download',
-                    type: 'negative',
+                    message: 'Baixando o Documento',
+                    type: 'positive',
                     progress: true,
-                    timeout: 3000,
+                    timeout: 2000,
                     position: 'top',
-                    color: 'negative',
+                    color: 'positive',
                     textColor: 'white',
                     classes: 'glossy'
                   })
@@ -85,29 +85,7 @@ export default {
                  this.$q.loading.hide()
                 console.log(error)
             })
-        },
-        writeFile(fileEntry, dataObj, isAppend) {
-
-    // Create a FileWriter object for our FileEntry (log.txt).
-    fileEntry.createWriter(function (fileWriter) {
-
-        fileWriter.onwriteend = function() {
-            console.log("Successful file write...")
-            if (dataObj.type == "image/png") {
-                readBinaryFile(fileEntry)
-            }
-            else {
-                readFile(fileEntry)
-            }
         }
-
-        fileWriter.onerror = function(e) {
-            console.log("Failed file write: " + e.toString())
-        }
-
-        fileWriter.write(dataObj)
-    })
-}
   }
 }
 </script>
