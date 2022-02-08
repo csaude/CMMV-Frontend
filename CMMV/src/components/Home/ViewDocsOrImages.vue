@@ -12,10 +12,60 @@
 </template>
 <script>
 import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
+import { Notify } from 'quasar'
 export default {
     props: ['file', 'id', 'showDownload'],
     methods: {
       forceFileDownload (materialEducativo, title) {
+ if (typeof cordova !== 'undefined') {
+    Notify.create({
+                    icon: 'announcement',
+                    message: 'Baixando o Documento',
+                    type: 'positive',
+                    progress: true,
+                    timeout: 2000,
+                    position: 'top',
+                    color: 'positive',
+                    textColor: 'white',
+                    classes: 'glossy'
+                  })
+     var blob = new Blob(materialEducativo.blop)
+     saveBlob2File(title, blob)
+     function saveBlob2File (fileName, blob) {
+        var folder = cordova.file.externalRootDirectory + 'Download'
+        window.resolveLocalFileSystemURL(folder, function (dirEntry) {
+          console.log('file system open: ' + dirEntry.name)
+          createFile(dirEntry, fileName, blob)
+        }, onErrorLoadFs)
+      }
+         function createFile (dirEntry, fileName, blob) {
+        // Creates a new file
+        dirEntry.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
+          writeFile(fileEntry, blob)
+        }, onErrorCreateFile)
+      }
+
+      function writeFile (fileEntry, dataObj) {
+        // Create a FileWriter object for our FileEntry
+        fileEntry.createWriter(function (fileWriter) {
+          fileWriter.onwriteend = function () {
+            console.log('Successful file write...')
+          }
+
+          fileWriter.onerror = function (error) {
+            console.log('Failed file write: ' + error)
+          }
+          fileWriter.write(dataObj)
+        })
+      }
+      function onErrorLoadFs (error) {
+        console.log(error)
+      }
+
+      function onErrorCreateFile (error) {
+        console.log(error)
+      }
+ } else {
         const bytes = btoa(new Uint8Array(materialEducativo.blop).reduce((data, byte) => data + String.fromCharCode(byte), ''))
         const url = 'data:application/pdf;base64, ' + bytes
         const link = document.createElement('a')
@@ -23,6 +73,7 @@ export default {
         link.setAttribute('download', title)
         document.body.appendChild(link)
         link.click()
+ }
     },
      getInfoDocsOrImagesById (id) {
             InfoDocsOrImages.api().get('/infoDocsOrImages/' + id).then(resp => {
