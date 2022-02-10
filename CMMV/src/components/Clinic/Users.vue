@@ -130,7 +130,7 @@
                     ref="role"
                     :rules="[ val => ( val != null ) || ' Por favor indique o role do utilizador']"
                     lazy-rules
-                    label="Role *" />
+                    label="Perfil *" />
             </div>
              <div class="row q-mb-md" v-if="!hideFields">
                    <q-select
@@ -177,7 +177,7 @@
                     option-label="name"
                     :rules="[ val => ( val != null ) || ' Por favor indique a Clinica']"
                     lazy-rules
-                    label="Clinica" />
+                    label="Unidade Sanitária" />
             </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">
@@ -210,6 +210,7 @@ import { QSpinnerIos } from 'quasar'
 export default {
     data () {
         // const $q = useQuasar()
+        const filter = ref('')
         return {
             user: new UserLogin(),
             userDistrict: new DistrictUserLogin(),
@@ -231,6 +232,7 @@ export default {
             district: '',
             disableFields: ref(false),
             hideFields: ref(false),
+             filter,
            // isRole: ref(false),
             // clinic: '',
             columns: [
@@ -239,7 +241,7 @@ export default {
           //      { name: 'actions', label: 'Opções', field: 'actions' }
             ],
             userRoles: [
-             'Utilizador Clinica', 'Administrador Districto'
+             'Utilizador na US', 'Administrador Districtal'
             ]
         }
     },
