@@ -76,15 +76,18 @@ import CommunityMobilizer from '../../store/models/mobilizer/CommunityMobilizer'
 import Province from 'src/store/models/province/Province'
 import District from 'src/store/models/district/District'
 import { QSpinnerIos } from 'quasar'
+import { ref } from 'vue'
 export default {
    props: ['backToDashBoard'],
     data () {
+      const filter = ref('')
         return {
             mobilizer: new CommunityMobilizer(),
             mobilizerLogin: {},
             province: null,
                showMobilizerRegistrationScreen: false,
                 editMode: false,
+                filter,
             columns: [
                 { name: 'firstNames', align: 'left', label: 'Nome', field: row => row.firstNames, format: val => `${val}`, sortable: true },
                 { name: 'lastNames', align: 'left', label: 'Apelido', field: row => row.lastNames, format: val => `${val}`, sortable: true },

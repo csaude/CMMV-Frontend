@@ -28,7 +28,6 @@
 <script>
 import InfoDocsOrImages from '../../store/models/dorcOrImages/InfoDocsOrImages'
 import { useQuasar, QSpinnerIos } from 'quasar'
-// import { ungzip } from 'pako'
 export default {
     props: ['docsOrImages', 'showDownload'],
     data () {
@@ -55,11 +54,6 @@ export default {
             InfoDocsOrImages.api().get('/infoDocsOrImages').then(resp => {
               //  offset = offset + 100
                 console.log(resp.response.data)
-              //  const textEncoder = new TextEncoder()
-   // const gzipedData = textEncoder.encode("H4sIAAAAAAAA//NIzcnJVyguSUzOzi9LLUrLyS/XUSjJSMzLLlZIyy9SSMwpT6wsVshIzSnIzEtXBACs78K6LwAAAA==");
-    //  console.log('gzipeddata', gzipedData);
-   // const ungzipedData = ungzip(resp.response.data)
-    // console.log('ungziped data', ungzipedData)
                  this.$q.loading.hide()
             }).catch(error => {
                  this.$q.loading.hide()
