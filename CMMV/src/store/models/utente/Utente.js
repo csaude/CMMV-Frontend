@@ -82,4 +82,8 @@ export default class Utente extends Model {
   static localDbDeleteAll () {
     return db.newDb().collection('utentes').delete()
   }
+
+  static localDbAddWithKey (utente) {
+    return db.newDb().collection('utentes').add(utente, utente.id)
+  }
 }

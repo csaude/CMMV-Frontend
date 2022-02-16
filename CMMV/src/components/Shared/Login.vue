@@ -5,7 +5,7 @@
     <div class="row q-py-lg q-ml-lg">
         <q-btn flat round color="white" icon="chevron_left" @click="$emit('previousScreen')"/>
         <div class="row q-py-lg q-mr-sm fixed-top-right">
-        <q-btn flat  unelevated rounded push dense color="primary" @click="setAdministrationScreen" :label=labelAdmin text-color="white"/>
+        <q-btn flat  unelevated rounded push dense color="deep-orange-10" @click="setAdministrationScreen" :label=labelAdmin text-color="white" class="glossy" icon-right="admin_panel_settings"  />
         </div>
     </div>
     <div class="row q-pa-xl texte-center q-mt-lg column">

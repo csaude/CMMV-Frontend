@@ -295,7 +295,7 @@ export default {
                if (utentes.length === 0) {
                   utentesApiList.forEach(utente => {
                   console.log(utente)
-                  Utente.localDbAdd(utente)
+                  Utente.localDbAddWithKey(utente)
                  })
                }
              })
