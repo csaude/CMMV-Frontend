@@ -36,6 +36,12 @@
                     label="Apelido" />
             </div>
             <div class="row">
+              <input-phone-code
+                dense
+                rounded
+                  outlined
+                    class="col-2">
+            </input-phone-code>
                 <input-number-phone-field
                     class="col"
                     ref="phone"
@@ -46,6 +52,12 @@
                     label="Número de Telefone" />
             </div>
             <div class="row">
+            <input-phone-code
+                dense
+                rounded
+                  outlined
+                    class="col-2">
+            </input-phone-code>
                 <input-number-phone-field
                     class="col"
                     ref="whatsapp"
@@ -245,7 +257,8 @@ export default {
     components: {
         'combo-field': require('components/Shared/ComboField.vue').default,
         'input-text-field': require('components/Shared/InputFieldText.vue').default,
-        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default,
+        'input-phone-code': require('components/Shared/IconPhoneCode.vue').default
         // 'input-number-field': require('components/Shared/InputNumberField.vue').default
         // buttone: require('components/Shared/Button.vue').default,
         // pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
@@ -409,7 +422,7 @@ export default {
              this.utente.selected = ''
              this.utente.clinic_id = ''
              this.utente.clinic = null
-             if (this.utente.syncStatus === 'S') {
+             if (this.utente.syncStatus === 'S' || this.utente.syncStatus === 'U') {
                   this.utente.syncStatus = 'U'
              } else {
                   this.utente.syncStatus = 'P'

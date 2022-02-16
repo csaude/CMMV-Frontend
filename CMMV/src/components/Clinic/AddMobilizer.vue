@@ -23,8 +23,14 @@
                     label="Apelido" />
             </div>
             <div class="row">
+             <input-phone-code
+                dense
+                square
+                  outlined
+                    class="col-2">
+            </input-phone-code>
                 <input-number-phone-field
-                    class="col"
+                    class="col q-ml-md"
                     ref="phone"
                     square
                     mask="#########"
@@ -32,7 +38,14 @@
                      :rules="[ val => phoneRules (val)]"
                     v-model="mobilizer.cellNumber"
                     label="Número de Telefone" />
-
+            </div>
+             <div class="row">
+<input-phone-code
+                dense
+                square
+                  outlined
+                    class="col-2">
+            </input-phone-code>
                 <input-number-phone-field
                     class="col q-ml-md"
                     ref="cellNumber2"
@@ -255,7 +268,8 @@ export default {
     },
     components: {
         'input-text-field': require('components/Shared/InputFieldText.vue').default,
-        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default
+        'input-number-phone-field': require('components/Shared/InputFieldPhoneNumber.vue').default,
+         'input-phone-code': require('components/Shared/IconPhoneCode.vue').default
     //    'combo-field': require('components/Shared/ComboField.vue').default
     }
 

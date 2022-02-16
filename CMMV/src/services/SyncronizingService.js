@@ -44,6 +44,9 @@ export default {
                     const idServer = resp.response.data.id.toString()
                     db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
                     db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+                    Utente.update({
+                        data: utentesToSend[i]
+                    })
                     Utente.delete(resp.response.data.id)
                  //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
                    i = i + 1
@@ -59,6 +62,9 @@ export default {
                         const idServer = resp.response.data.id.toString()
                       //  db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
                         db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+                        Utente.update({
+                            data: utentesToSend[i]
+                        })
                         Utente.delete(resp.response.data.id)
                      //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
                        i = i + 1

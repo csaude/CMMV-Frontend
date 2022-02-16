@@ -235,6 +235,11 @@ export default {
           const newDate = new Date(this.appointment.appointmentDate)
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
+            if (this.relatedUtente.syncStatus === 'S' || this.relatedUtente.syncStatus === 'U') {
+                  this.relatedUtente.syncStatus = 'U'
+             } else {
+                  this.relatedUtente.syncStatus = 'P'
+             }
              this.appointment.id = uuidv4()
             this.appointment.clinic = this.link
             this.appointment.status = 'PENDENTE'
