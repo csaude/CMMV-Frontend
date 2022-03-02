@@ -147,7 +147,7 @@
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
                     lazy-rules
-                    label="Distrito/Cidade" />
+                    label="Distrito" />
             </div>
              <div class="row q-mb-md">
                 <q-input

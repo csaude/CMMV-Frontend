@@ -143,6 +143,7 @@ import { ref } from 'vue'
 import { date, useQuasar, QSpinnerIos } from 'quasar'
 import Clinic from '../../store/models/clinic/Clinic'
 // import Appointment from 'src/store/models/appointment/Appointment'
+import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import moment from 'moment'
 import Utente from '../../store/models/utente/Utente'
 // import District from '../../store/models/district/District'
@@ -223,7 +224,15 @@ export default {
           set (utente) {
             this.$emit('update:relatedUtente', utente)
         }
+      },
+       mobilizer: {
+      get () {
+        return CommunityMobilizer.query().with('utentes').find(this.$route.params.id)
+      },
+      set (mobilizer) {
+        CommunityMobilizer.update(mobilizer)
       }
+    }
     },
     methods: {
       moment,
@@ -350,7 +359,7 @@ Utente.update({
       let calcDist = 0
       let clinic = {}
       this.clinics = []
-      for (clinic of Clinic.query().with('province.*').with('district.*').get()) {
+      for (clinic of Clinic.query().with('province.*').with('district.*').where('district_id', this.mobilizer.district_id).get()) {
          console.log(this.myLocation.distance)
         if (clinic.longitude !== undefined && clinic.longitude !== null) {
         if (this.myLocation.distance.includes('<1km')) {

@@ -48,6 +48,9 @@ export default {
                         data: utentesToSend[i]
                     })
                     Utente.delete(resp.response.data.id)
+                    if (resp.response.data.appointments !== undefined) {
+                    Appointment.delete(resp.response.data.appointments[0].id)
+                    }
                  //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
                    i = i + 1
                    setTimeout(this.doSend(i), 2)

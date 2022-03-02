@@ -196,7 +196,7 @@ export default {
             ],
             clinico: '',
             clinicTypes: [
-              '', 'Unidade Sanitária', 'Clinicas Móveis', 'Hospital', 'Posto de Saúde'
+              '', 'Unidade fixa', 'Unidade temporária', 'Clínica móvel'
             ]
         }
     },
@@ -265,8 +265,8 @@ export default {
           title: 'Problema no carregamento da localização',
           message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização'
         }).onOk(() => {
-            this.address.latitude = -25.9678239
-          this.address.longitude = 32.5864914
+            this.newClinic.latitude = -25.9678239
+          this.newClinic.longitude = 32.5864914
           this.$q.loading.hide()
         })
       }

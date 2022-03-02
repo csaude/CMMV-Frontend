@@ -198,6 +198,8 @@ import District from 'src/store/models/district/District'
 import SyncronizingService from '../../services/SyncronizingService'
 import db from 'src/store/localbase'
 import isOnline from 'is-online'
+import Appointment from '../../store/models/appointment/Appointment'
+// import Appointment from '../../store/models/appointment/Appointment'
 export default {
   setup () {
     const $q = useQuasar()
@@ -276,6 +278,7 @@ export default {
                    .with('clinic.province')
                    .with('clinic.district.province')
                    .with('communityMobilizer')
+                    .with('appointments.clinic')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
                    .with('addresses.district')
@@ -291,9 +294,11 @@ export default {
       await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
              offset = offset + 100
              utentesApiList = resp.response.data
+             console.log(utentesApiList)
              Utente.localDbGetAll().then(utentes => {
                if (utentes.length === 0) {
                   utentesApiList.forEach(utente => {
+                    console.log(Appointment.all())
                   console.log(utente)
                   Utente.localDbAddWithKey(utente)
                  })
@@ -351,6 +356,7 @@ export default {
      },
    async getDataLocalBase () {
     Utente.deleteAll()
+    Appointment.deleteAll()
   /*     db.newDb().collection('utentes').get().then(utentes => {
        Utente.insert({
      data: utentes
@@ -358,11 +364,17 @@ export default {
     }) */
    await db.newDb().collection('utentes').get().then(utentes => {
      console.log(utentes)
-          utentes.forEach(utente => {
+       /*   utentes.forEach(utente => {
+               const relatedUtenteLocalBase = JSON.parse(JSON.stringify(utente))
              Utente.insert({
-              data: utente
+              data: relatedUtenteLocalBase
           })
+           console.log(Appointment.all())
+          }) */
+           Utente.insert({
+              data: utentes
           })
+           console.log(Appointment.all())
      })
      db.newDb().collection('provinces').get().then(provinces => {
        Province.insert({
@@ -374,6 +386,24 @@ export default {
      data: districts
     })
     })
+    /*  db.newDb().collection('clinics').get().then(clinics => {
+        //  Clinic.deleteAll()
+          Clinic.insert({
+            data: clinics
+          })
+        }) /*
+     /*     db.newDb().collection('utentes').get().then(utentes => {
+     console.log(utentes)
+          utentes.forEach(utente => {
+            if (utente.appointments !== undefined) {
+            //  utente.appointments[0].utente = utente
+              console.log(utente.appointments[0])
+             Appointment.insert(
+              utente.appointments[0]
+          )
+          }
+          })
+     }) */
      },
      editUtente () {
        this.showUtenteRegistrationScreen = true
@@ -397,7 +427,7 @@ export default {
       },
       setClinics () {
         db.newDb().collection('clinics').get().then(clinics => {
-          Clinic.deleteAll()
+        //  Clinic.deleteAll()
           Clinic.insert({
             data: clinics
           })
@@ -489,8 +519,8 @@ export default {
     })
     const offset = 0
     this.isOnlineChecker(false)
-    this.setClinics()
-    this.getDataLocalBase()
+  //  this.setClinics()
+   this.getDataLocalBase()
     db.newDb().collection('communityMobilizers').get().then(mobilizers => {
       if (mobilizers.length === 0) {
         this.getMobilizer()
@@ -506,9 +536,9 @@ export default {
     //  this.setMobilizerLocalBase()
   },
   created () {
-    const offset = 0
-       this.getAllProvinces(offset)
-       this.getAllDistricts(offset)
+   // const offset = 0
+     //  this.getAllProvinces(offset)
+     //  this.getAllDistricts(offset)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
