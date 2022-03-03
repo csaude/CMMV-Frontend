@@ -170,21 +170,29 @@ export default {
                 }
             })
         },
-        addLocalDbDistricts (districtId) {
+        addLocalDbDistricts () {
             District.query()
                     .has('code')
                     .with('province')
-                    .where('id', districtId)
                     .get()
                     .forEach(district => {
                         console.log(district)
                         District.localDbAdd(district)
-                        Province.localDbAdd(district.province)
+                        // Province.localDbAdd(district.province)
+                    })
+        },
+         addLocalDbProvince () {
+            Province.query()
+                    .has('code')
+                    .get()
+                    .forEach(province => {
+                        Province.localDbAdd(province)
                     })
         },
         addLocalDbDatas (districtId) {
             this.addLocalDbClinics(districtId)
-            this.addLocalDbDistricts(districtId)
+            this.addLocalDbDistricts()
+             this.addLocalDbProvince()
         },
         setAdministrationScreen () {
            if (this.administration === false) {

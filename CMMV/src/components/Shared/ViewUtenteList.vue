@@ -37,10 +37,10 @@
                           <span class="text-green-9" v-else> {{utente.appointments[0].status}} </span>
                       </q-item-label>
                      <div class="">
-                      <q-icon name="event"/>  {{this.displayDate(utente.appointments[0].appointmentDate)}}
+                      <q-icon name="event"/> {{this.displayDate(utente.appointments[0].appointmentDate)}}
                      </div>
-                      <div class="">
-                      <q-icon name="place"/>  {{utente.appointments[0].clinic.name}}
+                      <div class="" v-if="utente.appointments[0].clinic !== null">
+                      <q-icon name="place"/> {{utente.appointments[0].clinic.name}}
                     </div>
                   </q-item-section>
                 </q-item>
@@ -69,6 +69,7 @@ import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
  import db from 'src/store/localbase'
 import Appointment from '../../store/models/appointment/Appointment'
+import Clinic from 'src/store/models/clinic/Clinic'
 import moment from 'moment'
 export default {
     props: ['indexEdit', 'utentes', 'utenteEdit', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],

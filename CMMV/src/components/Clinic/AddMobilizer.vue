@@ -54,7 +54,7 @@
                     lazy-rules
                      :rules="[ val => secondNumberRules (val)]"
                     v-model="mobilizer.cellNumber2"
-                    label="Número de Telefone 2" />
+                    label="Número de Telefone Alternativo" />
             </div>
             <div class="row q-mb-md">
                 <q-select
@@ -86,7 +86,7 @@
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique o Distrito']"
                     lazy-rules
-                    label="Distrito/Cidade" />
+                    label="Distrito" />
             </div>
             </q-card-section>
            <q-card-actions align="right" class="q-mb-md">

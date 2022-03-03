@@ -32,7 +32,7 @@ export default {
             return date.formatDate(value, 'DD-MM-YYYY')
         },
         promptToConfirm (appointmentToConfirm) {
-        if (appointmentToConfirm.utente.syncStatus === 'S') {
+        if (appointmentToConfirm.syncStatus === 'S') {
           this.$q.dialog({
             title: 'Informação',
             message: 'Não Pode Editar a consulta uma vez que esta já foi sicronizada',

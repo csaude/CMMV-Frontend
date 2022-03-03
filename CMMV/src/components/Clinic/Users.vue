@@ -162,7 +162,7 @@
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
                     lazy-rules
-                    label="Distrito/Cidade" />
+                    label="Distrito" />
             </div>
          <div class="row q-mb-md" v-if="this.isRoleAdm === true">
                    <q-select
@@ -280,7 +280,7 @@ export default {
             return UserLogin.all()
         },
         isRoleAdm () {
-          if (this.user.role === 'Utilizador Clinica' && localStorage.getItem('role') !== 'ROLE_USER') {
+          if (this.user.role === 'Utilizador na US' && localStorage.getItem('role') !== 'ROLE_USER') {
             return true
           }
           return false
@@ -319,7 +319,7 @@ export default {
            this.listErrors = []
        //   this.user.username = this.user.firstNames.substring(0, 1) + this.user.lastNames.trim()
            this.user.fullName = this.user.firstNames + ' ' + this.user.lastNames
-            if (this.user.role === 'Administrador Districto') {
+            if (this.user.role === 'Administrador Districtal') {
             //  this.user = DistrictLogin()
                this.userDistrict = Object.assign({}, this.user)
              this.userDistrict.province = this.province
@@ -356,13 +356,13 @@ export default {
             this.province = null
             this.district = null
          if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
-      this.user.role = 'Utilizador Clinica'
+      this.user.role = 'Utilizador na US'
       this.district = District.query().with('province').find(localStorage.getItem('idLogin'))
         this.province = this.district.province
         this.disableFields = true
           this.hideFields = true
      } else if (localStorage.getItem('role') === 'ROLE_USER') {
-       this.user.role = 'Utilizador Clinica'
+       this.user.role = 'Utilizador na US'
          this.user.clinic = Clinic.query().with('province').with('district.province').find(localStorage.getItem('id_clinicUser'))
           this.province = this.user.clinic.district.province
        this.district = this.user.clinic.district
@@ -380,18 +380,18 @@ export default {
       this.show_dialog = true
     },
     getStringUserType () {
-     if (this.user.role === 'Utilizador Clinica') {
+     if (this.user.role === 'Utilizador na US') {
        return '/userLogin'
-     } else if (this.user.role === 'Administrador Districto') {
+     } else if (this.user.role === 'Administrador Districtal') {
         return '/districtUserLogin'
      } else if (this.user.role === 'Mobilizador') {
         return '/mobilizerLogin'
      }
     },
      getObjectToSend () {
-       if (this.user.role === 'Utilizador Clinica') {
+       if (this.user.role === 'Utilizador na US') {
        return this.user
-     } else if (this.user.role === 'Administrador Districto') {
+     } else if (this.user.role === 'Administrador Districtal') {
         return this.userDistrict
      } else if (this.user.role === 'Mobilizador') {
         return '/mobilizerLogin'

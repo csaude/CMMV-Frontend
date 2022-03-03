@@ -69,10 +69,10 @@
                       <div v-if=isUser >
                         <q-tab name="consulta" icon="date_range" label="Consulta" />
                       </div>
-                        <q-tab name="configuracoes" icon="settings" label="Definições" />
-                         <div v-if="!isAdmin || isAdminDistrict" >
+                        <div v-if="!isAdmin || isAdminDistrict" >
                          <q-tab name="relatorios" icon="insights" label="Relatorios" />
                          </div>
+                        <q-tab name="configuracoes" icon="settings" label="Definições" />
                     </q-tabs>
                 </q-toolbar>
             </q-footer>
