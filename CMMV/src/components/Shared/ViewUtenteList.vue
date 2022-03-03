@@ -69,7 +69,6 @@ import Utente from 'src/store/models/utente/Utente'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
  import db from 'src/store/localbase'
 import Appointment from '../../store/models/appointment/Appointment'
-import Clinic from 'src/store/models/clinic/Clinic'
 import moment from 'moment'
 export default {
     props: ['indexEdit', 'utentes', 'utenteEdit', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
