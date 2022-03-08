@@ -203,6 +203,7 @@ import Appointment from '../../store/models/appointment/Appointment'
 export default {
   setup () {
     const $q = useQuasar()
+    const timerToSyncronizeConst = 0
     return {
        tab: ref('associados'),
        leftDrawerOpen: ref(false),
@@ -216,6 +217,7 @@ export default {
        showMobilizerRegistrationScreen: ref(false),
        showChangePasswordScreen: ref(false),
       editMode: false,
+      timerToSyncronizeConst,
        $q,
        isOnline,
        utente: {
@@ -287,6 +289,9 @@ export default {
                    .orderBy('firstNames')
                    .get()
     }
+   // checkOnlineToSync () {
+    //  return this.checkOnlineToSync1()
+   // }
   },
   methods: {
      async getAllUtente (offset) {
@@ -405,6 +410,11 @@ export default {
           })
      }) */
      },
+    timerToSyncronize () {
+   this.timerToSyncronizeConst = setInterval(() => {
+    this.checkOnlineToSync1()
+      }, 3600000) // 3600000 timer to sycronize hour to hour
+    },
      editUtente () {
        this.showUtenteRegistrationScreen = true
        this.indexEdit = 1
@@ -487,6 +497,16 @@ export default {
       // SyncronizingService.sendMobilizerData()
       // SyncronizingService.sendUserDataPassUpdated()
      },
+ checkOnlineToSync1 () {
+      isOnline().then(resp => {
+      if (resp === true) {
+        this.sendUtente()
+       // return true
+      } else if (resp === false) {
+        return false
+      }
+      })
+    },
      verificationDialog () {
             this.$q.dialog({
                 title: 'Confirmação',
@@ -521,6 +541,7 @@ export default {
     this.isOnlineChecker(false)
   //  this.setClinics()
    this.getDataLocalBase()
+   this.timerToSyncronize()
     db.newDb().collection('communityMobilizers').get().then(mobilizers => {
       if (mobilizers.length === 0) {
         this.getMobilizer()
@@ -539,6 +560,9 @@ export default {
    // const offset = 0
      //  this.getAllProvinces(offset)
      //  this.getAllDistricts(offset)
+  },
+   beforeUnmount () {
+   clearInterval(this.timerToSyncronizeConst)
   },
   components: {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,

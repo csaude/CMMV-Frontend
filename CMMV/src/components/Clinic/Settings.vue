@@ -7,7 +7,7 @@
         <div class="">
             <q-toolbar >
                 <q-tabs v-model="selectedTab" shrink stretch>
-                 <div v-if=isAdmin>
+                 <div v-if="isAdmin || isUser" >
                   <q-tab name="Clinicas" label="Unidade Sanitária" />
                     </div>
                   <q-tab name="Utilizadores" label="Utilizadores" />
@@ -50,17 +50,23 @@ export default {
   setup () {
     return {
         selectedTab: ref('Clinicas'),
-        isAdmin: ref(true)
+        isAdmin: ref(true),
+         isUser: ref(false)
     }
   },
   computed () {
   },
   mounted () {
-      if (localStorage.getItem('role') === 'ROLE_ADMIN' || localStorage.getItem('role') === 'ROLE_USER') {
-          this.selectedTab = 'Utilizadores'
-          this.isAdmin = false
+      if (localStorage.getItem('role') === 'ROLE_ADMIN') {
+         // this.selectedTab = 'Utilizadores'
+        //  this.isAdmin = false
          } else if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+           this.isAdmin = false
          // this.selectedTab = 'Clinicas'
+         } else if (localStorage.getItem('role') === 'ROLE_USER') {
+             this.isAdmin = false
+              this.isUser = true
+          this.selectedTab = 'Clinicas'
          }
   },
   methods: {

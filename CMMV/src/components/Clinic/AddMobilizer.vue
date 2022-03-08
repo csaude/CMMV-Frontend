@@ -62,7 +62,7 @@
                     class="col"
                     v-model="province"
                     :options="provinces"
-                     :disable=true
+                     :disable=editModeMobilizer
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="province"
@@ -79,7 +79,7 @@
                      transition-show="flip-up"
                     transition-hide="flip-down"
                     v-model="mobilizer.district"
-                      :disable=true
+                      :disable=editModeMobilizer
                     :options="districts"
                     ref="district"
                     option-value="id"

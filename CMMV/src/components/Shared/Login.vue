@@ -118,7 +118,7 @@ export default {
       //  const offset = 0
         Province.apiGetAll()
         District.apiGetAll()
-        Clinic.apiGetAll()
+     //   Clinic.apiGetAll()
       //  this.getAllClinic(offset)
     },
     computed: {
@@ -157,8 +157,16 @@ export default {
                 })
             }
         },
+          async getAllClinicsByDistrictId (districtId) {
+           await Clinic.api().get('/clinic/district/' + districtId).then(resp => {
+              console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+    },
         addLocalDbClinics (districtId) {
-            Clinic.localDbGetAll().then(clinics => {
+             this.getAllClinicsByDistrictId(districtId).then(resp => {
+                 Clinic.localDbGetAll().then(clinics => {
                 if (clinics.length === 0) {
                     Clinic.query()
                           .has('code')
@@ -169,6 +177,7 @@ export default {
                 })
                 }
             })
+              })
         },
         addLocalDbDistricts () {
             District.query()
@@ -206,6 +215,7 @@ export default {
            }
         },
         buildUserToAdd (responseUser) {
+            console.log(responseUser.refresh_token)
             UserLogin.localDbAdd({
                 id_token: responseUser.access_token,
                 orgaoId: responseUser.orgaoId,
