@@ -96,6 +96,7 @@ import Utente from 'src/store/models/utente/Utente'
 export default {
     data () {
       const $q = useQuasar()
+       const timerToSyncronizeConst = 0
         return {
             tab: ref('dashboard'),
             backToDashBoard: ref(true),
@@ -105,7 +106,8 @@ export default {
             isAdmin: ref(false),
             isAdminDistrict: ref(false),
             isUser: ref(false),
-             $q
+             $q,
+             timerToSyncronizeConst
         }
     },
     components: {
@@ -214,8 +216,25 @@ export default {
             }).onDismiss(() => {
                 // console.log('I am triggered on both OK and Cancel')
             })
-        }
+        },
+        checkOnlineToSync1 () {
+      isOnline().then(resp => {
+      if (resp === true) {
+         SyncronizingService.sendAppointmentsClinicData()
+      } else if (resp === false) {
+        return false
+      }
+      })
     },
+    timerToSyncronize () {
+   this.timerToSyncronizeConst = setInterval(() => {
+    this.checkOnlineToSync1()
+      }, 2000) // 3600000 timer to sycronize hour to hour
+    }
+    },
+     beforeUnmount () {
+   clearInterval(this.timerToSyncronizeConst)
+  },
     computed: {
     },
     mounted () {
@@ -235,6 +254,7 @@ export default {
           this.isUser = true
          this.isAdmin = false
            this.isAdminDistrict = false
+            this.timerToSyncronize()
          }
     }
 }

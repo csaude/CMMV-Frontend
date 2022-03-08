@@ -1,4 +1,30 @@
 <template>
+  <div class="row q-mb-md" v-if="this.showAddButton">
+                <combo-field
+                    class="col"
+                    v-model="province"
+                    :options="provinces"
+                    transition-show="flip-up"
+                    transition-hide="flip-down"
+                    ref="province"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null ) || ' Por favor indique a província']"
+                    lazy-rules
+                    label="Província" />
+                <combo-field
+                    class="col q-ml-md"
+                     transition-show="flip-up"
+                    transition-hide="flip-down"
+                    v-model="district"
+                    :options="districtsCombo"
+                    ref="district"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null) || ' Por favor indique a Distrito']"
+                    lazy-rules
+                    label="Distrito" />
+            </div>
     <div class="q-pt-xl">
         <q-table
         title="Unidade Sanitária"
@@ -114,7 +140,6 @@
                     transition-show="flip-up"
                     transition-hide="flip-down"
                     ref="province"
-                     :disable=true
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null ) || ' Por favor indique a província']"
@@ -129,7 +154,6 @@
                     v-model="newClinic.district"
                     :options="districts"
                     ref="district"
-                     :disable=true
                     option-value="id"
                     option-label="description"
                     :rules="[ val => ( val != null) || ' Por favor indique a Distrito/Cidade']"
@@ -179,6 +203,9 @@ export default {
             databaseCodes: [],
             listErrors: [],
             currClinic: {},
+            district: null,
+            province: null,
+            initialDistrict: 0,
             newClinic: {
                 name: '',
                 type: '',
@@ -208,6 +235,8 @@ export default {
         const offset = 0
         if (localStorage.getItem('role') === 'ROLE_USER') {
           this.getClinicById()
+        } else if (localStorage.getItem('role') === 'ROLE_ADMIN') {
+        //  this.getAllClinic(offset)
         } else {
           this.getAllClinicsByDistrictId(localStorage.getItem('idLogin'))
         }
@@ -217,16 +246,35 @@ export default {
        // console.log(11 + this.provinces)
     },
     computed: {
-         clinicos () {
+     /*    clinicos () {
           return Clinic.query().with('province').with('district')
                    .with('district.province').where('district_id', parseInt(localStorage.getItem('idLogin'))).get()
+                     return Clinic.query().with('province').with('district')
+                   .with('district.province').get()
+        }, */
+         clinicos () {
+           if (this.district != null) {
+          return this.getClinicsByDistrictId()
+           } else if (localStorage.getItem('role') === 'ROLE_USER') {
+       return Clinic.query().with('province').with('district')
+                   .with('district.province').where('id', parseInt(localStorage.getItem('id_clinicUser'))).get()
+           } else {
+             return []
+           }
         },
           provinces () {
-            return Province.query().withAll().get()
+            return Province.query().orderBy('code').has('code').get()
         },
         districts () {
         if (this.newClinic.province !== null) {
             return District.query().withAll().where('province_id', this.newClinic.province.id).get()
+        } else {
+            return null
+        }
+        },
+          districtsCombo () {
+        if (this.province !== null) {
+            return District.query().withAll().where('province_id', this.province.id).get()
         } else {
             return null
         }
@@ -281,6 +329,20 @@ export default {
                 this.submitting = true
                 this.submitClinic()
             }
+        },
+           getClinicsByDistrictId () {
+            if (this.district != null && this.initialDistrict !== this.district.id) {
+               this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Carregando Unidades Sanitarias. Por favor, aguarde...'
+        })
+              this.initialDistrict = this.district.id
+              this.getAllClinicsByDistrictId(this.district.id).then(resp => {
+                  this.$q.loading.hide()
+              })
+            }
+              return Clinic.query().with('province').with('district')
+                   .with('district.province').where('district_id', parseInt(this.district.id)).get()
         },
         async submitClinic () {
             console.log(this.newClinic)
@@ -350,11 +412,26 @@ export default {
         },
        async getAllClinicsByDistrictId (districtId) {
            await Clinic.api().get('/clinic/district/' + districtId).then(resp => {
-                console.log(resp.response.data)
+              console.log(resp.response.data)
             }).catch(error => {
                 console.log(error)
             })
     },
+     getAllClinic (offset) {
+       if (this.clinicos.length === 0) {
+            if (offset >= 0) {
+                Clinic.api().get('/clinic?offset=' + offset + '&max=100').then(resp => {
+                this.submitting = false
+                offset = offset + 100
+                if (resp.response.data.length > 0) {
+                    setTimeout(this.getAllClinic(offset), 2)
+                }
+                }).catch(error => {
+                console.log('Erro no code ' + error)
+                })
+            }
+       }
+        },
       addClinic () {
            if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
        // this.showLoading()
@@ -382,7 +459,7 @@ export default {
         }
     },
     verifyRole () {
-      if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT') {
+      if (localStorage.getItem('role') === 'ROLE_USER_DISTRICT' || localStorage.getItem('role') === 'ROLE_ADMIN') {
         this.showAddButton = true
       }
      },

@@ -232,6 +232,7 @@ export default {
             district: '',
             disableFields: ref(false),
             hideFields: ref(false),
+            initialDistrict: 0,
              filter,
            // isRole: ref(false),
             // clinic: '',
@@ -269,12 +270,17 @@ export default {
         }
         },
         displayClinics () {
-     if (this.district !== null) {
+   /*  if (this.district !== null) {
             return Clinic.query().with('province')
                    .with('district.province').has('code').where('district_id', this.district.id).get()
         } else {
             return null
-        }
+        } */
+         if (this.district != null) {
+          return this.getClinicsByDistrictId()
+           } else {
+             return []
+           }
         },
         users () {
             return UserLogin.all()
@@ -304,6 +310,27 @@ export default {
             }).catch(error => {
                 console.log(error)
             })
+        },
+         async getAllClinicsByDistrictId (districtId) {
+           await Clinic.api().get('/clinic/district/' + districtId).then(resp => {
+              console.log(resp.response.data)
+            }).catch(error => {
+                console.log(error)
+            })
+    },
+     getClinicsByDistrictId () {
+            if (this.district != null && this.initialDistrict !== this.district.id) {
+               this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Carregando Unidades Sanitarias. Por favor, aguarde...'
+        })
+              this.initialDistrict = this.district.id
+              this.getAllClinicsByDistrictId(this.district.id).then(resp => {
+                  this.$q.loading.hide()
+              })
+            }
+              return Clinic.query().with('province').with('district')
+                   .with('district.province').where('district_id', parseInt(this.district.id)).get()
         },
      validateUser () {
         this.$refs.nome.$refs.ref.validate()

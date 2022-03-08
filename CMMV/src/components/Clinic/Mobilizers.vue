@@ -1,4 +1,30 @@
 <template>
+<div class="row q-mb-md">
+                <combo-field
+                    class="col"
+                    v-model="province"
+                    :options="provinces"
+                    transition-show="flip-up"
+                    transition-hide="flip-down"
+                    ref="province"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null ) || ' Por favor indique a província']"
+                    lazy-rules
+                    label="Província" />
+                <combo-field
+                    class="col q-ml-md"
+                     transition-show="flip-up"
+                    transition-hide="flip-down"
+                    v-model="district"
+                    :options="districts"
+                    ref="district"
+                    option-value="id"
+                    option-label="description"
+                    :rules="[ val => ( val != null) || ' Por favor indique a Distrito']"
+                    lazy-rules
+                    label="Distrito" />
+            </div>
 <div class="q-pt-xl">
         <q-table
         title="Mobilizadores"
@@ -54,19 +80,6 @@
              :editMode=editMode
             @close="showMobilizerRegistrationScreen = false" />
       </q-dialog>
-    <!--q-table title="Unidade Sanitária" :data="this.clinicos" :columns="columns" row-key="name" binary-state-sort :filter="filter">
-      <template v-slot:top-right>
-      <q-input v-if="show_filter" filled borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
-              <template v-slot:append>
-                <q-icon name="search"/>
-              </template>
-            </q-input>
-      <div class="q-pa-md q-gutter-sm">
-      <q-btn class="q-ml-sm" icon="filter_list" @click="show_filter=!show_filter" flat/>
-        <q-btn outline rounded color="primary" icon="add" @click="show_dialog = true" no-caps/>
-      </div>
-      </template>
-    </q-table-->
     </div>
 </template>
 
@@ -85,8 +98,10 @@ export default {
             mobilizer: new CommunityMobilizer(),
             mobilizerLogin: {},
             province: null,
+            district: null,
                showMobilizerRegistrationScreen: false,
                 editMode: false,
+                 initialDistrict: 0,
                 filter,
             columns: [
                 { name: 'firstNames', align: 'left', label: 'Nome', field: row => row.firstNames, format: val => `${val}`, sortable: true },
@@ -105,14 +120,21 @@ export default {
            return Province.query().orderBy('code').has('code').get()
         },
         districts () {
-        if (this.address.province !== null) {
-            return District.query().has('code').withAll().where('province_id', this.address.province.id).get()
+        if (this.province !== null) {
+            return District.query().withAll().where('province_id', this.province.id).get()
         } else {
             return null
         }
         },
-        mobilizers () {
-            return CommunityMobilizer.query().has('firstNames').get()
+        // mobilizers () {
+         //   return CommunityMobilizer.query().has('firstNames').get()
+       // }
+         mobilizers () {
+           if (this.district != null) {
+          return this.getMobilizersByDistrictId()
+           } else {
+             return []
+           }
         }
     },
     created () {
@@ -140,6 +162,19 @@ export default {
                 })
         }
     },
+     getMobilizersByDistrictId () {
+            if (this.district != null && this.initialDistrict !== this.district.id) {
+               this.$q.loading.show({
+          spinner: QSpinnerIos,
+          message: 'Carregando Mobilizadores. Por favor, aguarde...'
+        })
+              this.initialDistrict = this.district.id
+              CommunityMobilizer.apiFetchByDistrictId(this.district.id).then(resp => {
+                  this.$q.loading.hide()
+              })
+            }
+              return CommunityMobilizer.query().has('firstNames').where('district_id', parseInt(this.district.id)).get()
+        },
      showLoading () {
         this.$q.loading.show({
           spinner: QSpinnerIos,
@@ -153,7 +188,8 @@ export default {
       }
     },
     components: {
-         addMobilizer: require('components/Clinic/AddMobilizer.vue').default
+         addMobilizer: require('components/Clinic/AddMobilizer.vue').default,
+           'combo-field': require('components/Shared/ComboField.vue').default
     }
 
 }
