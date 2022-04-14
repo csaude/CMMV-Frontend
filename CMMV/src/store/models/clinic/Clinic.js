@@ -17,6 +17,7 @@ export default class Clinic extends Model {
       type: this.attr(''),
       latitude: this.attr(''),
       longitude: this.attr(''),
+      active: this.attr(''),
       district_id: this.attr(''),
       province_id: this.attr(''),
 
