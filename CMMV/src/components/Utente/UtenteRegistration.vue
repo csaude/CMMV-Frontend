@@ -176,8 +176,8 @@
             <q-separator/>
             <div class="row q-mb-md">
                 <q-btn push flat color="white" text-color="black" round icon="my_location" @click="locateMe"/>
-                <q-input readonly v-model="address.latitude" label="Latitude" />
-                <q-input readonly v-model="address.longitude" label="Longitude" />
+                <q-input readonly v-model="address.latitude" label="Latitude" ref="latitude" />
+                <q-input readonly v-model="address.longitude" label="Longitude" ref="longitude" />
             </div>
         </div>
           <div class="absolute-bottom">
@@ -323,10 +323,11 @@ export default {
     methods: {
         moment,
         idadeCalculator (birthDate) {
-            if (moment(birthDate).isValid()) {
-               const utentBirthDate = moment(birthDate)
+            if (moment(birthDate, 'DD/MM/YYYY').isValid()) {
+               const utentBirthDate = moment(birthDate, 'DD/MM/YYYY')
                const todayDate = moment(new Date())
                const idade = todayDate.diff(utentBirthDate, 'years')
+               console.log(idade)
                this.utente.age = idade
             }
         },
@@ -463,16 +464,16 @@ export default {
     },
      phoneRules (val) {
        if (val.length === 0 || val.length < 9) {
-      return 'O Numero é invalido. Deve conter 9 dígitos.'
+      return 'O Número é invalido. Deve conter 9 dígitos.'
        } else if (this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
-           return 'O Numero é invalido. O codigo da operadora não existe'
+           return 'O Número é invalido. O codigo da operadora não existe'
        }
     },
     whatsapNumberRules (val) {
        if (val.length !== 0 && val.length < 9) {
-      return 'O Numero é invalido. Deve conter 9 dígitos.'
+      return 'O Número é invalido. Deve conter 9 dígitos.'
       } else if (val.length !== 0 && this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
-           return 'O Numero é invalido. O codigo da operadora não existe'
+           return 'O Número é invalido. O codigo da operadora não existe'
       }
     },
     validatePhonePrefix (val) {
