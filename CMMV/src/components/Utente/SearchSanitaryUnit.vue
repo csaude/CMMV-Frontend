@@ -241,7 +241,7 @@ export default {
             return date >= moment(new Date()).format('YYYY/MM/DD')
         },
      async associar () {
-          const newDate = new Date(this.appointment.appointmentDate)
+          const newDate = new Date(this.appointment.appointmentDate, 'DD-MM-YYYY')
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
             if (this.relatedUtente.syncStatus === 'S' || this.relatedUtente.syncStatus === 'U') {
@@ -255,8 +255,14 @@ export default {
             this.appointment.hasHappened = false
             this.appointment.orderNumber = 1
             this.appointment.visitDate = null
-           this.appointment.appointmentDate = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').toDate()
-           // this.appointment.appointmentDate = moment(this.appointment.appointmentDate).format('DD-MM-YYYY')
+           //  const dateAppoi = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').endOf('day').toDate()
+             // console.log(dateAppoi.endOf('day').toDate())
+           // this.appointment.appointmentDate = moment(this.appointment.appointmentDate).endOf('day').toDate()
+          //  this.appointment.appointmentDate = moment(this.appointment.appointmentDate).format('dd-mm-YYYY')
+           const date = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').endOf('day').toDate()
+         // const date1 = new Date(date)
+           console.log(date)
+           this.appointment.appointmentDate = date
             this.appointment.time = newDate.getHours() + ':' + newDate.getMinutes()
             this.appointment.utente = this.relatedUtente
             const appointmentLocalBase = JSON.parse(JSON.stringify(this.appointment))
@@ -264,6 +270,7 @@ export default {
              appointmentLocalBase
            )
            this.appointment.utente = null
+           // this.appointment.appointmentDate = date
            this.relatedUtente.appointments.push(this.appointment)
              const relatedUtenteLocalBase = JSON.parse(JSON.stringify(this.relatedUtente))
             db.newDb().collection('utentes').doc({ id: this.relatedUtente.id }).set(
@@ -277,7 +284,7 @@ Utente.update({
         appointments: this.relatedUtente.appointments
       })
       Appointment.insert({
-     data: this.appointment
+     data: this.relatedUtente.appointments[0]
     })
                 this.submitting = false
                 this.closeRegistration(false)
@@ -287,7 +294,7 @@ Utente.update({
           this.showdialog = ref(close)
           this.step = 1
           this.appointment = {}
-          this.appointment.appointmentDate = ''
+         // this.appointment.appointmentDate = ''
           this.submitting = false
           this.activeUSForm(close, this.utente)
           this.$emit('update:showUtenteULinkScreen', close)
@@ -325,8 +332,8 @@ Utente.update({
           title: 'Problema no carregamento da localização',
           message: 'Não tem permissões para aceder a localização do dispositivo ou a função de localização encontra-se desligada.\n Por favor ligue a localização ou dê as permissões de localização \n O sistema vai assumir coordenadas padrão!'
         }).onOk(() => {
-          this.myLocation.latitude = -25.9678239
-          this.myLocation.longitude = 32.5864914
+          this.myLocation.latitude = -25.967845 // -25.967845
+          this.myLocation.longitude = 32.586704 // 32.586704
           this.$q.loading.hide()
         })
       }
@@ -365,7 +372,7 @@ Utente.update({
         if (this.myLocation.distance.includes('<1km')) {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)
           if (calcDist <= 1000) {
-            clinic.distance = this.round(calcDist / 1000, 2)
+            clinic.distance = this.round(calcDist / 1000, 3)
             this.clinics.push(clinic)
           }
         } else {

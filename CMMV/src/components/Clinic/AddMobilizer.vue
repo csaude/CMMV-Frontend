@@ -171,9 +171,9 @@ export default {
         },
          phoneRules (val) {
        if (val.length === 0 || val.length < 9) {
-      return 'O Numero é invalido. Deve conter 9 dígitos.'
+      return 'O Número é invalido. Deve conter 9 dígitos.'
        } else if (this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
-           return 'O Numero é invalido. O codigo da operadora não existe'
+           return 'O Número é invalido. O codigo da operadora não existe'
        }
       },
     validatePhonePrefix (val) {
@@ -183,9 +183,9 @@ export default {
     },
      secondNumberRules (val) {
        if (val.length !== 0 && val.length < 9) {
-      return 'O Numero é invalido. Deve conter 9 dígitos.'
+      return 'O Número é invalido. Deve conter 9 dígitos.'
       } else if (val.length !== 0 && this.validatePhonePrefix(parseInt(val.substring(0, 2)))) {
-           return 'O Numero é invalido. O codigo da operadora não existe'
+           return 'O Número é invalido. O codigo da operadora não existe'
       }
     },
         submitMobilizer () {

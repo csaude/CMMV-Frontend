@@ -21,7 +21,7 @@ export class UserLogin extends Model {
       id: this.attr(null),
       username: this.attr(''),
       password: this.attr(''),
-      role: this.attr(''),
+      role: this.attr(null),
       fullName: this.attr(''),
       access_token: this.attr(''),
       refresh_token: this.attr(''),

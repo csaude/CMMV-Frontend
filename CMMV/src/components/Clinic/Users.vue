@@ -65,7 +65,7 @@
         <q-toolbar-title class="text-subtitle1 flex-center text-width-strong">Cadastrar Utilizador</q-toolbar-title>
         <q-btn flat v-close-popup round dense icon="close" @click="show_dialog = false"/>
       </q-toolbar>
-        <form @submit.prevent="submitUser" >
+        <form @submit.prevent="validateUser" >
             <q-card-section class="q-px-md">
              <div class="row q-mt-md">
                 <input-text-field
@@ -242,7 +242,7 @@ export default {
           //      { name: 'actions', label: 'Opções', field: 'actions' }
             ],
             userRoles: [
-             'Utilizador na US', 'Administrador Districtal'
+             'Utilizador na US', 'Administrador Distrital'
             ]
         }
     },
@@ -333,11 +333,17 @@ export default {
                    .with('district.province').where('district_id', parseInt(this.district.id)).get()
         },
      validateUser () {
+         this.$refs.role.validate()
         this.$refs.nome.$refs.ref.validate()
         this.$refs.apelido.$refs.ref.validate()
-        this.$refs.password.$refs.ref.validate()
+        this.$refs.password.validate()
+         this.$refs.province.validate()
+         this.$refs.username.$refs.ref.validate()
+        this.$refs.district.validate()
         if (!this.$refs.nome.$refs.ref.hasError && !this.$refs.apelido.$refs.ref.hasError &&
-            !this.$refs.password.$refs.ref.hasError) {
+            !this.$refs.password.hasError && !this.$refs.username.$refs.ref.hasError &&
+            !this.$refs.role.hasError && !this.$refs.province.hasError &&
+            !this.$refs.district.hasError) {
             this.submitUser()
         }
      },
@@ -346,7 +352,7 @@ export default {
            this.listErrors = []
        //   this.user.username = this.user.firstNames.substring(0, 1) + this.user.lastNames.trim()
            this.user.fullName = this.user.firstNames + ' ' + this.user.lastNames
-            if (this.user.role === 'Administrador Districtal') {
+            if (this.user.role === 'Administrador Distrital') {
             //  this.user = DistrictLogin()
                this.userDistrict = Object.assign({}, this.user)
              this.userDistrict.province = this.province
@@ -409,7 +415,7 @@ export default {
     getStringUserType () {
      if (this.user.role === 'Utilizador na US') {
        return '/userLogin'
-     } else if (this.user.role === 'Administrador Districtal') {
+     } else if (this.user.role === 'Administrador Distrital') {
         return '/districtUserLogin'
      } else if (this.user.role === 'Mobilizador') {
         return '/mobilizerLogin'
@@ -418,7 +424,7 @@ export default {
      getObjectToSend () {
        if (this.user.role === 'Utilizador na US') {
        return this.user
-     } else if (this.user.role === 'Administrador Districtal') {
+     } else if (this.user.role === 'Administrador Distrital') {
         return this.userDistrict
      } else if (this.user.role === 'Mobilizador') {
         return '/mobilizerLogin'
