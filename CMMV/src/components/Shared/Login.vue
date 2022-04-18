@@ -284,10 +284,10 @@ export default {
                         this.$router.push({ path: '/mobilizerHome/' + localStorage.getItem('idLogin') })
                     } else if (this.tab === 'clinic' && response.response.data.roles.includes('ROLE_USER')) {
                         localStorage.setItem('id_clinicUser', localStorage.getItem('idLogin'))
-                        const clinic = Clinic.query().has('code').where('id', response.response.data.clinicId).first()
-                        Clinic.localDbAdd(clinic)
+                       // const clinic = Clinic.query().has('code').where('id', response.response.data.clinicId).first()
+                       // Clinic.localDbAdd(clinic)
                         this.buildUserToAdd(response.response.data)
-                        this.addLocalDbDatas(clinic.district_id)
+                        this.addLocalDbDatas(response.response.data.districtId)
                         this.$router.push({ path: '/clinicHome/' + localStorage.getItem('idLogin') })
                         } else if (this.tab === null && response.response.data.roles[0] === 'ROLE_ADMIN') {
                           //  this.buildUserToAdd(response.response.data)
