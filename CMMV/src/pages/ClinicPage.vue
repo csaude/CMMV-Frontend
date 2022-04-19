@@ -221,6 +221,7 @@ export default {
         checkOnlineToSync1 () {
       isOnline().then(resp => {
       if (resp === true) {
+         SyncronizingService.getAppointmentsClinicData()
          SyncronizingService.sendAppointmentsClinicData()
       } else if (resp === false) {
         return false
