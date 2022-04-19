@@ -210,6 +210,7 @@ export default {
             }).onOk(() => {
                // this.sendUtente()
                 // this.$emit('update:showUtenteRegistrationScreenProp', false)
+               SyncronizingService.getAppointmentsClinicData()
                SyncronizingService.sendAppointmentsClinicData()
             }).onCancel(() => {
                 // console.log('>>>> Cancel')
