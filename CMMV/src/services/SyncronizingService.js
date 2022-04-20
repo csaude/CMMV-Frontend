@@ -136,23 +136,23 @@ export default {
             return appointmentsToSend
             }).then(appointmentsToSend => {
               const i = 0
-                console.log(appointmentsToSend)
+                  console.log(appointmentsToSend)
                       // const appointment[i] =
                       this.sendAppointment(appointmentsToSend, i)
                 })
         },
         getAppointmentsClinicData () {
          const clinicId = Number(localStorage.getItem('id_clinicUser'))
-         console.log('clinica Nova ', clinicId)
          Appointment.api().get('/appointment/clinic/' + clinicId).then(resp => {
          let appointmentsList = []
          appointmentsList = resp.response.data
          appointmentsList.forEach(appointment => {
             db.newDb().collection('appointments').doc({ id: appointment.id }).get().then(appointmentObj => {
-                console.log(appointmentObj)
                 if (appointmentObj === undefined) {
+                    appointment.syncStatus = 'S'
                     Appointment.localDbAdd(appointment)
-                } else if (appointmentObj !== undefined && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
+                } else if (appointmentObj !== undefined && appointment.hasHappened === true && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
+                    appointmentObj.syncStatus = 'S'
                     Appointment.localDbUpdate(appointmentObj)
                 }
               })
