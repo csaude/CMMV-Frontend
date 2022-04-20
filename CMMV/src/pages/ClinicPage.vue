@@ -231,7 +231,7 @@ export default {
     timerToSyncronize () {
    this.timerToSyncronizeConst = setInterval(() => {
     this.checkOnlineToSync1()
-      }, 1800000) // 3600000 timer to sycronize hour to hour
+      }, 20000) // 3600000 timer to sycronize hour to hour
     }
     },
      beforeUnmount () {
