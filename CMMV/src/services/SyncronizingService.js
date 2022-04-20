@@ -152,7 +152,8 @@ export default {
                     appointment.syncStatus = 'S'
                     Appointment.localDbAdd(appointment)
                 } else if (appointmentObj !== undefined && appointment.hasHappened === true && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
-                    appointmentObj.syncStatus = 'S'
+                    appointmentObj.status = appointment.status
+                    appointmentObj.appointmentDate = appointment.appointmentDate
                     Appointment.localDbUpdate(appointmentObj)
                 }
               })
