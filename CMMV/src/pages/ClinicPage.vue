@@ -210,6 +210,7 @@ export default {
             }).onOk(() => {
                // this.sendUtente()
                 // this.$emit('update:showUtenteRegistrationScreenProp', false)
+               SyncronizingService.getAppointmentsClinicData()
                SyncronizingService.sendAppointmentsClinicData()
             }).onCancel(() => {
                 // console.log('>>>> Cancel')
@@ -220,6 +221,7 @@ export default {
         checkOnlineToSync1 () {
       isOnline().then(resp => {
       if (resp === true) {
+         SyncronizingService.getAppointmentsClinicData()
          SyncronizingService.sendAppointmentsClinicData()
       } else if (resp === false) {
         return false

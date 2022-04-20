@@ -119,9 +119,9 @@ export default {
                 const user = mobilizers[0]
                 UserLogin.api().patch('/secUser/' + user.idUser, user).then(resp => {
                     console.log(resp.response)
-}).catch(error => {
-console.log(error)
-})
+                }).catch(error => {
+                console.log(error)
+                })
             })
          },
          sendAppointmentsClinicData () {
@@ -136,10 +136,30 @@ console.log(error)
             return appointmentsToSend
             }).then(appointmentsToSend => {
               const i = 0
-                console.log(appointmentsToSend)
+                  console.log(appointmentsToSend)
                       // const appointment[i] =
                       this.sendAppointment(appointmentsToSend, i)
                 })
+        },
+        getAppointmentsClinicData () {
+         const clinicId = Number(localStorage.getItem('id_clinicUser'))
+         Appointment.api().get('/appointment/clinic/' + clinicId).then(resp => {
+         let appointmentsList = []
+         appointmentsList = resp.response.data
+         appointmentsList.forEach(appointment => {
+            db.newDb().collection('appointments').doc({ id: appointment.id }).get().then(appointmentObj => {
+                if (appointmentObj === undefined) {
+                    appointment.syncStatus = 'S'
+                    Appointment.localDbAdd(appointment)
+                } else if (appointmentObj !== undefined && appointment.hasHappened === true && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
+                    appointmentObj.syncStatus = 'S'
+                    Appointment.localDbUpdate(appointmentObj)
+                }
+              })
+         })
+        }).catch(error => {
+            console.log(error)
+    })
         },
         sendAppointment (appointmentsToSend, i) {
             if (appointmentsToSend[i] !== undefined) {
