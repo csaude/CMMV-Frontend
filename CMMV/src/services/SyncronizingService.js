@@ -151,10 +151,9 @@ export default {
                 if (appointmentObj === undefined) {
                     appointment.syncStatus = 'S'
                     Appointment.localDbAdd(appointment)
-                } else if (appointmentObj !== undefined && appointment.hasHappened === true && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
-                    appointmentObj.status = appointment.status
-                    appointmentObj.appointmentDate = appointment.appointmentDate
-                    Appointment.localDbUpdate(appointmentObj)
+                } else if (appointmentObj !== undefined && (appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
+                    appointment.synStatus = 'S'
+                    db.newDb().collection('appointments').doc({ id: appointment.id }).set(appointment)
                 }
               })
          })
