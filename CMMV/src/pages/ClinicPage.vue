@@ -210,8 +210,8 @@ export default {
             }).onOk(() => {
                // this.sendUtente()
                 // this.$emit('update:showUtenteRegistrationScreenProp', false)
-               SyncronizingService.getAppointmentsClinicData()
-               SyncronizingService.sendAppointmentsClinicData()
+                SyncronizingService.sendAppointmentsClinicData()
+                SyncronizingService.getAppointmentsClinicData()
             }).onCancel(() => {
                 // console.log('>>>> Cancel')
             }).onDismiss(() => {
@@ -221,8 +221,8 @@ export default {
         checkOnlineToSync1 () {
       isOnline().then(resp => {
       if (resp === true) {
-         SyncronizingService.getAppointmentsClinicData()
          SyncronizingService.sendAppointmentsClinicData()
+         SyncronizingService.getAppointmentsClinicData()
       } else if (resp === false) {
         return false
       }
@@ -231,7 +231,7 @@ export default {
     timerToSyncronize () {
    this.timerToSyncronizeConst = setInterval(() => {
     this.checkOnlineToSync1()
-      }, 2000) // 3600000 timer to sycronize hour to hour
+      }, 20000) // 3600000 timer to sycronize hour to hour
     }
     },
      beforeUnmount () {
