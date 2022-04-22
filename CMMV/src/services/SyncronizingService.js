@@ -63,13 +63,11 @@ export default {
                     Utente.apiUpdate(utenteToSend).then(resp => {
                         utentesToSend[i].syncStatus = 'S'
                         const idServer = resp.response.data.id.toString()
-                      //  db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
                         db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
                         Utente.update({
                             data: utentesToSend[i]
                         })
-                        Utente.delete(resp.response.data.id)
-                     //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
+                    //    Utente.delete(resp.response.data.id)
                        i = i + 1
                        setTimeout(this.doSend(i), 2)
                     })
@@ -106,22 +104,20 @@ export default {
         await db.newDb().collection('mobilizer').get().then(mobilizers => {
             mobilizers.forEach(mobilizer => {
                 CommunityMobilizer.api().patch('/communityMobilizer/' + mobilizer.id, mobilizer).then(resp => {
-                        console.log(resp.response)
-                        CommunityMobilizer.update(mobilizer)
-}).catch(error => {
-    console.log(error)
-})
-                     })
-                 })
-         },
-         sendUserDataPassUpdated () {
+                    CommunityMobilizer.update(mobilizer)
+                }).catch(error => {
+                        console.log(error)
+                })
+            })
+        })
+        },
+        sendUserDataPassUpdated () {
             db.newDb().collection('users').get().then(mobilizers => {
                 const user = mobilizers[0]
                 UserLogin.api().patch('/secUser/' + user.idUser, user).then(resp => {
-                    console.log(resp.response)
-                }).catch(error => {
+            }).catch(error => {
                 console.log(error)
-                })
+            })
             })
          },
          sendAppointmentsClinicData () {

@@ -231,7 +231,6 @@ export default {
             })
         },
         authUser () {
-            console.log({ username: this.username, password: this.password })
             this.$refs.user.validate()
             this.$refs.password.validate()
             if (!this.$refs.user.hasError && !this.$refs.password.hasError) {
@@ -241,7 +240,6 @@ export default {
                     const username = users[0].username
                     const passwordLocal = users[0].password
                     // const role = users[0].role
-                    console.log(passwordLocal.substring(8))
                     const match = bcrypt.compareSync(this.password, passwordLocal.substring(8))
                     if (username === this.username && match) {
                         this.verifiyRoleAndUser(users)
@@ -265,7 +263,6 @@ export default {
                     password: this.password
                 }).then((response) => {
                     this.submitting = false
-                    console.log('Login >>>>>>>>', response)
                     localStorage.setItem('id_token', response.response.data.access_token)
                     localStorage.setItem('idLogin', response.response.data.mainEntity)
                     localStorage.setItem('idUser', response.response.data.id)

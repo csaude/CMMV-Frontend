@@ -149,7 +149,7 @@ import Utente from '../../store/models/utente/Utente'
 // import District from '../../store/models/district/District'
 // import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
 import { v4 as uuidv4 } from 'uuid'
- import db from 'src/store/localbase'
+// import db from 'src/store/localbase'
 import Appointment from '../../store/models/appointment/Appointment'
 export default {
     props: ['utente', 'showUtenteULinkScreen', 'activeUSForm'],
@@ -222,10 +222,11 @@ export default {
             return this.utente
           },
           set (utente) {
-            this.$emit('update:relatedUtente', utente)
+            Utente.update(utente)
+            this.$emit('update:utente', utente)
         }
       },
-       mobilizer: {
+      mobilizer: {
       get () {
         return CommunityMobilizer.query().with('utentes').find(this.$route.params.id)
       },
@@ -241,60 +242,38 @@ export default {
             return date >= moment(new Date()).format('YYYY/MM/DD')
         },
      async associar () {
-          const newDate = new Date(this.appointment.appointmentDate, 'DD-MM-YYYY')
+            const newDate = new Date(this.appointment.appointmentDate, 'DD-MM-YYYY')
             this.relatedUtente.clinic = this.link
             this.relatedUtente.status = 'ENVIADO'
-            if (this.relatedUtente.syncStatus === 'S' || this.relatedUtente.syncStatus === 'U') {
+            if (this.relatedUtente.syncStatus === 'S' || this.relatedUtente.syncStatus === 'U' || this.relatedUtente.syncStatus === null) {
                   this.relatedUtente.syncStatus = 'U'
              } else {
                   this.relatedUtente.syncStatus = 'P'
              }
-             this.appointment.id = uuidv4()
-            this.appointment.clinic = this.link
-            this.appointment.status = 'PENDENTE'
-            this.appointment.hasHappened = false
-            this.appointment.orderNumber = 1
-            this.appointment.visitDate = null
-           //  const dateAppoi = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').endOf('day').toDate()
-             // console.log(dateAppoi.endOf('day').toDate())
-           // this.appointment.appointmentDate = moment(this.appointment.appointmentDate).endOf('day').toDate()
-          //  this.appointment.appointmentDate = moment(this.appointment.appointmentDate).format('dd-mm-YYYY')
-           const date = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').endOf('day').toDate()
-         // const date1 = new Date(date)
-           console.log(date)
-           this.appointment.appointmentDate = date
-            this.appointment.time = newDate.getHours() + ':' + newDate.getMinutes()
-            this.appointment.utente = this.relatedUtente
-            const appointmentLocalBase = JSON.parse(JSON.stringify(this.appointment))
-       db.newDb().collection('appointments').add(
-             appointmentLocalBase
-           )
-           this.appointment.utente = null
-           // this.appointment.appointmentDate = date
-           this.relatedUtente.appointments.push(this.appointment)
-             const relatedUtenteLocalBase = JSON.parse(JSON.stringify(this.relatedUtente))
-            db.newDb().collection('utentes').doc({ id: this.relatedUtente.id }).set(
-relatedUtenteLocalBase
-)
-Utente.update({
-        where: (utente) => {
-    return utente.id === this.relatedUtente.id
-  },
-        data: this.relatedUtente,
-        appointments: this.relatedUtente.appointments
-      })
-      Appointment.insert({
-     data: this.relatedUtente.appointments[0]
-    })
-                this.submitting = false
-                this.closeRegistration(false)
-                 this.$emit('update:utente', this.relatedUtente)
+          this.appointment.id = uuidv4()
+          this.appointment.clinic = this.link
+          this.appointment.status = 'PENDENTE'
+          this.appointment.hasHappened = false
+          this.appointment.orderNumber = 1
+          this.appointment.visitDate = null
+          this.appointment.appointmentDate = moment(this.appointment.appointmentDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
+          this.appointment.time = newDate.getHours() + ':' + newDate.getMinutes()
+          this.appointment.utente = this.relatedUtente
+          this.appointment.utente.id = this.relatedUtente.id
+          const appointmentLocalBase = JSON.parse(JSON.stringify(this.appointment))
+          this.relatedUtente.appointments.push(appointmentLocalBase)
+          const relatedUtenteLocalBase = JSON.parse(JSON.stringify(this.relatedUtente))
+          Appointment.localDbAdd(appointmentLocalBase)
+          Utente.localDbUpdate(relatedUtenteLocalBase)
+          Appointment.insert({ data: this.appointment })
+          this.submitting = false
+          this.closeRegistration(false)
+          this.$emit('update:utente', this.relatedUtente)
         },
         closeRegistration (close) {
           this.showdialog = ref(close)
           this.step = 1
           this.appointment = {}
-         // this.appointment.appointmentDate = ''
           this.submitting = false
           this.activeUSForm(close, this.utente)
           this.$emit('update:showUtenteULinkScreen', close)
@@ -366,8 +345,9 @@ Utente.update({
       let calcDist = 0
       let clinic = {}
       this.clinics = []
+      console.log(this.myLocation.distance)
       for (clinic of Clinic.query().with('province.*').with('district.*').where('district_id', this.mobilizer.district_id).get()) {
-         console.log(this.myLocation.distance)
+         console.log(clinic)
         if (clinic.longitude !== undefined && clinic.longitude !== null) {
         if (this.myLocation.distance.includes('<1km')) {
           calcDist = this.getDistance(this.myLocation.latitude, this.myLocation.longitude, clinic.latitude, clinic.longitude, unit)

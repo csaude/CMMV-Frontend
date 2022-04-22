@@ -24,16 +24,11 @@ export default class CommunityMobilizer extends Model {
       cellNumber: this.attr(''),
       cellNumber2: this.attr(''),
       uuid: this.attr(''),
-    //  clinic_id: this.attr(''),
       district_id: this.attr(''),
-      // user_id: this.attr(''),
-
       // Relationships
       utentes: this.hasMany(Utente, 'communityMobilizer_id'),
       docsOrImages: this.hasMany(InfoDocsOrImages, 'docsOrImages_id'),
-    //  clinic: this.belongsTo(Clinic, 'clinic_id'),
       district: this.belongsTo(District, 'district_id')
-      // user: this.hasOne(MobilizerLogin, 'user_id')
     }
   }
 
