@@ -51,7 +51,7 @@
           <q-icon name="cloud_upload" class="round"/>
         </q-item-section>
         <q-item-section>
-          <q-item-label>Sicronizar</q-item-label>
+          <q-item-label>Sincronizar</q-item-label>
         </q-item-section>
       </q-item>
         <q-separator/>
@@ -216,8 +216,8 @@ export default {
        indexEdit: 1,
        showMobilizerRegistrationScreen: ref(false),
        showChangePasswordScreen: ref(false),
-      editMode: false,
-      timerToSyncronizeConst,
+       editMode: false,
+       timerToSyncronizeConst,
        $q,
        isOnline,
        utente: {
@@ -245,6 +245,14 @@ export default {
       },
       set (mobilizer) {
         CommunityMobilizer.update(mobilizer)
+      },
+      allUtente: {
+        get () {
+          return Utente.query().all
+        },
+        set (utente) {
+        Utente.update(utente)
+      }
       }
     },
     getAllNewClinics () {
@@ -269,8 +277,8 @@ export default {
                    .with('communityMobilizer')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
-                  .with('addresses.district')
-                  .with('addresses.district.province')
+                   .with('addresses.district')
+                   .with('addresses.district.province')
                    .where('status', 'ASSOCIADO')
                    .orderBy('firstNames')
                    .get()
@@ -280,7 +288,7 @@ export default {
                    .with('clinic.province')
                    .with('clinic.district.province')
                    .with('communityMobilizer')
-                    .with('appointments.clinic')
+                   .with('appointments.clinic')
                    .with('appointments.clinic.province')
                    .with('appointments.clinic.district.province')
                    .with('addresses.district')
@@ -289,9 +297,6 @@ export default {
                    .orderBy('firstNames')
                    .get()
     }
-   // checkOnlineToSync () {
-    //  return this.checkOnlineToSync1()
-   // }
   },
   methods: {
      async getAllUtente (offset) {
@@ -299,20 +304,18 @@ export default {
       await Utente.api().get('/utente/communityMobilizer/' + this.$route.params.id).then(resp => {
              offset = offset + 100
              utentesApiList = resp.response.data
-             console.log(utentesApiList)
              Utente.localDbGetAll().then(utentes => {
                if (utentes.length === 0) {
                   utentesApiList.forEach(utente => {
-                    console.log(Appointment.all())
-                  console.log(utente)
+                    utente.communityMobilizer = this.mobilizer
+                    if (utente.syncStatus === undefined || utente.syncStatus === null) {
+                        utente.syncStatus = 'S'
+                    }
                   Utente.localDbAddWithKey(utente)
                  })
                }
              })
               this.$q.loading.hide()
-            // if (resp.response.data.length > 0) {
-            //   setTimeout(this.getAllUtente(offset), 2)
-            // }
         }).catch(error => {
            this.$q.loading.hide()
             console.log(error)
@@ -343,10 +346,7 @@ export default {
     async getAllDistricts (offset) {
         await District.api().get('/district?offset=' + offset + '&max=100').then(resp => {
             offset = offset + 100
-             this.$q.loading.hide()
-            // if (resp.response.data.length > 0) {
-            //   setTimeout(this.getAllClinics(offset), 2)
-            // }
+            this.$q.loading.hide()
             }).catch(error => {
                this.$q.loading.hide()
                 console.log(error)
@@ -354,64 +354,41 @@ export default {
     },
      async getMobilizer () {
        await CommunityMobilizer.api().get('/communityMobilizer/' + localStorage.getItem('id_mobilizer')).then(resp => {
-          CommunityMobilizer.localDbAdd(resp.response.data)
-        }).catch(error => {
-            console.log(error)
+         const mobilizer = resp.response.data
+               mobilizer.utentes = []
+             CommunityMobilizer.localDbAdd(mobilizer)
+      }).catch(error => {
+          console.log(error)
+      })
+     },
+     async getDataLocalBase () {
+      Utente.deleteAll()
+      Appointment.deleteAll()
+      const utentesList = await Utente.localDbGetAll()
+      utentesList.forEach(utente => {
+        utente.communityMobilizer = this.mobilizer
+        Utente.insert({
+          data: utente
         })
-     },
-   async getDataLocalBase () {
-    Utente.deleteAll()
-    Appointment.deleteAll()
-  /*     db.newDb().collection('utentes').get().then(utentes => {
-       Utente.insert({
-     data: utentes
-    })
-    }) */
-   await db.newDb().collection('utentes').get().then(utentes => {
-     console.log(utentes)
-       /*   utentes.forEach(utente => {
-               const relatedUtenteLocalBase = JSON.parse(JSON.stringify(utente))
-             Utente.insert({
-              data: relatedUtenteLocalBase
-          })
-           console.log(Appointment.all())
-          }) */
-           Utente.insert({
-              data: utentes
-          })
-           console.log(Appointment.all())
-     })
-     db.newDb().collection('provinces').get().then(provinces => {
-       Province.insert({
-     data: provinces
-    })
-    })
-    db.newDb().collection('districts').get().then(districts => {
-       District.insert({
-     data: districts
-    })
-    })
-    /*  db.newDb().collection('clinics').get().then(clinics => {
-        //  Clinic.deleteAll()
-          Clinic.insert({
-            data: clinics
-          })
-        }) /*
-     /*     db.newDb().collection('utentes').get().then(utentes => {
-     console.log(utentes)
-          utentes.forEach(utente => {
-            if (utente.appointments !== undefined) {
-            //  utente.appointments[0].utente = utente
-              console.log(utente.appointments[0])
-             Appointment.insert(
-              utente.appointments[0]
-          )
-          }
-          })
-     }) */
-     },
+      })
+      Province.localDbGetAll().then(provinces => {
+        Province.insert({
+          data: provinces
+        })
+      })
+      District.localDbGetAll().then(districts => {
+        District.insert({
+          data: districts
+        })
+      })
+      Clinic.localDbGetAll().then(clinics => {
+        Clinic.insert({
+          data: clinics
+        })
+      })
+    },
     timerToSyncronize () {
-   this.timerToSyncronizeConst = setInterval(() => {
+    this.timerToSyncronizeConst = setInterval(() => {
     this.checkOnlineToSync1()
       }, 3600000) // 3600000 timer to sycronize hour to hour
     },
@@ -425,19 +402,16 @@ export default {
          this.editModeMobilizer = true
       },
       changePassword () {
-      //  this.mobilizer = Object.assign({}, mobilizer)
          this.showChangePasswordScreen = true
       },
       setMobilizerLocalBase () {
-      //   const mobilizerLocal = JSON.parse(JSON.stringify(this.mobilizer))
-          const mobilizer = this.mobilizer
+        const mobilizer = this.mobilizer
         db.newDb().collection('mobilizer').add({
           mobilizer
           })
       },
       setClinics () {
         db.newDb().collection('clinics').get().then(clinics => {
-        //  Clinic.deleteAll()
           Clinic.insert({
             data: clinics
           })
@@ -453,7 +427,7 @@ export default {
         } else if (resp === false && sync === true) {
            Notify.create({
                     icon: 'announcement',
-                    message: 'Nao Possui conectividade com a internet , Sicronizacao nao efectuda',
+                    message: 'Nao Possui conectividade com a internet , Sincronização nao efectuda',
                     type: 'negative',
                     progress: true,
                     timeout: 3000,
@@ -497,11 +471,11 @@ export default {
       // SyncronizingService.sendMobilizerData()
       // SyncronizingService.sendUserDataPassUpdated()
      },
- checkOnlineToSync1 () {
+  checkOnlineToSync1 () {
       isOnline().then(resp => {
       if (resp === true) {
         this.sendUtente()
-       // return true
+        return true
       } else if (resp === false) {
         return false
       }
@@ -539,27 +513,24 @@ export default {
     })
     const offset = 0
     this.isOnlineChecker(false)
-  //  this.setClinics()
-   this.getDataLocalBase()
-   this.timerToSyncronize()
-    db.newDb().collection('communityMobilizers').get().then(mobilizers => {
+    this.getDataLocalBase()
+    this.timerToSyncronize()
+    CommunityMobilizer.localDbGetAll().then(mobilizers => {
       if (mobilizers.length === 0) {
         this.getMobilizer()
         this.getAllUtente(offset)
       } else {
+        console.log(mobilizers)
+        mobilizers.utentes = []
         CommunityMobilizer.deleteAll()
         CommunityMobilizer.insert({
           data: mobilizers
         })
       }
-      this.$q.loading.hide()
+       this.$q.loading.hide()
     })
-    //  this.setMobilizerLocalBase()
   },
   created () {
-   // const offset = 0
-     //  this.getAllProvinces(offset)
-     //  this.getAllDistricts(offset)
   },
    beforeUnmount () {
    clearInterval(this.timerToSyncronizeConst)
@@ -568,8 +539,8 @@ export default {
      'utente-registration': require('components/Utente/UtenteRegistration.vue').default,
      'utentes-view-list': require('components/Shared/ViewUtenteList.vue').default,
      'view-docs': require('components/Home/MaterialEducativo.vue').default,
-       addMobilizer: require('components/Clinic/AddMobilizer.vue').default,
-       changePassword: require('components/Shared/ChangePassword.vue').default
+      addMobilizer: require('components/Clinic/AddMobilizer.vue').default,
+      changePassword: require('components/Shared/ChangePassword.vue').default
     }
 }
 </script>
