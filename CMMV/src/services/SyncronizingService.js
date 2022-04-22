@@ -132,10 +132,30 @@ export default {
             return appointmentsToSend
             }).then(appointmentsToSend => {
               const i = 0
-                console.log(appointmentsToSend)
+                  console.log(appointmentsToSend)
                       // const appointment[i] =
                       this.sendAppointment(appointmentsToSend, i)
                 })
+        },
+        getAppointmentsClinicData () {
+         const clinicId = Number(localStorage.getItem('id_clinicUser'))
+         Appointment.api().get('/appointment/clinic/' + clinicId).then(resp => {
+         let appointmentsList = []
+         appointmentsList = resp.response.data
+         appointmentsList.forEach(appointment => {
+            db.newDb().collection('appointments').doc({ id: appointment.id }).get().then(appointmentObj => {
+                if (appointmentObj === undefined) {
+                    appointment.syncStatus = 'S'
+                    Appointment.localDbAdd(appointment)
+                } else if (appointmentObj !== undefined && (appointment.hasHappened !== appointmentObj.hasHappened || appointmentObj.status !== appointment.status || appointmentObj.appointmentDate !== appointment.appointmentDate)) {
+                    appointment.synStatus = 'S'
+                    db.newDb().collection('appointments').doc({ id: appointment.id }).set(appointment)
+                }
+              })
+         })
+        }).catch(error => {
+            console.log(error)
+    })
         },
         sendAppointment (appointmentsToSend, i) {
             if (appointmentsToSend[i] !== undefined) {
