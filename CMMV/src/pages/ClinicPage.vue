@@ -20,7 +20,7 @@
                                     <q-item-section @click="showChangePasswordScreen = true" clickable >Alterar Senha</q-item-section>
                                 </q-item>
                                 <q-item clickable v-if=isUser>
-                                    <q-item-section clickable @click="isOnlineChecker(true)">Sicronizar</q-item-section>
+                                    <q-item-section clickable @click="isOnlineChecker(true)">Sincronizar</q-item-section>
                                 </q-item>
                                 <q-separator/>
                                 <q-item to="/" clickable>

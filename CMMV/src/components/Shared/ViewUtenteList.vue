@@ -155,7 +155,7 @@ export default {
         if (utente.syncStatus === 'S') {
         this.$q.dialog({
               title: 'Informação',
-              message: 'Não Pode Editar a consulta uma vez que esta já foi sicronizada',
+              message: 'Não Pode Editar a consulta uma vez que esta já foi sincronizada',
               ok: {
               label: 'OK',
               push: true,
