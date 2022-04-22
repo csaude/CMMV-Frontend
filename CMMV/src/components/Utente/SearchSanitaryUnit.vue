@@ -42,6 +42,7 @@
                   icon="my_location"
                   title="1º Passo"
                   :done="step > 1"
+                  v-if=isOn
                   :header-nav="step > 1">
                   <div class="col text-subtitle1 text-weight-bolder ellipsis">
                           Minha localização e Raio de Pesquisa de US
@@ -79,7 +80,7 @@
                         <q-item-label>{{clinic.name}}</q-item-label>
                         <q-item-label caption>{{clinic.type}}</q-item-label>
                       </q-item-section>
-                      <q-item-section side top>
+                      <q-item-section side top  v-if=isOn>
                         <q-item-label>{{clinic.distance}}Km</q-item-label>
                       </q-item-section>
                     </q-item>
@@ -93,7 +94,7 @@
                     </q-item>
                   </q-list>
                   <q-stepper-navigation class="row justify-center">
-                    <q-btn flat icon="chevron_left" @click="step = 1" color="primary" label="voltar" class="q-ml-sm" />
+                    <q-btn flat icon="chevron_left" @click="step = 1" color="primary" label="voltar" class="q-ml-sm"  v-if=isOn />
                     <q-btn flat icon-right="chevron_right" :disable="this.link.length >= 0" @click="() => { done2 = true; step = 3 }" color="primary" label="Próximo" />
                   </q-stepper-navigation>
                 </q-step>
@@ -146,13 +147,14 @@ import Clinic from '../../store/models/clinic/Clinic'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import moment from 'moment'
 import Utente from '../../store/models/utente/Utente'
+import Appointment from '../../store/models/appointment/Appointment'
 // import District from '../../store/models/district/District'
 // import { UserLogin } from '../../store/models/userLogin/UserLoginHierarchy'
 import { v4 as uuidv4 } from 'uuid'
  import db from 'src/store/localbase'
-import Appointment from '../../store/models/appointment/Appointment'
+import isOnline from 'is-online'
 export default {
-    props: ['utente', 'showUtenteULinkScreen', 'activeUSForm'],
+    props: ['utente', 'showUtenteULinkScreen', 'activeUSForm', 'isOn', 'showDialog'],
     emits: ['update:showUtenteULinkScreen', 'update:utente', 'update:utente.appointments'],
     data () {
         const $q = useQuasar()
@@ -187,6 +189,7 @@ export default {
             optionsFn (newDate) {
                 return newDate >= date.formatDate(new Date(), 'YYYY-MM-DD HH:mm')
             },
+            isOnline,
             columns: [
             {
               name: 'name',
@@ -296,7 +299,8 @@ Utente.update({
           this.appointment = {}
          // this.appointment.appointmentDate = ''
           this.submitting = false
-          this.activeUSForm(close, this.utente)
+          this.$emit('update:showDialog', false)
+           this.activeUSForm(close, this.utente)
           this.$emit('update:showUtenteULinkScreen', close)
         },
         async getLocation () {
@@ -406,6 +410,21 @@ Utente.update({
     },
     created () {
     },
+ mounted () {
+ },
+  watch: {
+        showUtenteULinkScreen: function (newVal, oldVal) {
+          console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+           if (!this.isOn) {
+             this.getClinicInRange('K')
+      this.done1 = true
+       this.step = 2
+           } else {
+               this.done1 = false
+       this.step = 1
+           }
+        }
+        },
     components: {
         // buttone: require('components/Shared/Button.vue').default
         // pageHeader: require('components/Utente/UtenteRegistrationHeader.vue').default
