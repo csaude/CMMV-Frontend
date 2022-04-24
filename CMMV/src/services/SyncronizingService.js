@@ -67,7 +67,7 @@ export default {
                         Utente.update({
                             data: utentesToSend[i]
                         })
-                    //    Utente.delete(resp.response.data.id)
+                        Utente.delete(resp.response.data.id)
                        i = i + 1
                        setTimeout(this.doSend(i), 2)
                     })

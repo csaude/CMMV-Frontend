@@ -153,7 +153,6 @@ import Appointment from '../../store/models/appointment/Appointment'
 import { v4 as uuidv4 } from 'uuid'
 import isOnline from 'is-online'
 // import db from 'src/store/localbase'
-import Appointment from '../../store/models/appointment/Appointment'
 export default {
     props: ['utente', 'showUtenteULinkScreen', 'activeUSForm', 'isOn', 'showDialog'],
     emits: ['update:showUtenteULinkScreen', 'update:utente', 'update:utente.appointments'],
