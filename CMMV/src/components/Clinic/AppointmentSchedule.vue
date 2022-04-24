@@ -136,7 +136,16 @@ export default {
             let appointmentApiList = []
              appointmentApiList = resp.response.data
              appointmentApiList.forEach(appointment => {
+             if (appointment.status === 'CONFIRMADO') {
+               appointment.syncStatus = 'S'
+             }
                 Appointment.localDbAdd(appointment)
+                Appointment.update({
+        where: (appointmentVuex) => {
+    return appointmentVuex.id === appointment.id
+  },
+        data: appointment
+      })
              })
           }).catch(error => {
             console.log('Erro no code ' + error)

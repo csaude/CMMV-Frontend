@@ -17,6 +17,7 @@ export default class Appointment extends Model {
       visitDate: this.attr(''),
       utente_id: this.attr(''),
       clinic_id: this.attr(''),
+      syncStatus: this.attr(''),
 
       // Relationships
       utente: this.belongsTo(Utente, 'utente_id'),

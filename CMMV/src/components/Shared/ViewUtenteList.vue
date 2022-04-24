@@ -57,7 +57,7 @@
           </q-list>
           </q-card-section>
     </q-card>
-    <utente-us-link v-model:showUtenteULinkScreen="show_dialog" v-model:utente="utente" :activeUSForm="activeUSForm"/>
+    <utente-us-link v-model:showUtenteULinkScreen="show_dialog" v-model:utente="utente" :activeUSForm="activeUSForm" :isOn=isOn />
 </div>
 </template>
 
@@ -70,18 +70,21 @@ import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
  import db from 'src/store/localbase'
 import Appointment from '../../store/models/appointment/Appointment'
 import moment from 'moment'
+import isOnline from 'is-online'
 export default {
     props: ['indexEdit', 'utentes', 'utenteEdit', 'name', 'value', 'showUtenteULinkScreenProp', 'showUtenteRegistrationScreen'],
-    emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:indexEdit', 'update:utenteEdit', 'update:showUtenteRegistrationScreen'],
+    emits: ['update:showUtenteULinkScreenProp', 'update:utentes', 'update:indexEdit', 'update:utenteEdit', 'update:showUtenteRegistrationScreen', 'update:isOn'],
     setup () {
        const $q = useQuasar()
        let timer
-
+        let isOn
       return {
         show_dialog: ref(false),
         utente: {},
         $q,
         timer,
+          isOn,
+           isOnline,
         confirm: ref(false)
       }
     },
@@ -214,11 +217,14 @@ Utente.update({
       //  moment(date).format('YYYY/MM/DD'))
         return moment(newDate).format('DD-MM-YYYY')
       },
-      activeUSForm (open, utente) {
+     async activeUSForm (open, utente) {
+        if (open) {
+          this.isOnlineChecker()
+        }
         Utente.update(utente)
         this.show_dialog = open
         this.utente = utente
-        this.$emit('update:showUtenteULinkScreenProp', open)
+       this.$emit('update:showUtenteULinkScreenProp', open)
         this.$emit('update:utente', utente)
       },
       idadeCalculator (birthDate) {
@@ -228,11 +234,32 @@ Utente.update({
                const idade = todayDate.diff(utentBirthDate, 'years')
                return idade
             }
-      }
+      },
+       async isOnlineChecker () {
+          this.$q.loading.show({
+         spinner: QSpinnerIos,
+         message: 'Por favor, aguarde...'
+    })
+      await isOnline().then(resp => {
+        if (resp === true) {
+         this.isOn = true
+          this.$q.loading.hide()
+        } else {
+           this.isOn = false
+          this.$q.loading.hide()
+        }
+      }).catch(error => {
+        this.$q.loading.hide()
+        console.log(error)
+      })
+    }
     },
      components: {
       'utente-us-link': require('components/Utente/SearchSanitaryUnit.vue').default
-  }
+  },
+   mounted () {
+      this.isOnlineChecker()
+ }
 }
 </script>
 <style scoped>
