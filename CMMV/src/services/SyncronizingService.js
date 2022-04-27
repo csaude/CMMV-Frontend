@@ -3,6 +3,7 @@
 import db from 'src/store/localbase'
 import CommunityMobilizer from 'src/store/models/mobilizer/CommunityMobilizer'
 import Appointment from 'src/store/models/appointment/Appointment'
+import Address from 'src/store/models/address/Address'
 import { UserLogin } from 'src/store/models/userLogin/UserLoginHierarchy'
 import { Notify } from 'quasar'
 export default {
@@ -35,6 +36,7 @@ export default {
             if (utentesToSend[i] !== undefined) {
                 console.log(utentesToSend[i])
                 const idToDelete = utentesToSend[i].id.toString()
+                const addressIdToDelete = utentesToSend[i].addresses[0].id.toString()
                 const utenteToSend = Object.assign({}, utentesToSend[i])
                 utenteToSend.id = null
                 utenteToSend.syncStatus = 'S'
@@ -42,12 +44,18 @@ export default {
                  Utente.apiSave(utenteToSend).then(resp => {
                     utentesToSend[i].syncStatus = 'S'
                     const idServer = resp.response.data.id.toString()
-                    db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
-                    db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+                    utentesToSend[i].id = resp.response.data.id
+                    utentesToSend[i].$id = resp.response.data.id
                     Utente.update({
                         data: utentesToSend[i]
                     })
-                    Utente.delete(resp.response.data.id)
+                    if (resp.response.data.addresses !== undefined) {
+                        utentesToSend[i].addresses[0].id = resp.response.data.addresses[0].id
+                   }
+                  db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
+                  db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+                  Address.delete(addressIdToDelete)
+                    Utente.delete(idToDelete)
                     if (resp.response.data.appointments !== undefined) {
                     Appointment.delete(resp.response.data.appointments[0].id)
                     }
@@ -60,6 +68,8 @@ export default {
             } else if (utentesToSend[i].syncStatus === 'U') {
                 db.newDb().collection('utentes').doc(utentesToSend[i].idServer).get().then(utente => {
                     utenteToSend.id = utentesToSend[i].idServer
+                    utentesToSend[i].$id = utentesToSend[i].idServer
+                    utentesToSend[i].id = utentesToSend[i].idServer
                     Utente.apiUpdate(utenteToSend).then(resp => {
                         utentesToSend[i].syncStatus = 'S'
                         const idServer = resp.response.data.id.toString()
@@ -67,7 +77,7 @@ export default {
                         Utente.update({
                             data: utentesToSend[i]
                         })
-                        Utente.delete(resp.response.data.id)
+                  //      Utente.delete(resp.response.data.id)
                        i = i + 1
                        setTimeout(this.doSend(i), 2)
                     })
@@ -122,6 +132,7 @@ export default {
          },
          sendAppointmentsClinicData () {
             db.newDb().collection('appointments').get().then(appointments => {
+                console.log(appointments)
                 const appointmentsToSend = []
                 appointments.forEach(appointment => {
                 if ((appointment.status === 'CONFIRMADO' && appointment.syncStatus !== 'S') ||

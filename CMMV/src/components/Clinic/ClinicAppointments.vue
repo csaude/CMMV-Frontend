@@ -64,6 +64,8 @@ export default {
                            .with('utente.addresses')
                            .with('utente.addresses.province')
                            .with('utente.addresses.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -84,6 +86,8 @@ export default {
                            .with('utente.addresses')
                            .with('utente.addresses.province')
                            .with('utente.addresses.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.hasHappened === false &&
@@ -105,6 +109,8 @@ export default {
                            .with('utente.addresses')
                            .with('utente.addresses.province')
                            .with('utente.addresses.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                                   return appointment.status === 'CONFIRMADO' &&
                                   appointment.visitDate !== '' &&

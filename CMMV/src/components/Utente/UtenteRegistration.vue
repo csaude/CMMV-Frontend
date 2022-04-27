@@ -199,6 +199,7 @@ import { ref } from 'vue'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 import Localbase from 'localbase'
+import Address from '../../store/models/address/Address'
  const db = new Localbase('db')
 export default {
     setup () {
@@ -454,6 +455,9 @@ export default {
             db.collection('utentes').doc({ id: this.utente.id }).set(utenteLocalBase)
             Utente.update({
                 data: utenteLocalBase
+            })
+            Address.update({
+                data: utenteLocalBase.addresses[0]
             })
             this.$q.notify({
                 message: 'O utente ' + this.utente.firstNames + ' ' + this.utente.lastNames + ' foi actualizado com sucesso.',
