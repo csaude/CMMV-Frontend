@@ -66,6 +66,8 @@ export default {
                            .with('utente.address')
                            .with('utente.province')
                            .with('utente.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                                   return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                                   })
@@ -80,6 +82,8 @@ export default {
                            .with('utente.address')
                            .with('utente.province')
                            .with('utente.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                                   return appointment.status === 'PENDENTE' && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                             }).whereHas('utente', (query) => {
@@ -100,6 +104,8 @@ export default {
                            .with('utente.address')
                            .with('utente.province')
                            .with('utente.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => { return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser')) }).orderBy('appointmentDate', 'desc')
                            .get()
           } else {
@@ -110,6 +116,8 @@ export default {
                            .with('utente.address')
                            .with('utente.province')
                            .with('utente.district.province')
+                           .with('utente.communityMobilizer')
+                            .with('utente.clinic')
                            .where((appointment) => {
                              return appointment.status === 'CONFIRMADO' && !appointment.hasHappened && appointment.appointmentDate !== '' && appointment.clinic_id === Number(localStorage.getItem('id_clinicUser'))
                            }).whereHas('utente', (query) => {
