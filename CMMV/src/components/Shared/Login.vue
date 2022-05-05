@@ -97,6 +97,7 @@ import District from 'src/store/models/district/District'
 import bcrypt from 'bcryptjs'
 import { Notify } from 'quasar'
 import { UserLogin } from 'src/store/models/userLogin/UserLogin'
+import isOnline from 'is-online'
 // import Localbase from 'localbase'
 // const db = new Localbase('db')
 export default {
@@ -230,6 +231,15 @@ export default {
                 source: responseUser.source
             })
         },
+        checkOnline () {
+            isOnline().then(resp => {
+                if (resp === true) {
+                    return true
+                } else if (resp === false) {
+                    return false
+                }
+            })
+        },
         authUser () {
             this.$refs.user.validate()
             this.$refs.password.validate()
@@ -242,6 +252,24 @@ export default {
                     // const role = users[0].role
                     const match = bcrypt.compareSync(this.password, passwordLocal.substring(8))
                     if (username === this.username && match) {
+                         if (this.checkOnline()) {
+                            UsersService.login({
+                                username: this.username,
+                                password: this.password
+                            }).then((response) => {
+                                localStorage.setItem('id_token', response.response.data.access_token)
+                                localStorage.setItem('idLogin', response.response.data.mainEntity)
+                                localStorage.setItem('idUser', response.response.data.id)
+                                localStorage.setItem('orgaoId', response.response.data.orgaoId)
+                                localStorage.setItem('refresh_token', response.response.data.refresh_token)
+                                localStorage.setItem('username', response.response.data.username)
+                                localStorage.setItem('password', response.response.data.password)
+                                localStorage.setItem('role', response.response.data.roles)
+                                localStorage.setItem('clinicId', response.response.data.clinicId)
+                                localStorage.setItem('districtId', response.response.data.districtId)
+                                localStorage.setItem('source', response.response.data.source)
+                            })
+                        }
                         this.verifiyRoleAndUser(users)
                     } else {
                         Notify.create({
