@@ -10,7 +10,7 @@
     </div>
     <div class="row q-pa-xl texte-center q-mt-lg column">
         <div style="font-family: 'Arial';font-size: 40px; font-weight: bold" class="row text-center column text-white q-mb-md">BEM VINDO</div>
-        <div class="row text-center column text-white text-subtitle1 text-weight-bold">Sistema móvel para o <br/> acompanhamento de Circuncisão <br/>Masculina</div>
+        <div class="row text-center column text-white text-subtitle1 text-weight-bold">Sistema móvel de <br/> Geração de Demanada para a Circuncisão <br/>Masculina</div>
     </div>
    </q-card>
 
