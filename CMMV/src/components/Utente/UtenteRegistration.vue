@@ -418,7 +418,7 @@ export default {
             console.log(this.address.latitude)
             console.log(this.address.longitude)
             this.utente.addresses.splice(0, 1, this.address)
-            this.utente.birthDate = moment(this.utente.birthDate, 'DD-MM-YYYY').toDate()
+            this.utente.birthDate = moment(this.utente.birthDate, 'DD-MM-YYYY').format('YYYY-MM-DD')
             this.utente.communityMobilizer = this.mobilizer
             this.utente.communityMobilizer_id = this.mobilizer.id
              this.utente.selected = ''

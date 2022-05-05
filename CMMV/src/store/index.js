@@ -61,7 +61,12 @@ axios.interceptors.request.use(
       return axios.post('http://dev.fgh.org.mz:4110/oauth/access_token?grant_type=refresh_token&refresh_token=' + rToken)
         .then(({ data }) => {
           console.log('==got the following token back: ' + data.access_token + '___________________________________________')
-          axios.defaults.headers.common['X-Auth-Token'] = data.access_token
+          localStorage.setItem('id_token', data.access_token)
+          localStorage.setItem('refresh_token', data.access_token)
+        //  axios.defaults.headers.common['X-Auth-Token'] = data.access_token
+        originalRequest.headers['X-Auth-Token'] = [
+          '', localStorage.getItem('id_token')
+        ].join(' ')
       return axios(originalRequest)
         })
     }
