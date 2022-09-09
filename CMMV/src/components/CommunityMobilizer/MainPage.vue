@@ -204,6 +204,8 @@ export default {
   setup () {
     const $q = useQuasar()
     const timerToSyncronizeConst = 0
+    localStorage.setItem('isProcessing', 'false')
+   // const isProcessingSync = ref(0)
     return {
        tab: ref('associados'),
        leftDrawerOpen: ref(false),
@@ -217,6 +219,7 @@ export default {
        showMobilizerRegistrationScreen: ref(false),
        showChangePasswordScreen: ref(false),
        editMode: false,
+     //  isProcessingSync,
        timerToSyncronizeConst,
        $q,
        isOnline,
@@ -497,8 +500,48 @@ export default {
                 },
                 persistent: true
             }).onOk(() => {
-                this.sendUtente()
+               // alert('ProcessingStatus: ' + localStorage.getItem('isProcessing'))
+               db.newDb().collection('utentes').get({ keys: true }).then(utentes => {
+                    const utentesToSend = []
+                    utentes.forEach(utente => {
+                      // console.log('Utente a sincronizaar: ', utente)
+                        if (utente.data.syncStatus === 'P') {
+                            utentesToSend.push(utente.data)
+                        } else if (utente.data.syncStatus === 'U') {
+                            utente.data.idServer = utente.key.toString()
+                            utentesToSend.push(utente.data)
+                        }
+                    })
+                    alert(utentesToSend.length)
+                     if (utentesToSend.length === 0) {
+                        Notify.create({
+                          icon: 'announcement',
+                          message: 'Não existem registos a serem sincronizados.',
+                          type: 'negative',
+                          progress: true,
+                          timeout: 3000,
+                          position: 'top',
+                          color: 'negative',
+                          textColor: 'white',
+                          classes: 'glossy'
+                        })
+                     } else if (localStorage.getItem('isProcessing') === 'true') {
+                        Notify.create({
+                            icon: 'announcement',
+                            message: 'Já Existe uma sincronização em curso.',
+                            type: 'warning',
+                            progress: true,
+                            timeout: 3000,
+                            position: 'top',
+                            color: 'warning',
+                            textColor: 'white',
+                            classes: 'glossy'
+                          })
+                } else {
+                   this.sendUtente()
                 // this.$emit('update:showUtenteRegistrationScreenProp', false)
+                }
+                })
             }).onCancel(() => {
                 // console.log('>>>> Cancel')
             }).onDismiss(() => {
