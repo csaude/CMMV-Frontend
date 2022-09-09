@@ -500,11 +500,9 @@ export default {
                 },
                 persistent: true
             }).onOk(() => {
-               // alert('ProcessingStatus: ' + localStorage.getItem('isProcessing'))
                db.newDb().collection('utentes').get({ keys: true }).then(utentes => {
                     const utentesToSend = []
                     utentes.forEach(utente => {
-                      // console.log('Utente a sincronizaar: ', utente)
                         if (utente.data.syncStatus === 'P') {
                             utentesToSend.push(utente.data)
                         } else if (utente.data.syncStatus === 'U') {

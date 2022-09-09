@@ -18,12 +18,9 @@ export default {
             })
         },
         doSend (i) {
-           // const utentesToSend = []
-           // const utentesToSend = this.getUtentesToSend()
            db.newDb().collection('utentes').get({ keys: true }).then(utentes => {
             const utentesToSend = []
             utentes.forEach(utente => {
-              // console.log('Utente a sincronizaar: ', utente)
                 if (utente.data.syncStatus === 'P') {
                     utentesToSend.push(utente.data)
                 } else if (utente.data.syncStatus === 'U') {
@@ -49,7 +46,6 @@ export default {
                    this.processUtentesSyncStatusU(utentesToSend, i, utenteToSend)
                 }
             } else {
-               // O objecto utentesToSend[i]  é invalido
                localStorage.setItem('isProcessing', 'false')
                console.log('Erro ao sincronizar o Utente: ' + utentesToSend[i])
             }
