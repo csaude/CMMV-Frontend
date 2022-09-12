@@ -18,8 +18,6 @@ export default {
             })
         },
         doSend (i) {
-           // const utentesToSend = []
-           // const utentesToSend = this.getUtentesToSend()
            db.newDb().collection('utentes').get({ keys: true }).then(utentes => {
             const utentesToSend = []
             utentes.forEach(utente => {
@@ -32,7 +30,7 @@ export default {
             })
             return utentesToSend
         }).then(utentesToSend => {
-            console.log(utentesToSend)
+            if (utentesToSend.length > 0) {
             if (utentesToSend[i] !== undefined) {
                 console.log(utentesToSend[i])
                 const idToDelete = utentesToSend[i].id.toString()
@@ -41,61 +39,30 @@ export default {
                 utenteToSend.id = null
                 utenteToSend.syncStatus = 'S'
                 if (utentesToSend[i].syncStatus === 'P') {
-                 Utente.apiSave(utenteToSend).then(resp => {
-                    utentesToSend[i].syncStatus = 'S'
-                    const idServer = resp.response.data.id.toString()
-                    utentesToSend[i].id = resp.response.data.id
-                    utentesToSend[i].$id = resp.response.data.id
-                    Utente.update({
-                        data: utentesToSend[i]
-                    })
-                    if (resp.response.data.addresses !== undefined) {
-                        utentesToSend[i].addresses[0].id = resp.response.data.addresses[0].id
-                   }
-                  db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
-                  db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
-                  Address.delete(addressIdToDelete)
-                    Utente.delete(idToDelete)
-                    if (resp.response.data.appointments !== undefined) {
-                    Appointment.delete(resp.response.data.appointments[0].id)
-                    }
-                 //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
-                   i = i + 1
-                   setTimeout(this.doSend(i), 2)
-                }).catch(error => {
-                    console.log(error)
-                })
-            } else if (utentesToSend[i].syncStatus === 'U') {
-                db.newDb().collection('utentes').doc(utentesToSend[i].idServer).get().then(utente => {
-                    utenteToSend.id = utentesToSend[i].idServer
-                    utentesToSend[i].$id = utentesToSend[i].idServer
-                    utentesToSend[i].id = utentesToSend[i].idServer
-                    Utente.apiUpdate(utenteToSend).then(resp => {
-                        utentesToSend[i].syncStatus = 'S'
-                        const idServer = resp.response.data.id.toString()
-                        db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
-                        Utente.update({
-                            data: utentesToSend[i]
-                        })
-                  //      Utente.delete(resp.response.data.id)
-                       i = i + 1
-                       setTimeout(this.doSend(i), 2)
-                    })
-                  })
-            }
+                  localStorage.setItem('isProcessing', 'true')
+                    this.processUtentesSyncStatusP(utenteToSend, utentesToSend, i, idToDelete, addressIdToDelete)
+                } else if (utentesToSend[i].syncStatus === 'U') {
+                  localStorage.setItem('isProcessing', 'true')
+                   this.processUtentesSyncStatusU(utentesToSend, i, utenteToSend)
+                }
             } else {
-                Notify.create({
-                    icon: 'announcement',
-                    message: 'Sincronização de dados Terminada',
-                    type: 'positive',
-                    progress: true,
-                    timeout: 3000,
-                    position: 'top',
-                    color: 'positive',
-                    textColor: 'white',
-                    classes: 'glossy'
-                  })
+               localStorage.setItem('isProcessing', 'false')
+               console.log('Erro ao sincronizar o Utente: ' + utentesToSend[i])
             }
+          } else {
+            localStorage.setItem('isProcessing', 'false')
+            Notify.create({
+              icon: 'announcement',
+              message: 'Sincronização de dados Terminada',
+              type: 'positive',
+              progress: true,
+              timeout: 3000,
+              position: 'top',
+              color: 'positive',
+              textColor: 'white',
+              classes: 'glossy'
+            })
+          }
         })
         },
         getUtentesToSend () {
@@ -109,6 +76,53 @@ export default {
                return utentesToSend
                 })
             })
+        },
+        processUtentesSyncStatusP (utenteToSend, utentesToSend, i, idToDelete, addressIdToDelete) {
+          Utente.apiSave(utenteToSend).then(resp => {
+            utentesToSend[i].syncStatus = 'S'
+            const idServer = resp.response.data.id.toString()
+            utentesToSend[i].id = resp.response.data.id
+            utentesToSend[i].$id = resp.response.data.id
+            Utente.update({
+              data: utentesToSend[i]
+            })
+            if (resp.response.data.addresses !== undefined) {
+              utentesToSend[i].addresses[0].id = resp.response.data.addresses[0].id
+            }
+            db.newDb().collection('utentes').doc({ id: idToDelete }).delete()
+            db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+            Address.delete(addressIdToDelete)
+            Utente.delete(idToDelete)
+            if (resp.response.data.appointments !== undefined) {
+              Appointment.delete(resp.response.data.appointments[0].id)
+            }
+            //   db.newDb().collection('utentes').doc({ id: utente.id }).set(utente)
+            i = i + 1
+            setTimeout(this.doSend(i), 2)
+          }).catch(error => {
+            localStorage.setItem('isProcessing', 'false')
+            console.log(error)
+          })
+          return i
+        },
+        processUtentesSyncStatusU (utentesToSend, i, utenteToSend) {
+          db.newDb().collection('utentes').doc(utentesToSend[i].idServer).get().then(utente => {
+            utenteToSend.id = utentesToSend[i].idServer
+            utentesToSend[i].$id = utentesToSend[i].idServer
+            utentesToSend[i].id = utentesToSend[i].idServer
+            Utente.apiUpdate(utenteToSend).then(resp => {
+              utentesToSend[i].syncStatus = 'S'
+              const idServer = resp.response.data.id.toString()
+              db.newDb().collection('utentes').doc(idServer).set(utentesToSend[i])
+              Utente.update({
+                data: utentesToSend[i]
+              })
+              //      Utente.delete(resp.response.data.id)
+              i = i + 1
+              setTimeout(this.doSend(i), 2)
+            })
+          })
+          return i
         },
        async sendMobilizerData () {
         await db.newDb().collection('mobilizer').get().then(mobilizers => {
