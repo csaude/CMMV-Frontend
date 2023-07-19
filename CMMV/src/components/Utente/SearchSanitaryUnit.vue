@@ -403,6 +403,14 @@ export default {
                this.done1 = false
        this.step = 1
            }
+           if (this.myLocation.latitude !== undefined && this.myLocation.latitude !== null) {
+      this.myLocation.latitude = ''
+      this.myLocation.longitude = ''
+      this.myLocation.distance = ''
+      this.link = ref('')
+      this.appointment.appointmentDate = ''
+      this.submitting = false
+     }
         }
         },
     components: {
