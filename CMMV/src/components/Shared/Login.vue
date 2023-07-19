@@ -252,8 +252,9 @@ export default {
                     // const role = users[0].role
                     const match = bcrypt.compareSync(this.password, passwordLocal.substring(8))
                     if (username === this.username && match) {
-                         if (this.checkOnline()) {
-                            UsersService.login({
+                            isOnline().then(resp => {
+                           if (resp === true) {
+                             UsersService.login({
                                 username: this.username,
                                 password: this.password
                             }).then((response) => {
@@ -268,8 +269,10 @@ export default {
                                 localStorage.setItem('clinicId', response.response.data.clinicId)
                                 localStorage.setItem('districtId', response.response.data.districtId)
                                 localStorage.setItem('source', response.response.data.source)
-                            })
-                        }
+                              })
+                           return true
+                      }
+                    })
                         this.verifiyRoleAndUser(users)
                     } else {
                         Notify.create({

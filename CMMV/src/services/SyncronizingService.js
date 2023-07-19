@@ -78,6 +78,7 @@ export default {
             })
         },
         processUtentesSyncStatusP (utenteToSend, utentesToSend, i, idToDelete, addressIdToDelete) {
+            console.log(utenteToSend)
           Utente.apiSave(utenteToSend).then(resp => {
             utentesToSend[i].syncStatus = 'S'
             const idServer = resp.response.data.id.toString()
@@ -103,7 +104,6 @@ export default {
             localStorage.setItem('isProcessing', 'false')
             console.log(error)
           })
-          return i
         },
         processUtentesSyncStatusU (utentesToSend, i, utenteToSend) {
           db.newDb().collection('utentes').doc(utentesToSend[i].idServer).get().then(utente => {
@@ -122,7 +122,6 @@ export default {
               setTimeout(this.doSend(i), 2)
             })
           })
-          return i
         },
        async sendMobilizerData () {
         await db.newDb().collection('mobilizer').get().then(mobilizers => {
